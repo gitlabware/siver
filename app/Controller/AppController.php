@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Application level Controller
  *
@@ -18,7 +19,6 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 App::uses('Controller', 'Controller');
 
 /**
@@ -31,5 +31,21 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-  public $components = array('DebugKit.Toolbar');
+
+  public $components = array('DebugKit.Toolbar', 'Session', 'Auth');
+
+  public function validar($modelo) {
+    $devuelve = '';
+    if ($this->$modelo->validates()) {
+      $this->$modelo->set($this->request->data);
+      $errores = $this->$modelo->invalidFields();
+      if (!empty($errores)) {
+        $devuelve = current(current($errores));
+      }
+    } else {
+      
+    }
+    return $devuelve;
+  }
+
 }

@@ -14,20 +14,19 @@
                 </a>
                 <ul class="nav sub-nav">
                     <li>
-                        <a href="<?php //echo $this->Url->build(['controller' => 'Users', 'action' => 'index'])  ?>">
+                        <a href="<?php echo $this->Html->url(array('controller' => 'Users','action' => 'index')); ?>">
                             Listado de Usuarios</a>
                     </li>
                     <li>
-                        <a href="javascript:" onclick="cargarmodal('<?php //echo $this->Url->build(['controller' => 'Users', 'action' => 'add'])  ?>');">
+                        <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Users', 'action' => 'usuario')); ?>');">
                             Nuevo Usuario</a>
                     </li>
                 </ul>
             </li>
-
             <li>
                 <a href="<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'index')); ?>">
                     <span class="fa fa-square-o"></span>
-                    <span class="sidebar-sc">FLUJOS</span>
+                    <span class="sidebar-title">FLUJOS</span>
                 </a>
             </li>
         </ul>
