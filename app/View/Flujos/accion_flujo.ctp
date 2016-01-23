@@ -36,17 +36,17 @@
                                     <?php foreach ($procesos as $key => $pro): ?>
                                       <tr>
                                           <td><?php echo ($key + 1) ?></td>
-                                          <td class="btn-group" style="width: 200px;"><?php echo $pro['Proceso']['nombre'] ?></td>
+                                          <td><?php echo $pro['Proceso']['nombre'] ?></td>
                                           <td>
-                                              <div class="btn-group" style="width: 200px;">
-                                                  <button type="button" class="btn btn-primary light">
-                                                      <i class="fa fa-envelope"></i>
+                                              <div class="btn-group" style="width: 120px;;">
+                                                  <button type="button" class="btn btn-warning" title="Editar Proceso" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'proceso', $flujo['Flujo']['id'], $pro['Proceso']['id'])); ?>');">
+                                                      <i class="fa fa-edit"></i>
                                                   </button>
-                                                  <button type="button" class="btn btn-primary">
-                                                      <i class="fa fa-home"></i>
+                                                  <button type="button" class="btn btn-success" title="Condiciones Necesarias" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'cond_necesarias', $pro['Proceso']['id'])) ?>');">
+                                                      <i class="fa fa-ban"></i>
                                                   </button>
-                                                  <button type="button" class="btn btn-primary dark">
-                                                      <i class="fa fa-coffee"></i>
+                                                  <button type="button" class="btn btn-primary" title="Condiciones Opcionales" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'cond_opcionales', $pro['Proceso']['id'])); ?>');">
+                                                      <i class="fa fa-ban"></i>
                                                   </button>
                                               </div>
                                           </td>

@@ -10,7 +10,7 @@
     <div class="section row">
         <div class="col-md-12">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->textarea('nombre', ['class' => 'gui-textarea','required']); ?>
+                <?php echo $this->Form->textarea('nombre', ['class' => 'gui-textarea', 'required']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-edit"></i>
                 </label>
@@ -23,11 +23,14 @@
 
 <div class="panel-footer">
     <button type="submit" class="button btn-primary">Registrar</button>
+    <?php if (!empty($this->request->data['Proceso']['id'])): ?>
+      <?php echo $this->Html->link('Eliminar', array('action' => 'eliminar',$this->request->data['Proceso']['id']), array('class' => 'button btn-danger','confirm' => 'Esta seguro de eliminar el proceso??')) ?>
+    <?php endif; ?>
 </div>
 <!-- end .form-footer section -->
-<?php echo $this->Form->hidden('id')?> 
-<?php echo $this->Form->hidden('user_id')?> 
-<?php echo $this->Form->hidden('flujo_id')?> 
+<?php echo $this->Form->hidden('id') ?> 
+<?php echo $this->Form->hidden('user_id') ?> 
+<?php echo $this->Form->hidden('flujo_id') ?> 
 <?= $this->Form->end(); ?>
 
 <?php
