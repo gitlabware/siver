@@ -38,4 +38,11 @@ class FlujosController extends AppController{
     ));
     $this->set(compact('flujo','procesos'));
   }
+  
+  public function eliminar($idFlujo = null){
+    $this->Flujo->delete($idFlujo);
+    $this->Proceso->deleteAll(array('Proceso.flujo_id' => $idFlujo));
+    $this->Session->setFlash("Se ha eliminado correctamente el flujo y sus procesos...!!",'msgbueno');
+    $this->redirect(array('action' => 'index'));
+  }
 }
