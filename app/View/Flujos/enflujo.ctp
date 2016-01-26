@@ -17,7 +17,7 @@
                             <tbody>
                                 <?php foreach ($procesos as $pro): ?>
                                 <?php 
-                                $consulta = $this->requestAction(array('controller' => 'Procesos','action' => ''));
+                                //$consulta = $this->requestAction(array('controller' => 'Procesos','action' => ''));
                                 ?>
                                   <tr>
                                       <td class="text-center" style="font-size: 16px;">

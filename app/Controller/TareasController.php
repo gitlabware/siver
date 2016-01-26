@@ -7,5 +7,9 @@ class TareasController extends AppController{
   public function tarea(){
     
   }
+  
+  public function calendario(){
+    
+  }
 }
 

@@ -17,7 +17,17 @@
             </label>
         </div>
     </div>
-
+    <div class="section row">
+        <div class="col-md-12">
+            <label for="firstname" class="field prepend-icon">
+                <?php echo $this->Form->text('tiempo', ['class' => 'gui-input','type' => 'number','min' => 0,'placeholder' => 'Dias de Vencimiento']); ?>
+                <label for="email" class="field-icon">
+                    <i class="fa fa-bookmark-o"></i>
+                </label>
+            </label>
+            
+        </div>
+    </div>
 </div>
 <!-- end .form-body section -->
 

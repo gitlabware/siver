@@ -62,42 +62,46 @@
                 <div class="panel-menu p12 admin-form theme-primary">
                     <div class="row">
                         <div class="col-md-12">
-                            <?php echo $this->Html->link('<i class="fa fa-play"></i> INICIAR FLUJO', array('action' => 'iniciar_flujo', $flujo['Flujo']['id']), array('class' => 'btn btn-success btn-block ', 'escape' => false)) ?>
+                            <a href="javascript:" class="btn btn-success btn-block" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flujo['Flujo']['id'])); ?>');" ><i class="fa fa-play"></i> INICIAR FLUJO</a>
                         </div>
                     </div>
 
                 </div>
             </div>
-            <div class="panel">
+            <?php if (!empty($flujos)): ?>
+              <div class="panel">
 
-                <div class="panel-body pn">
-                    <div class="table-responsive">
-                        <table class="table dataTable tabla-dato table-bordered">
-                            <thead>
-                                <tr class="bg-light">
-                                    <th>Usuario</th>
-                                    <th>Creado</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($flujos as $flu): ?>
-                                  <tr>
-                                      <td><?php echo $flu['User']['nombre_completo']; ?></td>
-                                      <td><?php echo $flu['FlujosUser']['created']; ?></td>
-                                      <td class="text-center" style="font-size: 16px;">
-                                          <div class="btn-group" style="width: 120px;;">
-                                              <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false,'title' => 'VER FLUJO')); ?>
-                                          </div>
-                                      </td>
+                  <div class="panel-body pn">
+                      <div class="table-responsive">
+                          <table class="table dataTable tabla-dato table-bordered">
+                              <thead>
+                                  <tr class="bg-light">
+                                      <th>Descripcion</th>
+                                      <th>Usuario</th>
+                                      <th>Creado</th>
+                                      <th></th>
                                   </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                              </thead>
+                              <tbody>
+                                  <?php foreach ($flujos as $flu): ?>
+                                    <tr>
+                                        <td><?php echo $flu['FlujosUser']['descripcion']; ?></td>
+                                        <td><?php echo $flu['User']['nombre_completo']; ?></td>
+                                        <td><?php echo $flu['FlujosUser']['created']; ?></td>
+                                        <td class="text-center" style="font-size: 16px;">
+                                            <div class="btn-group" style="width: 120px;">
 
+                                                <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                  <?php endforeach; ?>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>
