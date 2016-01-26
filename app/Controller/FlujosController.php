@@ -3,7 +3,7 @@
 class FlujosController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Flujo', 'Proceso', 'FlujosUser');
+  public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado');
 
   public function index() {
     $flujos = $this->Flujo->find('all', array(
@@ -62,20 +62,90 @@ class FlujosController extends AppController {
       $idFlujoUser = $this->FlujosUser->getLastInsertID();
       $this->redirect(array('action' => 'enflujo', $idFlujoUser));
     }
-    
   }
 
   public function enflujo($idFlujoUser = null) {
     $flujo = $this->FlujosUser->find('first', array(
       'recursive' => 0,
       'conditions' => array('FlujosUser.id' => $idFlujoUser),
-      'fields' => array('Flujo.*')
+      'fields' => array('Flujo.*', 'FlujosUser.*')
     ));
+    $this->update_proceso_est($flujo['Flujo']['id'], $idFlujoUser);
+    $sql1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = $idFlujoUser AND pres.proceso_id = Proceso.id ORDER BY pres.id DESC LIMIT 1)";
+    $this->Proceso->virtualFields = array(
+      'estado' => "$sql1"
+    );
     $procesos = $this->Proceso->find('all', array(
       'recursive' => -1,
       'conditions' => array('Proceso.flujo_id' => $flujo['Flujo']['id'])
     ));
+     /*debug($procesos);
+      exit;*/ 
     $this->set(compact('flujo', 'procesos'));
+  }
+
+  public function update_proceso_est($idFlujo = null, $idFlujoUser = null) {
+    $sql1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = $idFlujoUser AND pres.proceso_id = Proceso.id ORDER BY pres.id LIMIT 1)";
+    $this->Proceso->virtualFields = array(
+      'estado' => "$sql1"
+    );
+    $procesos = $this->Proceso->find('all', array(
+      'recursive' => -1,
+      'conditions' => array('Proceso.flujo_id' => $idFlujo)
+    ));
+    foreach ($procesos as $pro) {
+      if (empty($pro['Proceso']['estado'])) {
+        $condiciones_nec = $this->ProcesosCondicione->find('all', array(
+          'recursive' => -1,
+          'conditions' => array('ProcesosCondicione.proceso_id' => $pro['Proceso']['id'], 'ProcesosCondicione.tipo LIKE' => 'Necesario')
+        ));
+        $condiciones_opc = $this->ProcesosCondicione->find('all', array(
+          'recursive' => -1,
+          'conditions' => array('ProcesosCondicione.proceso_id' => $pro['Proceso']['id'], 'ProcesosCondicione.tipo LIKE' => 'Opcional')
+        ));
+        $habilitar = TRUE;
+        if (!empty($condiciones_nec)) {
+          foreach ($condiciones_nec as $con) {
+            $verifica = $this->ProcesosEstado->find('first', array(
+              'recursive' => -1,
+              'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $con['ProcesosCondicione']['condicion_id'], 'ProcesosEstado.estado LIKE' => 'Finalizado'),
+              'fields' => array('ProcesosEstado.id'),
+              'order' => array('ProcesosEstado.id DESC')
+            ));
+            if (empty($verifica)) {
+              $habilitar = FALSE;
+            }
+          }
+        }
+        if (!empty($condiciones_opc)) {
+          $cantidad = 0;
+          foreach ($condiciones_opc as $con) {
+            $verifica = $this->ProcesosEstado->find('first', array(
+              'recursive' => -1,
+              'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $con['ProcesosCondicione']['condicion_id'], 'ProcesosEstado.estado LIKE' => 'Finalizado'),
+              'fields' => array('ProcesosEstado.id'),
+              'order' => array('ProcesosEstado.id DESC')
+            ));
+            if (!empty($verifica)) {
+              $cantidad++;
+            }
+          }
+          if ($cantidad == 0) {
+            $habilitar = FALSE;
+          }
+        }
+        if ($habilitar) {
+          $d_proest['user_id'] = 0;
+          $d_proest['flujos_user_id'] = $idFlujoUser;
+          $d_proest['proceso_id'] = $pro['Proceso']['id'];
+          $d_proest['estado'] = 'Activo';
+          $this->ProcesosEstado->create();
+          $this->ProcesosEstado->save($d_proest);
+        }
+      } elseif (!empty($pro['Proceso']['tiempo'])) {
+        
+      }
+    }
   }
 
 }

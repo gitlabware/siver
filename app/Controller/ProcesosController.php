@@ -3,7 +3,7 @@
 class ProcesosController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Proceso', 'ProcesosCondicione');
+  public $uses = array('Proceso', 'ProcesosCondicione', 'ProcesosEstado','FlujosUser');
 
   public function proceso($idFlujo = null, $idProceso = null) {
     $this->layout = 'ajax';
@@ -33,9 +33,9 @@ class ProcesosController extends AppController {
     //$condiciones['Proceso.id !='] = $idProceso;
     array_push($condiciones_l, $idProceso);
     if (!empty($condiciones_l)) {
-      if(count($condiciones_l) > 1){
+      if (count($condiciones_l) > 1) {
         $condiciones['Proceso.id NOT IN'] = $condiciones_l;
-      }else{
+      } else {
         $condiciones['Proceso.id !='] = $condiciones_l;
       }
     }
@@ -51,30 +51,115 @@ class ProcesosController extends AppController {
         'Proceso.id' => $idProceso
       )
     ));
-    
-    $condiciones_g = $this->ProcesosCondicione->find('all',array(
+
+    $condiciones_g = $this->ProcesosCondicione->find('all', array(
       'recursive' => 0,
       'conditions' => array('ProcesosCondicione.proceso_id' => $idProceso),
-      'fields' => array('Condicion.nombre','ProcesosCondicione.*')
+      'fields' => array('Condicion.nombre', 'ProcesosCondicione.*')
     ));
-    $this->set(compact('opciones', 'proceso','condiciones_g'));
+    $this->set(compact('opciones', 'proceso', 'condiciones_g'));
   }
-  
-  public function registra_condicion(){
-    if(!empty($this->request->data['ProcesosCondicione'])){
+
+  public function registra_condicion() {
+    if (!empty($this->request->data['ProcesosCondicione'])) {
       $this->ProcesosCondicione->create();
       $this->ProcesosCondicione->save($this->request->data['ProcesosCondicione']);
     }
     exit;
   }
-  
-  public function eliminar_cond($idProcCond = null){
+
+  public function eliminar_cond($idProcCond = null) {
     $this->ProcesosCondicione->delete($idProcCond);
     exit;
   }
-  
-  public function get_hab_proc($idProceso = null){
+
+  public function get_hab_proc($idProceso = null) {
     
+  }
+
+  public function verproceso($idFlujoUser = null, $idProceso = null) {
+    $this->layout = 'ajax';
+
+    /* debug($idProceso);
+      exit; */
+
+    $this->set(compact('idFlujoUser', 'idProceso'));
+  }
+
+  public function finaliza_proceso($idFlujoUser = null, $idProceso = null) {
+    $d_proest['user_id'] = $this->Session->read('Auth.User.id');
+    $d_proest['flujos_user_id'] = $idFlujoUser;
+    $d_proest['proceso_id'] = $idProceso;
+    $d_proest['estado'] = 'Finalizado';
+    $this->ProcesosEstado->create();
+    $this->ProcesosEstado->save($d_proest);
+    $flujo = $this->FlujosUser->findByid($idFlujoUser,null,null,-1);
+    $this->update_proceso_est($flujo['FlujosUser']['flujo_id'], $idFlujoUser);
+    $this->Session->setFlash('Se ha finalizado correctamente el proceso!!','msgbueno');
+    $this->redirect($this->referer());
+  }
+  public function update_proceso_est($idFlujo = null, $idFlujoUser = null) {
+    $sql1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = $idFlujoUser AND pres.proceso_id = Proceso.id ORDER BY pres.id LIMIT 1)";
+    $this->Proceso->virtualFields = array(
+      'estado' => "$sql1"
+    );
+    $procesos = $this->Proceso->find('all', array(
+      'recursive' => -1,
+      'conditions' => array('Proceso.flujo_id' => $idFlujo)
+    ));
+    foreach ($procesos as $pro) {
+      if (empty($pro['Proceso']['estado'])) {
+        $condiciones_nec = $this->ProcesosCondicione->find('all', array(
+          'recursive' => -1,
+          'conditions' => array('ProcesosCondicione.proceso_id' => $pro['Proceso']['id'], 'ProcesosCondicione.tipo LIKE' => 'Necesario')
+        ));
+        $condiciones_opc = $this->ProcesosCondicione->find('all', array(
+          'recursive' => -1,
+          'conditions' => array('ProcesosCondicione.proceso_id' => $pro['Proceso']['id'], 'ProcesosCondicione.tipo LIKE' => 'Opcional')
+        ));
+        $habilitar = TRUE;
+        if (!empty($condiciones_nec)) {
+          foreach ($condiciones_nec as $con) {
+            $verifica = $this->ProcesosEstado->find('first', array(
+              'recursive' => -1,
+              'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $con['ProcesosCondicione']['condicion_id'], 'ProcesosEstado.estado LIKE' => 'Finalizado'),
+              'fields' => array('ProcesosEstado.id'),
+              'order' => array('ProcesosEstado.id DESC')
+            ));
+            if (empty($verifica)) {
+              $habilitar = FALSE;
+            }
+          }
+        }
+        if (!empty($condiciones_opc)) {
+          $cantidad = 0;
+          foreach ($condiciones_opc as $con) {
+            $verifica = $this->ProcesosEstado->find('first', array(
+              'recursive' => -1,
+              'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $con['ProcesosCondicione']['condicion_id'], 'ProcesosEstado.estado LIKE' => 'Finalizado'),
+              'fields' => array('ProcesosEstado.id'),
+              'order' => array('ProcesosEstado.id DESC')
+            ));
+            if (!empty($verifica)) {
+              $cantidad++;
+            }
+          }
+          if ($cantidad == 0) {
+            $habilitar = FALSE;
+          }
+        }
+        if ($habilitar) {
+          $d_proest['user_id'] = 0;
+          $d_proest['flujos_user_id'] = $idFlujoUser;
+          $d_proest['proceso_id'] = $pro['Proceso']['id'];
+          $d_proest['estado'] = 'Activo';
+          $this->ProcesosEstado->create();
+          $this->ProcesosEstado->save($d_proest);
+        }
+      } elseif (!empty($pro['Proceso']['tiempo'])) {
+        
+      }
+    }
   }
 
 }
