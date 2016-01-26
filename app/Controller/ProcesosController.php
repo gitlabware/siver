@@ -72,5 +72,9 @@ class ProcesosController extends AppController {
     $this->ProcesosCondicione->delete($idProcCond);
     exit;
   }
+  
+  public function get_hab_proc($idProceso = null){
+    
+  }
 
 }

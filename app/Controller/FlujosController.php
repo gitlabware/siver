@@ -2,7 +2,7 @@
 
 class FlujosController extends AppController{
   public $layout = 'svergara';
-  public $uses = array('Flujo','Proceso');
+  public $uses = array('Flujo','Proceso','FlujosUser');
 
 
   public function index(){
@@ -36,7 +36,12 @@ class FlujosController extends AppController{
       'conditions' => array('Proceso.flujo_id' => $idFlujo),
       'order' => array('Proceso.id')
     ));
-    $this->set(compact('flujo','procesos'));
+    $flujos = $this->FlujosUser->find('all',array(
+      'recursive' => 0,
+      'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
+      'fields' => array('Flujo.*','User.*','FlujosUser.*')
+    ));
+    $this->set(compact('flujo','procesos','flujos'));
   }
   
   public function eliminar($idFlujo = null){
@@ -44,5 +49,27 @@ class FlujosController extends AppController{
     $this->Proceso->deleteAll(array('Proceso.flujo_id' => $idFlujo));
     $this->Session->setFlash("Se ha eliminado correctamente el flujo y sus procesos...!!",'msgbueno');
     $this->redirect(array('action' => 'index'));
+  }
+  
+  public function iniciar_flujo($idFlujo = null){
+    $this->FlujosUser->create();
+    $d_flujo['flujo_id'] = $idFlujo;
+    $d_flujo['user_id'] = $this->Session->read('Auth.User.id');
+    $this->FlujosUser->save($d_flujo);
+    $idFlujoUser = $this->FlujosUser->getLastInsertID();
+    $this->redirect(array('action' => 'enflujo',$idFlujoUser));
+  }
+  
+  public function enflujo($idFlujoUser = null){
+    $flujo = $this->FlujosUser->find('first',array(
+      'recursive' => 0,
+      'conditions' => array('FlujosUser.id' => $idFlujoUser),
+      'fields' => array('Flujo.*')
+    ));
+    $procesos = $this->Proceso->find('all',array(
+      'recursive' => -1,
+      'conditions' => array('Proceso.flujo_id' => $flujo['Flujo']['id'])
+    ));
+    $this->set(compact('flujo','procesos'));
   }
 }

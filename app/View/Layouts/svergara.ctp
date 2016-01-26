@@ -49,14 +49,13 @@
                     <span id="toggle_sidemenu_l" class="ad ad-lines"></span>
                 </div>
                 <?php
-                
-                /*if ($this->request->session()->read('Auth.User.role') == 'Megadealer') {
+                /* if ($this->request->session()->read('Auth.User.role') == 'Megadealer') {
                   echo $this->element('menu/mega');
-                } elseif ($this->request->session()->read('Auth.User.role') == 'Dealer') {
+                  } elseif ($this->request->session()->read('Auth.User.role') == 'Dealer') {
                   echo $this->element('menu/dealer');
-                } else {
+                  } else {
                   echo $this->element('menu/admin');
-                }*/
+                  } */
                 ?>
 
             </header>
@@ -64,13 +63,13 @@
 
             <!-- Start: Sidebar -->
             <?php
-            /*if ($this->request->session()->read('Auth.User.role') == 'Megadealer') {
+            /* if ($this->request->session()->read('Auth.User.role') == 'Megadealer') {
               echo $this->element('sidebar/mega');
-            } elseif ($this->request->session()->read('Auth.User.role') == 'Dealer') {
+              } elseif ($this->request->session()->read('Auth.User.role') == 'Dealer') {
               echo $this->element('sidebar/dealer');
-            } else {
+              } else {
               echo $this->element('sidebar/admin');
-            }*/
+              } */
             echo $this->element('sidebar/admin');
             ?>
 
@@ -292,10 +291,6 @@
           }
 
         </script>
-
-
-
-
 
         <script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/highcharts/highcharts.js"></script>
 
