@@ -1,4 +1,5 @@
 $("#datepicker1").datepicker({
+    dateFormat: 'yy-mm-dd',
     prevText: '<i class="fa fa-chevron-left"></i>',
     nextText: '<i class="fa fa-chevron-right"></i>',
     showButtonPanel: false,
@@ -12,6 +13,7 @@ $("#datepicker1").datepicker({
     }
 });
 $("#datepicker2").datepicker({
+    dateFormat: 'yy-mm-dd',
     prevText: '<i class="fa fa-chevron-left"></i>',
     nextText: '<i class="fa fa-chevron-right"></i>',
     showButtonPanel: false,

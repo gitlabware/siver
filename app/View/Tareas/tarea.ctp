@@ -6,21 +6,20 @@
 
         <!-- Begin: Content Header -->
         <div class="content-header">
-            <h2> Formulario de Tarea</h2>
-            <p class="lead">Para el proceso "Remision del expediente"</p>
+            <h2> Tarea "<?php echo $flujo['FlujosUser']['descripcion']; ?>"</h2>
         </div>
 
         <!-- Validation Example -->
         <div class="admin-form theme-primary mw1000 center-block" style="padding-bottom: 175px;">
 
             <div class="panel heading-border panel-primary">
-
+                <?php echo $this->Form->create('Tarea'); ?>
                 <form method="post" action="/" id="admin-form">
 
                     <div class="panel-body bg-light">
 
                         <div class="section-divider mt20 mb40">
-                            <span> Tarea de Gonzalo </span>
+                            <span> Para el proceso "<?php echo $proceso['Proceso']['nombre'] ?>" </span>
                         </div>
                         <!-- .section-divider -->
 
@@ -28,19 +27,14 @@
                             <div class="col-md-6">
                                 <div class="section">
                                     <label class="field select">
-                                        <select id="language" name="language">
-                                            <option value="">Asignar a...</option>
-                                            <option value="EN">Jorge Teran</option>
-                                            <option value="FR">Pedro Mendoza</option>
-                                            <option value="SP">Yolanda Pinto</option>
-                                            <option value="CH">Jose Chavez</option>
-                                        </select>
+                                        <?php echo $this->Form->select('Tarea.asignado_id', $usuarios, array('empty' => 'Asignar a...')) ?>
+
                                         <i class="arrow double"></i>
                                     </label>
                                 </div>
                                 <div class="section">
                                     <label for="datepicker1" class="field prepend-icon">
-                                        <input type="text" id="datepicker1" name="datepicker1" class="gui-input" placeholder="Fecha Inicio">
+                                        <?php echo $this->Form->text('Tarea.fecha_inicio', array('class' => 'gui-input', 'placeholder' => 'Fecha Inicio', 'id' => 'datepicker1')); ?>
                                         <label class="field-icon">
                                             <i class="fa fa-calendar-o"></i>
                                         </label>
@@ -48,7 +42,7 @@
                                 </div>
                                 <div class="section">
                                     <label for="datepicker1" class="field prepend-icon">
-                                        <input type="text" id="datepicker2" name="datepicker1" class="gui-input" placeholder="Fecha Fin">
+                                        <?php echo $this->Form->text('Tarea.fecha_fin', array('class' => 'gui-input', 'placeholder' => 'Fecha Fin', 'id' => 'datepicker2')); ?>
                                         <label class="field-icon">
                                             <i class="fa fa-calendar-o"></i>
                                         </label>
@@ -56,13 +50,7 @@
                                 </div>
                                 <div class="section">
                                     <label class="field select">
-                                        <select id="language" name="language">
-                                            <option value="">Seleccione Prioridad</option>
-                                            <option value="EN">Urgente</option>
-                                            <option value="FR">Alta</option>
-                                            <option value="SP">Normal</option>
-                                            <option value="CH">Baja</option>s
-                                        </select>
+                                        <?php echo $this->Form->select('Tarea.asignado_id', array('Urgente' => 'Urgente', 'Alta' => 'Alta', 'Normal' => 'Normal', 'Baja' => 'Baja'), array('empty' => 'Seleccione Prioridad')) ?>
                                         <i class="arrow double"></i>
                                     </label>
                                 </div>
@@ -73,7 +61,7 @@
                             <div class="col-md-6">
                                 <div class="section" id="spy3">
                                     <label for="comment" class="field prepend-icon">
-                                        <textarea class="gui-textarea"  id="comment" name="comment" placeholder="Tu Descripcion"></textarea>
+                                        <?php echo $this->Form->textarea('Tarea.descripcion', array('class' => 'gui-textarea', 'placeholder' => 'Descripcion')) ?>
                                         <label for="comment" class="field-icon">
                                             <i class="fa fa-comments"></i>
                                         </label>
@@ -84,20 +72,15 @@
                                 </div>
                                 <div class="section">
                                     <label for="useremail" class="field prepend-icon">
-                                        <input type="email" name="useremail" id="useremail" class="gui-input" placeholder="Porcentaje de la tarea">
+                                        <?php echo $this->Form->text('Tarea.porcentaje', array('class' => 'gui-input', 'placeholder' => 'Porcentaje de la tarea')); ?>
                                         <label for="useremail" class="field-icon">
                                             <i class="fa fa-neuter"></i>
                                         </label>
                                     </label>
-
                                 </div>
                             </div>
                             <!-- end section -->
                         </div>
-
-
-
-
 
                     </div>
                     <!-- end .form-body section -->
@@ -106,8 +89,10 @@
                         <button type="reset" class="button"> Cancelar </button>
                     </div>
                     <!-- end .form-footer section -->
-                </form>
-
+                    <?php echo $this->Form->hidden('Tarea.proceso_id', array('value' => $proceso['Proceso']['id'])) ?>
+                    <?php echo $this->Form->hidden('Tarea.flujos_user_id', array('value' => $flujo['FlujosUser']['id'])) ?>
+                    <?php echo $this->Form->hidden('Tarea.user_id', array('value' => $this->Session->read('Auth.User.id'))) ?>
+                    <?php echo $this->Form->end(); ?>
             </div>
 
         </div>

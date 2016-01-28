@@ -3,7 +3,7 @@
 class ProcesosController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Proceso', 'ProcesosCondicione', 'ProcesosEstado','FlujosUser');
+  public $uses = array('Proceso', 'ProcesosCondicione', 'ProcesosEstado', 'FlujosUser', 'Tarea');
 
   public function proceso($idFlujo = null, $idProceso = null) {
     $this->layout = 'ajax';
@@ -82,8 +82,32 @@ class ProcesosController extends AppController {
 
     /* debug($idProceso);
       exit; */
+    $tareas = $this->Tarea->find('all', array(
+      'recursive' => 0,
+      'conditions' => array('Tarea.flujos_user_id' => $idFlujoUser, 'Tarea.proceso_id' => $idProceso),
+      'fields' => array('Tarea.*', 'Asignado.nombre_completo'),
+      'order' => array('Tarea.id DESC')
+    ));
+    $this->set(compact('idFlujoUser', 'idProceso', 'tareas'));
+  }
 
-    $this->set(compact('idFlujoUser', 'idProceso'));
+  public function ver_proceso($idFlujoUser = null, $idProceso = null) {
+    $flujo = $this->FlujosUser->findByid($idFlujoUser, null, null, -1);
+    $proceso = $this->Proceso->findByid($idProceso, null, null, -1);
+    $sql1 = "(SELECT tareas.id, tareas.created, CONCAT('Tarea') AS tipo_t, users.nombre_completo FROM tareas LEFT JOIN users ON (users.id = tareas.user_id) WHERE tareas.flujos_user_id = $idFlujoUser AND tareas.proceso_id = $idProceso)";
+    $sql2 = "(SELECT adjuntos.id, adjuntos.created, CONCAT('Adjunto') AS tipo_t, users.nombre_completo FROM adjuntos LEFT JOIN users ON (users.id = adjuntos.user_id) WHERE adjuntos.flujos_user_id = $idFlujoUser AND adjuntos.proceso_id = $idProceso)";
+    $sql3 = "(SELECT comentarios.id, comentarios.created, CONCAT('Comentario') AS tipo_t, users.nombre_completo FROM comentarios LEFT JOIN users ON (users.id = comentarios.user_id) WHERE comentarios.flujos_user_id = $idFlujoUser AND comentarios.proceso_id = $idProceso)";
+    $sql4 = "$sql1 UNION $sql2 UNION $sql3 ORDER BY created DESC";
+    $linea_tiempo = $this->Proceso->query($sql4);
+    /* debug($linea_tiempo);
+      exit; */
+    $tareas = $this->Tarea->find('all', array(
+      'recursive' => 0,
+      'conditions' => array('Tarea.flujos_user_id' => $idFlujoUser, 'Tarea.proceso_id' => $idProceso),
+      'fields' => array('Tarea.*','Asignado.nombre_completo','User.nombre_completo'),
+      'order' => array('Tarea.created DESC')
+    ));
+    $this->set(compact('flujo', 'proceso', 'linea_tiempo','tareas'));
   }
 
   public function finaliza_proceso($idFlujoUser = null, $idProceso = null) {
@@ -93,11 +117,12 @@ class ProcesosController extends AppController {
     $d_proest['estado'] = 'Finalizado';
     $this->ProcesosEstado->create();
     $this->ProcesosEstado->save($d_proest);
-    $flujo = $this->FlujosUser->findByid($idFlujoUser,null,null,-1);
+    $flujo = $this->FlujosUser->findByid($idFlujoUser, null, null, -1);
     $this->update_proceso_est($flujo['FlujosUser']['flujo_id'], $idFlujoUser);
-    $this->Session->setFlash('Se ha finalizado correctamente el proceso!!','msgbueno');
+    $this->Session->setFlash('Se ha finalizado correctamente el proceso!!', 'msgbueno');
     $this->redirect($this->referer());
   }
+
   public function update_proceso_est($idFlujo = null, $idFlujoUser = null) {
     $sql1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = $idFlujoUser AND pres.proceso_id = Proceso.id ORDER BY pres.id LIMIT 1)";
     $this->Proceso->virtualFields = array(
