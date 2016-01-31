@@ -92,6 +92,7 @@ class ProcesosController extends AppController {
   }
 
   public function ver_proceso($idFlujoUser = null, $idProceso = null) {
+    
     $flujo = $this->FlujosUser->findByid($idFlujoUser, null, null, -1);
     $proceso = $this->Proceso->findByid($idProceso, null, null, -1);
     $sql1 = "(SELECT tareas.id, tareas.created, CONCAT('Tarea') AS tipo_t, users.nombre_completo FROM tareas LEFT JOIN users ON (users.id = tareas.user_id) WHERE tareas.flujos_user_id = $idFlujoUser AND tareas.proceso_id = $idProceso)";
@@ -107,7 +108,7 @@ class ProcesosController extends AppController {
       'fields' => array('Tarea.*','Asignado.nombre_completo','User.nombre_completo'),
       'order' => array('Tarea.created DESC')
     ));
-    $this->set(compact('flujo', 'proceso', 'linea_tiempo','tareas'));
+    $this->set(compact('flujo', 'proceso', 'linea_tiempo','idFlujoUser','idProceso','tareas'));
   }
 
   public function finaliza_proceso($idFlujoUser = null, $idProceso = null) {

@@ -49,16 +49,35 @@ class TareasController extends AppController {
     $this->set(compact('usuarios', 'proceso', 'flujo'));
   }
 
+  public function ver_tarea($idFlujoUser = null, $idProceso = null, $idTarea = null) {
+    $tarea = $this->Tarea->find('first', array(
+      'recursive' => 0,
+      'conditions' => array('Tarea.id' => $idTarea),
+      'fields' => array('Tarea.*', 'User.nombre_completo', 'Asignado.nombre_completo')
+    ));
+    $proceso = $this->Proceso->findByid($idProceso, null, null, -1);
+    $flujo = $this->FlujosUser->findByid($idFlujoUser, null, null, -1);
+    $this->set(compact('tarea', 'proceso', 'flujo'));
+  }
+
   public function calendario() {
     
   }
-  
-  public function get_tarea($idTarea = null){
-    return $this->Tarea->find('first',array(
-      'recursive' => 0,
-      'conditions' => array('Tarea.id' => $idTarea),
-      'fields' => array('Tarea.*','Asignado.nombre_completo')
+
+  public function get_tarea($idTarea = null) {
+    return $this->Tarea->find('first', array(
+        'recursive' => 0,
+        'conditions' => array('Tarea.id' => $idTarea),
+        'fields' => array('Tarea.*', 'Asignado.nombre_completo')
     ));
   }
+
+  public function eliminar($idTarea = null) {
+    $this->Tarea->delete($idTarea);
+    $this->Session->setFlash("Se ha eliminado correctamente la tarea!!!", 'msgbueno');
+    $this->redirect($this->referer());
+  }
+
+  
 
 }

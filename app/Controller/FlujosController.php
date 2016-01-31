@@ -6,6 +6,7 @@ class FlujosController extends AppController {
   public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado');
 
   public function index() {
+    
     $flujos = $this->Flujo->find('all', array(
       'recursive' => -1,
       'order' => 'modified DESC'
@@ -36,12 +37,25 @@ class FlujosController extends AppController {
       'conditions' => array('Proceso.flujo_id' => $idFlujo),
       'order' => array('Proceso.id')
     ));
+    $this->set(compact('flujo', 'procesos','idFlujo'));
+  }
+  public function accion_flujo_m($idFlujo = null){
+    $this->layout = 'ajax';
     $flujos = $this->FlujosUser->find('all', array(
       'recursive' => 0,
       'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
       'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*')
     ));
-    $this->set(compact('flujo', 'procesos', 'flujos'));
+    $this->set(compact('flujos'));
+  }
+  public function accion_flujo_d($idFlujo = null){
+    $this->layout = 'ajax';
+    $flujos = $this->FlujosUser->find('all', array(
+      'recursive' => 0,
+      'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
+      'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*')
+    ));
+    $this->set(compact('flujos'));
   }
 
   public function eliminar($idFlujo = null) {
@@ -51,7 +65,7 @@ class FlujosController extends AppController {
     $this->redirect(array('action' => 'index'));
   }
 
-  public function iniciar_flujo($idFlujo = null) {
+  public function iniciar_flujo($idFlujo = null,$idFlujosUser = null) {
     $this->layout = 'ajax';
     if (!empty($this->request->data['FlujosUser'])) {
       $this->FlujosUser->create();
@@ -61,6 +75,10 @@ class FlujosController extends AppController {
       $this->FlujosUser->save($d_flujo);
       $idFlujoUser = $this->FlujosUser->getLastInsertID();
       $this->redirect(array('action' => 'enflujo', $idFlujoUser));
+    }
+    if(!empty($idFlujosUser)){
+      $this->FlujosUser->id = $idFlujosUser;
+      $this->request->data = $this->FlujosUser->read();
     }
   }
 
@@ -146,6 +164,12 @@ class FlujosController extends AppController {
         
       }
     }
+  }
+  
+  public function eliminar_e_flujo($idFlujoUser = null){
+    $this->FlujosUser->delete($idFlujoUser);
+    $this->Session->setFlash("Se ha eliminado correctamente el flujo!!",'msgbueno');
+    $this->redirect(array('action' => 'index'));
   }
 
 }

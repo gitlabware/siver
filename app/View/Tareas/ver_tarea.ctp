@@ -1,21 +1,20 @@
-<!-- Start: Topbar-Dropdown -->
 <div id="topbar-dropmenu">
     <div class="topbar-menu row">
 
-
-        <div class="col-xs-6 col-sm-3">
-            <a  href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'tarea', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'])); ?>" class="metro-tile">
-                <span class="metro-icon glyphicon glyphicon-plus"></span>
-                <p class="metro-title">Nuevo Tarea</p>
-            </a>
-        </div>
-        <div class="col-xs-6 col-sm-3">
-            <?php echo $this->Html->link('<span class="metro-icon fa fa-stop"></span> <p class="metro-title">Finalizar Proceso</p>', array('action' => 'finaliza_proceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de finalizar el Proceso???')) ?>
-
-        </div>
+        <?php if ($this->Session->read('Auth.User.id') == $tarea['Tarea']['user_id']): ?>
+          <div class="col-xs-6 col-sm-3">
+              <a  href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'tarea', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], $tarea['Tarea']['id'])); ?>" class="metro-tile">
+                  <span class="metro-icon glyphicon glyphicon-edit"></span>
+                  <p class="metro-title">Editar Tarea</p>
+              </a>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+              <?php echo $this->Html->link('<span class="metro-icon fa fa-remove"></span> <p class="metro-title"> Eliminar Tarea</p>', array('action' => 'eliminar', $tarea['Tarea']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de eliminar la tarea???')) ?>
+          </div>
+        <?php endif; ?>
         <div class="col-xs-6 col-sm-3">
             <a  href="javascript:" class="metro-tile" onclick="cierra_elmenu();
-                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'adjunto', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0)); ?>');">
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'adjunto', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], $tarea['Tarea']['id'])); ?>');">
                 <span class="metro-icon glyphicon glyphicon-upload"></span>
                 <p class="metro-title">Subir Archivo</p>
             </a>
@@ -31,54 +30,68 @@
   }
 
 </script>
-<section id="content" class=" animated fadeIn">
+<section id="content" class="animated fadeIn">
 
-    <h2><?php echo $proceso['Proceso']['nombre'] ?> <small> <?php echo $flujo['FlujosUser']['descripcion'] ?></small></h2>
+    <!-- Begin: Content Header -->
+    <p class="lead text-center mv30">
+
+        <?php echo $flujo['FlujosUser']['descripcion']; ?> - <b><?php echo $proceso['Proceso']['nombre'] ?></b>
+    </p>
+
     <div class="row">
         <div class="col-md-8">
+
             <div class="panel">
                 <div class="panel-heading">
-                    <span class="panel-icon">
-                        <i class="fa fa-tasks"></i>
-                    </span>
-                    <span class="panel-title"> Tareas</span>
-                </div>
+                    <span class="panel-icon"><i class="fa fa-pencil"></i></span>
+                    <span class="panel-title"> Tarea</span>
+                </div>	
                 <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered theme-info">
-                            <thead>
-                                <tr>
-                                    <th>Creado</th>
-                                    <th>Creado Por Usuario</th>
-                                    <th>Contenido</th>
-                                    <th>Accion</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($tareas as $ta): ?>
-                                  <tr>
-                                      <td><?php echo $ta['Tarea']['created'] ?></td>
-                                      <td><?php echo $ta['User']['nombre_completo'] ?></td>
-                                      <td>
-                                          <?php echo $ta['Tarea']['descripcion'] ?> <b class="text-primary"> Asignado a <?php echo $ta['Asignado']['nombre_completo'] ?></b>
-                                      </td>
-                                      <td>
-                                          <div class="btn-group" style="width: 120px;;">
-                                              <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', $idFlujoUser, $idProceso, $ta['Tarea']['id']), array('class' => 'btn btn-info', 'title' => 'Ver tarea', 'escape' => FALSE)) ?>
-                                              <?php echo $this->Html->link('<i class="fa fa-edit"></i>', array('controller' => 'Tareas', 'action' => 'tarea', $idFlujoUser, $idProceso, $ta['Tarea']['id']), array('class' => 'btn btn-warning', 'title' => 'Editar tarea', 'escape' => FALSE)) ?>
-                                              <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Tareas', 'action' => 'eliminar', $ta['Tarea']['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar la tarea??')) ?>
-
-                                          </div>
-                                      </td>
-                                  </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                    <div class="alert alert-info pastel alert-dismissable">
+                        <i class="fa fa-tasks pr10"></i>
+                        <strong><?php echo $tarea['User']['nombre_completo'] ?></strong> - en fecha 
+                        <?php
+                        echo $tarea['Tarea']['created'];
+                        if (!empty($tarea['Asignado']['nombre_completo'])) {
+                          echo 'asigno a <strong>' . $tarea['Asignado']['nombre_completo'] . '</strong>';
+                        }
+                        ?>
                     </div>
+                </div>
+                <div class="panel-body bg-light p20">
+                    <p class="fs14 lh25">
+                        <?php echo $tarea['Tarea']['descripcion'] ?>
+                    </p>
+                </div>
+                <div class="panel-body pn br-b-n" style="margin-top: -1px;">
+                    <table class="table table-bordered table-striped">
+                        <colgroup>
+                            <col class="col-xs-1">
+                            <col class="col-xs-7">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Fecha Inicio:</th>
+                                <td><?php echo $tarea['Tarea']['fecha_inicio'] ?></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Fecha Fin:</th>
+                                <td><?php echo $tarea['Tarea']['fecha_fin'] ?></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Prioridad:</th>
+                                <td><?php echo $tarea['Tarea']['prioridad'] ?></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Porcentaje:</th>
+                                <td><?php echo $tarea['Tarea']['porcentaje'] ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <?php
-            $adjuntos = $this->requestAction(array('controller' => 'Adjuntos', 'action' => 'get_adjuntos', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0));
+            $adjuntos = $this->requestAction(array('controller' => 'Adjuntos', 'action' => 'get_adjuntos', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], $tarea['Tarea']['id']));
             ?>
             <?php if (!empty($adjuntos)): ?>
               <div class="panel">
@@ -120,6 +133,7 @@
                   </div>
               </div>
             <?php endif; ?>
+
         </div>
         <div class="col-md-4">
             <div class="panel">
@@ -143,12 +157,14 @@
                     <?php echo $this->Form->hidden('user_id', array('value' => $this->Session->read('Auth.User.id'))) ?> 
                     <?php echo $this->Form->hidden('flujos_user_id', array('value' => $flujo['FlujosUser']['id'])) ?>
                     <?php echo $this->Form->hidden('proceso_id', array('value' => $proceso['Proceso']['id'])) ?>
-                    <?php echo $this->Form->hidden('tarea_id', array('value' => 0)) ?>
+                    <?php echo $this->Form->hidden('tarea_id', array('value' => $tarea['Tarea']['id'])) ?>
                     <?= $this->Form->end(); ?>
+
+
                 </div>
             </div>
             <?php
-            $comentarios = $this->requestAction(array('controller' => 'Comentarios', 'action' => 'get_comentarios', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0));
+            $comentarios = $this->requestAction(array('controller' => 'Comentarios', 'action' => 'get_comentarios', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], $tarea['Tarea']['id']));
             ?>
             <?php if (!empty($comentarios)): ?>
               <div class="panel">
@@ -185,10 +201,11 @@
 
 
 </section>
+<!-- End: Content -->
 
-<script>
-  $('#carga-proc').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'verproceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'])); ?>', function () {
-
-  });
-
-</script>
+<?php
+echo $this->Html->script([
+  'jquery.validate.min',
+  'inivalidacion_reg'
+]);
+?>

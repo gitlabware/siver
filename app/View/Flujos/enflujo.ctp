@@ -1,3 +1,27 @@
+<!-- Start: Topbar-Dropdown -->
+<div id="topbar-dropmenu">
+    <div class="topbar-menu row">
+        <div class="col-xs-6 col-sm-3">
+            <a onclick="cierra_elmenu();cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'iniciar_flujo', $flujo['FlujosUser']['flujo_id'], $flujo['FlujosUser']['id'])); ?>');"  href="javascript:" class="metro-tile">
+                <span class="metro-icon glyphicon glyphicon-edit"></span>
+                <p class="metro-title">Editar Flujo</p>
+            </a>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <?php echo $this->Html->link('<span class="metro-icon fa fa-remove"></span> <p class="metro-title">Eliminar este flujo</p>', array('action' => 'eliminar_e_flujo', $flujo['FlujosUser']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de eliminar este flujo???')) ?>
+        </div>
+    </div>
+</div>
+<script>
+  function cierra_elmenu() {
+      $('.metro-modal').fadeOut('fast');
+      setTimeout(function () {
+          $('#topbar-dropmenu').slideToggle(150).toggleClass('topbar-menu-open');
+      }, 250);
+  }
+
+</script>
+
 <section id="content" class="table-layout animated fadeIn">
 
     <div class="tray tray-center">
@@ -7,37 +31,29 @@
             <div class="panel">
 
                 <div class="panel-body pn">
-                    <div class="table-responsive">
-                        <table class="table admin-form theme-warning tc-checkbox-1 fs13">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <?php foreach ($procesos as $pro): ?>
+                              <?php
+                              $btncss = '';
+                              if ($pro['Proceso']['estado'] == 'Activo') {
+                                $btncss = 'primary';
+                              } elseif ($pro['Proceso']['estado'] == 'Finalizado') {
+                                $btncss = 'success';
+                              }
+                              ?>
+                              <tr class="<?php echo $btncss ?>" style="cursor: pointer;" onclick="cargarproceso(<?php echo $pro['Proceso']['id'] ?>);">
+                                  <td class="text-center" style="font-size: 18px;">
+                                      <b><?php echo $pro['Proceso']['nombre'] ?></b>
+                                      <div id="d-proceso-<?php echo $pro['Proceso']['id']; ?>" class="row" style="display: none;">
 
-                            <thead>
-                                <tr class="bg-light">
-                                    <th class="text-center" style="font-size: 16px;">FLUJOS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($procesos as $pro): ?>
-                                  <?php
-                                  $btncss = 'btn-default';
-                                  if ($pro['Proceso']['estado'] == 'Activo') {
-                                    $btncss = 'btn-primary';
-                                  }elseif ($pro['Proceso']['estado'] == 'Finalizado') {
-                                    $btncss = 'btn-success';
-                                  }
-                                  ?>
-                                  <tr>
-                                      <td class="text-center" style="font-size: 16px;">
-                                          <a href="javascript:" onclick="cargarproceso(<?php echo $pro['Proceso']['id'] ?>);" class="btn <?php echo $btncss ?> btn-block"><?php echo $pro['Proceso']['nombre'] ?></a>
-                                          <div id="d-proceso-<?php echo $pro['Proceso']['id']; ?>" class="row" style="display: none;">
+                                      </div>
+                                  </td>
+                              </tr>
+                            <?php endforeach; ?>
+                        </tbody>
 
-                                          </div>
-                                      </td>
-                                  </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-
-                        </table>
-                    </div>
+                    </table>
                 </div>
             </div>
 

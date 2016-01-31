@@ -13,37 +13,7 @@
             </div>
         </div>
     </div>
-    <div class="panel-body pn">
-        <div class="table-responsive">
-            <div class="table-responsive">
-                <table class="table tabla-dato table-bordered">
-                    <thead>
-                        <tr>
-
-                            <th>Creado</th>
-                            <th></th>
-                            <th>Asignado</th>
-                            <th>Tarea</th>
-                            <th>Accion</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($tareas as $ta): ?>
-                          <tr>
-                              <td><?php echo $ta['Tarea']['created']; ?></td>
-                              <td></td>
-                              <td><?php echo $ta['Asignado']['nombre_completo']; ?></td>
-                              <td><?php echo $ta['Tarea']['descripcion']; ?></td>
-                              <td>
-
-                              </td>
-                          </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    
 </div>
 
 

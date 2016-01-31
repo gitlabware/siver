@@ -478,6 +478,7 @@ var Core = function(options) {
             // Toggle menu and active class on icon click
             menu.slideToggle(230).toggleClass('topbar-menu-open');
             metroBG.fadeIn();
+            //alert('ssss');
          }
          else {
             menu.slideToggle(230).toggleClass('topbar-menu-open');
@@ -490,6 +491,7 @@ var Core = function(options) {
             setTimeout(function() {
                metroBG.fadeIn();
             }, 380);
+            //alert('aaaaa');
          }
 
       });

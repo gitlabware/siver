@@ -92,6 +92,7 @@
                     <?php echo $this->Form->hidden('Tarea.proceso_id', array('value' => $proceso['Proceso']['id'])) ?>
                     <?php echo $this->Form->hidden('Tarea.flujos_user_id', array('value' => $flujo['FlujosUser']['id'])) ?>
                     <?php echo $this->Form->hidden('Tarea.user_id', array('value' => $this->Session->read('Auth.User.id'))) ?>
+                    <?php echo $this->Form->hidden('Tarea.id'); ?>
                     <?php echo $this->Form->end(); ?>
             </div>
 

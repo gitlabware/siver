@@ -56,6 +56,7 @@
                   } else {
                   echo $this->element('menu/admin');
                   } */
+                echo $this->element('menu/admin');
                 ?>
 
             </header>
@@ -86,6 +87,11 @@
                   var tipo_notif = null;
                   var texto_noyif = null;
                 </script>
+                <style>
+                    .dataTables_wrapper{
+                        min-width: 450px;
+                    }
+                </style>
                 <!-- Begin: Content -->
                 <?= $this->Flash->render() ?>
                 <?= $this->fetch('content') ?>
