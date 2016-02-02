@@ -92,7 +92,7 @@ class ProcesosController extends AppController {
   }
 
   public function ver_proceso($idFlujoUser = null, $idProceso = null) {
-    
+
     $flujo = $this->FlujosUser->findByid($idFlujoUser, null, null, -1);
     $proceso = $this->Proceso->findByid($idProceso, null, null, -1);
     $sql1 = "(SELECT tareas.id, tareas.created, CONCAT('Tarea') AS tipo_t, users.nombre_completo FROM tareas LEFT JOIN users ON (users.id = tareas.user_id) WHERE tareas.flujos_user_id = $idFlujoUser AND tareas.proceso_id = $idProceso)";
@@ -105,10 +105,10 @@ class ProcesosController extends AppController {
     $tareas = $this->Tarea->find('all', array(
       'recursive' => 0,
       'conditions' => array('Tarea.flujos_user_id' => $idFlujoUser, 'Tarea.proceso_id' => $idProceso),
-      'fields' => array('Tarea.*','Asignado.nombre_completo','User.nombre_completo'),
+      'fields' => array('Tarea.*', 'Asignado.nombre_completo', 'User.nombre_completo'),
       'order' => array('Tarea.created DESC')
     ));
-    $this->set(compact('flujo', 'proceso', 'linea_tiempo','idFlujoUser','idProceso','tareas'));
+    $this->set(compact('flujo', 'proceso', 'linea_tiempo', 'idFlujoUser', 'idProceso', 'tareas'));
   }
 
   public function finaliza_proceso($idFlujoUser = null, $idProceso = null) {
@@ -186,6 +186,23 @@ class ProcesosController extends AppController {
         
       }
     }
+  }
+
+  public function ajax_sel_procesos($idFlujosUser = null) {
+    //debug($idFlujosUser);exit;
+    $this->layout = 'ajax';
+    $flujo = $this->FlujosUser->findByid($idFlujosUser, null, null, -1);
+    $procesos = array();
+    if (!empty($flujo)) {
+      $procesos = $this->Proceso->find('list', array(
+        'recursive' => -1,
+        'conditions' => array('Proceso.flujo_id' => $flujo['FlujosUser']['flujo_id']),
+        'fields' => array('Proceso.nombre')
+      ));
+    }
+
+    //debug($procesos);exit;
+    $this->set(compact('procesos'));
   }
 
 }

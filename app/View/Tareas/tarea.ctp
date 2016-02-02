@@ -1,4 +1,5 @@
 <!-- Begin: Content -->
+<link rel="stylesheet" type="text/css" href="<?php echo $this->request->webroot; ?>js/vendor/plugins/datepicker/css/bootstrap-datetimepicker.css">
 <section id="content" class="table-layout animated fadeIn">
 
     <!-- begin: .tray-center -->
@@ -14,7 +15,6 @@
 
             <div class="panel heading-border panel-primary">
                 <?php echo $this->Form->create('Tarea'); ?>
-                <form method="post" action="/" id="admin-form">
 
                     <div class="panel-body bg-light">
 
@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="section">
                                     <label for="datepicker1" class="field prepend-icon">
-                                        <?php echo $this->Form->text('Tarea.fecha_inicio', array('class' => 'gui-input', 'placeholder' => 'Fecha Inicio', 'id' => 'datepicker1')); ?>
+                                        <?php echo $this->Form->text('Tarea.fechainicio', array('class' => 'form-control', 'placeholder' => 'Fecha Inicio', 'id' => 'ddatepicker1')); ?>
                                         <label class="field-icon">
                                             <i class="fa fa-calendar-o"></i>
                                         </label>
@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="section">
                                     <label for="datepicker1" class="field prepend-icon">
-                                        <?php echo $this->Form->text('Tarea.fecha_fin', array('class' => 'gui-input', 'placeholder' => 'Fecha Fin', 'id' => 'datepicker2')); ?>
+                                        <?php echo $this->Form->text('Tarea.fechafin', array('class' => 'form-control', 'placeholder' => 'Fecha Fin', 'id' => 'ddatepicker2')); ?>
                                         <label class="field-icon">
                                             <i class="fa fa-calendar-o"></i>
                                         </label>
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="section">
                                     <label class="field select">
-                                        <?php echo $this->Form->select('Tarea.asignado_id', array('Urgente' => 'Urgente', 'Alta' => 'Alta', 'Normal' => 'Normal', 'Baja' => 'Baja'), array('empty' => 'Seleccione Prioridad')) ?>
+                                        <?php echo $this->Form->select('Tarea.prioridad', array('Urgente' => 'Urgente', 'Alta' => 'Alta', 'Normal' => 'Normal', 'Baja' => 'Baja'), array('empty' => 'Seleccione Prioridad','required')) ?>
                                         <i class="arrow double"></i>
                                     </label>
                                 </div>
@@ -103,4 +103,4 @@
     <!-- end: .tray-center -->
 
 </section>
-<?php echo $this->Html->script(array('jquery-ui-datepicker.min', 'inicalendario2'), array('block' => 'scriptjs')) ?>
+<?php echo $this->Html->script(array('vendor/plugins/moment/moment.min', 'vendor/plugins/datepicker/js/bootstrap-datetimepicker', 'inicalendario2'), array('block' => 'scriptjs')) ?>

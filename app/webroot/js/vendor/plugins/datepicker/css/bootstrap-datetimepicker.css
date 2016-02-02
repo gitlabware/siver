@@ -86,6 +86,7 @@
   font-weight: bold;
   font-size: 1.2em;
   margin: 0;
+  text-align: center !important;
 }
 .bootstrap-datetimepicker-widget button[data-action] {
   padding: 6px;

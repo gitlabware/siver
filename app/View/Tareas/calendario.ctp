@@ -9,8 +9,8 @@
         <div class="section admin-form theme-primary">
             <div class="inline-mp minimal-mp center-block"></div>
         </div>
-        <h4 class="mt25"> Tareas Pendientes
-            <a id="compose-event-btn" href="#calendarEvent" data-effect="mfp-flipInY">
+        <h4 class="mt25"> Tareas Recientes
+            <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'tarea_ajax')); ?>', true);">
                 <span class="fa fa-plus-square"></span>
             </a>
         </h4>
@@ -18,51 +18,28 @@
         <div id="external-events" class="bg-dotted">
 
             <!-- Standard Events -->
-            <div class='fc-event fc-event-primary' data-event="primary">
-                <div class="fc-event-icon">
-                    <span class="fa fa-exclamation"></span>
-                </div>
-                <div class="fc-event-desc">
-                    <b>2:30am - </b>Evaluacion de Procesos de Jorge</div>
-            </div>
-            <div class='fc-event fc-event-info' data-event="info">
-                <div class="fc-event-icon">
-                    <span class="fa fa-info"></span>
-                </div>
-                <div class="fc-event-desc">
-                    <b>2:30am - </b>Presentacion de ambas partes</div>
-            </div>
-            <div class='fc-event fc-event-success' data-event="success">
-                <div class="fc-event-icon">
-                    <span class="fa fa-check"></span>
-                </div>
-                <div class="fc-event-desc">
-                    <b>2:30am - </b>Importante para Miguel</div>
-            </div>
-            <div class='fc-event fc-event-warning' data-event="warning">
-                <div class="fc-event-icon">
-                    <span class="fa fa-question"></span>
-                </div>
-                <div class="fc-event-desc">
-                    <b>2:30am - </b>Recoger papeles de CFVG</div>
-            </div>
+            <?php foreach ($tareas_re as $ta): ?>
+              <div class='fc-event fc-event-primary' data-event="primary" data-permiso="no" data-miid="<?php echo $ta['Tarea']['id'] ?>">
+                  <div class="fc-event-icon">
+                      <span class="fa fa-tasks"></span>
+                  </div>
+                  <div class="fc-event-desc">
+                      <b><?php echo $ta['Tarea']['created'] ?> </b><?php echo $ta['Tarea']['descripcion'] ?></div>
+              </div>
+            <?php endforeach; ?>
+
 
             <!-- Reoccuring Events -->
             <h6 class="mt20"> Tareas Pendientes: </h6>
-            <div class='fc-event fc-event-alert event-recurring' data-event="alert">
-                <div class="fc-event-icon">
-                    <span class="fa fa-clock-o"></span>
-                </div>
-                <div class="fc-event-desc">
-                    <b>2:30am - </b>LLamadas Urgentes</div>
-            </div>
-            <div class='fc-event fc-event-system event-recurring' data-event="system">
-                <div class="fc-event-icon">
-                    <span class="fa fa-bell-o"></span>
-                </div>
-                <div class="fc-event-desc">
-                    <b>2:30am - </b>Nelson Cabrera</div>
-            </div>
+            <?php foreach ($tareas_pe as $ta): ?>
+              <div class="fc-event fc-event-system" data-event="system" data-permiso="si" data-miid="<?php echo $ta['Tarea']['id'] ?>">
+                  <div class="fc-event-icon">
+                      <span class="fa fa-clock-o"></span>
+                  </div>
+                  <div class="fc-event-desc">
+                      <b><?php echo $ta['Tarea']['created'] ?> </b><?php echo $ta['Tarea']['descripcion'] ?></div>
+              </div>
+            <?php endforeach; ?>
 
         </div>
 
@@ -116,3 +93,48 @@ echo $this->Html->script(array(
   'inifullcalendario'
   ), array('block' => 'scriptjs'));
 ?>
+<script>
+  var urldatjson = '<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'get_json_tareas')); ?>';
+
+//  
+  function saveMyData(event) {
+      /*jQuery.post(
+       '/event/save',
+       {
+       title: event.title,
+       start: event.start,
+       end: event.end
+       }
+       );*/
+      //alert(event.id);
+
+      //var postData = event.serializeArray();;
+      var fecha_inicio = '';
+      var fecha_fin = '';
+      if (event.start !== null) {
+          fecha_inicio = $.fullCalendar.moment(event.start).format('YYYY-MM-DD HH:mm');
+          //alert($.fullCalendar.moment(event.start).format('YYYY-MM-DD HH:mm'));
+      }
+      if (event.end !== null) {
+          fecha_fin = $.fullCalendar.moment(event.end).format('YYYY-MM-DD HH:mm');
+      }
+
+      var formURL = '<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'registra_fecha')) ?>';
+      $.ajax(
+              {
+                  url: formURL,
+                  type: "POST",
+                  data: 'id=' + event.id + '&title=' + event.title + '&start=' + fecha_inicio + '&end=' + fecha_fin,
+                  success: function (data, textStatus, jqXHR)
+                  {
+                      //data: return data from server
+                      //$("#parte").html(data);
+                  },
+                  error: function (jqXHR, textStatus, errorThrown)
+                  {
+                      //if fails   
+                      alert("error");
+                  }
+              });
+  }
+</script>

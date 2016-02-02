@@ -87,11 +87,7 @@
                   var tipo_notif = null;
                   var texto_noyif = null;
                 </script>
-                <style>
-                    .dataTables_wrapper{
-                        min-width: 450px;
-                    }
-                </style>
+
                 <!-- Begin: Content -->
                 <?= $this->Flash->render() ?>
                 <?= $this->fetch('content') ?>
@@ -109,7 +105,7 @@
                 }
             </style>
 
-            <div id="mimodal" class="popup-basic admin-form mfp-with-anim mfp-hide">
+            <div id="mimodal" class="popup-basic popup-lg admin-form mfp-with-anim mfp-hide">
                 <div class="panel">
                     <div id="spin-cargando-mod" class="progress mt10 mbn">
                         <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
@@ -262,7 +258,12 @@
 
           });
 
-          function cargarmodal(urll) {
+          function cargarmodal(urll, largo) {
+              if (typeof largo === 'undefined') {
+                  $('#mimodal').removeClass('popup-lg');
+              } else {
+                  $('#mimodal').addClass('popup-lg');
+              }
 
               jQuery("#spin-cargando-mod").show();
               jQuery("#divmodal").hide();
@@ -299,7 +300,6 @@
         </script>
 
         <script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/highcharts/highcharts.js"></script>
-
 
         <!-- END: PAGE SCRIPTS -->
         <?php echo $this->fetch('scriptjs'); ?>
