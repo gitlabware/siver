@@ -7,6 +7,12 @@
         <ul class="nav sidebar-menu">
             <li class="sidebar-label pt20">Menu</li>
             <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'calendario')); ?>">
+                    <span class="fa fa-calendar"></span>
+                    <span class="sidebar-title">Calendario</span>
+                </a>
+            </li>
+            <li>
                 <a href="javascript:" class="accordion-toggle">
                     <span class="fa fa-users"></span>
                     <span class="sidebar-title">Usuarios</span>

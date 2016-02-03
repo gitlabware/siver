@@ -5,7 +5,7 @@
 </div>
 <!-- end .panel-heading section -->
 
-<?= $this->Form->create('Proceso', ['class' => 'form-validacion', 'id' => 'f-add']); ?>
+<?= $this->Form->create('Tarea', ['class' => 'form-validacion', 'id' => 'f-add']); ?>
 <div class="panel-body p25">
     <div class="section row">
         <div class="col-md-6">
@@ -40,7 +40,7 @@
             </div>
             <div class="section">
                 <label class="field select">
-                    <?php echo $this->Form->select('Tarea.prioridad', array('Urgente' => 'Urgente', 'Alta' => 'Alta', 'Normal' => 'Normal', 'Baja' => 'Baja'), array('empty' => 'Seleccione Prioridad','required')) ?>
+                    <?php echo $this->Form->select('Tarea.prioridad', array('Urgente' => 'Urgente', 'Alta' => 'Alta', 'Normal' => 'Normal', 'Baja' => 'Baja'), array('empty' => 'Seleccione Prioridad', 'required')) ?>
                     <i class="arrow double"></i>
                 </label>
             </div>
@@ -51,13 +51,19 @@
         <div class="col-md-6">
             <div class="section">
                 <label class="field select" id="carga_proceso_d">
-                    <?php echo $this->Form->select('Tarea.proceso_id', array(), array('empty' => 'En Proceso....', 'disabled')) ?>
+                    <?php 
+                    $disabled_p = 'disabled';
+                    if(!empty($procesos)){
+                      $disabled_p = '';
+                    }
+                    ?>
+                    <?php echo $this->Form->select('Tarea.proceso_id', $procesos, array('empty' => 'En Proceso....', $disabled_p)) ?>
                     <i class="arrow double"></i>
                 </label>
             </div>
             <div class="section" id="spy3">
                 <label for="comment" class="field prepend-icon">
-                    <?php echo $this->Form->textarea('Tarea.descripcion', array('class' => 'gui-textarea', 'placeholder' => 'Descripcion','required')) ?>
+                    <?php echo $this->Form->textarea('Tarea.descripcion', array('class' => 'gui-textarea', 'placeholder' => 'Descripcion', 'required')) ?>
                     <label for="comment" class="field-icon">
                         <i class="fa fa-comments"></i>
                     </label>
@@ -84,7 +90,8 @@
     <button type="submit" class="button btn-primary">Registrar</button>
 </div>
 <!-- end .form-footer section --> 
-<?php echo $this->Form->hidden('user_id',array('value' => $this->Session->read('Auth.User.id'))) ?> 
+<?php echo $this->Form->hidden('Tarea.user_id', array('value' => $this->Session->read('Auth.User.id'))); ?> 
+<?php echo $this->Form->hidden('Tarea.id'); ?> 
 
 <?= $this->Form->end(); ?>
 
@@ -98,6 +105,6 @@ echo $this->Html->script([
 <script>
 
   $('#idflujo').change(function () {
-      $('#carga_proceso_d').load('<?php echo $this->Html->url(array('controller' => 'Procesos','action' => 'ajax_sel_procesos')); ?>/'+$('#idflujo').val());
+      $('#carga_proceso_d').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ajax_sel_procesos')); ?>/' + $('#idflujo').val());
   });
 </script>

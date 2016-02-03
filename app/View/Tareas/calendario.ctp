@@ -19,7 +19,7 @@
 
             <!-- Standard Events -->
             <?php foreach ($tareas_re as $ta): ?>
-              <div class='fc-event fc-event-primary' data-event="primary" data-permiso="no" data-miid="<?php echo $ta['Tarea']['id'] ?>">
+            <div class='fc-event fc-event-primary' onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Tareas','action' => 'ver_tarea',$ta['Tarea']['flujos_user_id'],$ta['Tarea']['proceso_id'],$ta['Tarea']['id']))?>';" data-event="primary" data-permiso="no" data-miid="<?php echo $ta['Tarea']['id'] ?>">
                   <div class="fc-event-icon">
                       <span class="fa fa-tasks"></span>
                   </div>
@@ -32,7 +32,7 @@
             <!-- Reoccuring Events -->
             <h6 class="mt20"> Tareas Pendientes: </h6>
             <?php foreach ($tareas_pe as $ta): ?>
-              <div class="fc-event fc-event-system" data-event="system" data-permiso="si" data-miid="<?php echo $ta['Tarea']['id'] ?>">
+              <div class="fc-event fc-event-system"  onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Tareas','action' => 'ver_tarea',$ta['Tarea']['flujos_user_id'],$ta['Tarea']['proceso_id'],$ta['Tarea']['id']))?>';" data-event="system" data-permiso="si" data-miid="<?php echo $ta['Tarea']['id'] ?>">
                   <div class="fc-event-icon">
                       <span class="fa fa-clock-o"></span>
                   </div>

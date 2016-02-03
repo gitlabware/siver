@@ -4,25 +4,19 @@
 
     <!-- begin: .tray-center -->
     <div class="tray tray-center">
-
         <!-- Begin: Content Header -->
         <div class="content-header">
             <h2> Tarea "<?php echo $flujo['FlujosUser']['descripcion']; ?>"</h2>
         </div>
-
         <!-- Validation Example -->
         <div class="admin-form theme-primary mw1000 center-block" style="padding-bottom: 175px;">
-
             <div class="panel heading-border panel-primary">
                 <?php echo $this->Form->create('Tarea'); ?>
-
                     <div class="panel-body bg-light">
-
                         <div class="section-divider mt20 mb40">
                             <span> Para el proceso "<?php echo $proceso['Proceso']['nombre'] ?>" </span>
                         </div>
                         <!-- .section-divider -->
-
                         <div class="section row">
                             <div class="col-md-6">
                                 <div class="section">
@@ -54,10 +48,8 @@
                                         <i class="arrow double"></i>
                                     </label>
                                 </div>
-
                             </div>
                             <!-- end section -->
-
                             <div class="col-md-6">
                                 <div class="section" id="spy3">
                                     <label for="comment" class="field prepend-icon">
@@ -81,7 +73,6 @@
                             </div>
                             <!-- end section -->
                         </div>
-
                     </div>
                     <!-- end .form-body section -->
                     <div class="panel-footer text-right">
@@ -95,10 +86,8 @@
                     <?php echo $this->Form->hidden('Tarea.id'); ?>
                     <?php echo $this->Form->end(); ?>
             </div>
-
         </div>
         <!-- end: .admin-form -->
-
     </div>
     <!-- end: .tray-center -->
 

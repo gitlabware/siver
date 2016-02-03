@@ -79,9 +79,9 @@ class TareasController extends AppController {
       'conditions' => array('Tarea.id' => $idTarea),
       'fields' => array('Tarea.*', 'User.nombre_completo', 'Asignado.nombre_completo')
     ));
-    $proceso = $this->Proceso->findByid($idProceso, null, null, -1);
-    $flujo = $this->FlujosUser->findByid($idFlujoUser, null, null, -1);
-    $this->set(compact('tarea', 'proceso', 'flujo'));
+    $proceso = $this->Proceso->findByid($tarea['Tarea']['proceso_id'], null, null, -1);
+    $flujo = $this->FlujosUser->findByid($tarea['Tarea']['flujos_user_id'], null, null, -1);
+    $this->set(compact('tarea', 'proceso', 'flujo', 'idFlujoUser', 'idProceso'));
   }
 
   public function calendario() {
@@ -114,9 +114,10 @@ class TareasController extends AppController {
     $this->redirect($this->referer());
   }
 
-  public function tarea_ajax() {
+  public function tarea_ajax($idTarea = null) {
     $this->layout = 'ajax';
     if (!empty($this->request->data['Tarea'])) {
+      //debug($this->request->data);exit;
       $this->request->data['Tarea']['fecha_inicio'] = $this->request->data['Tarea']['fechainicio'];
       $this->request->data['Tarea']['fecha_fin'] = $this->request->data['Tarea']['fechafin'];
       if (empty($this->request->data['Tarea']['proceso_id'])) {
@@ -144,7 +145,27 @@ class TareasController extends AppController {
       'order' => array('FlujosUser.created DESC'),
       'fields' => array('FlujosUser.id', 'FlujosUser.descripcion')
     ));
-    $this->set(compact('usuarios', 'flujos'));
+    $procesos = array();
+    if (!empty($idTarea)) {
+      $this->Tarea->id = $idTarea;
+      $this->request->data = $this->Tarea->read();
+      $this->request->data['Tarea']['fechainicio'] = $this->request->data['Tarea']['fecha_inicio'];
+      $this->request->data['Tarea']['fechafin'] = $this->request->data['Tarea']['fecha_fin'];
+      if (!empty($this->request->data['Tarea']['flujos_user_id'])) {
+        $flujo = $this->FlujosUser->findByid($this->request->data['Tarea']['flujos_user_id'], null, null, -1);
+        
+        if (!empty($flujo)) {
+          $procesos = $this->Proceso->find('list', array(
+            'recursive' => -1,
+            'conditions' => array('Proceso.flujo_id' => $flujo['FlujosUser']['flujo_id']),
+            'fields' => array('Proceso.nombre')
+          ));
+        }
+        //debug($this->request->data['Tarea']);exit;
+      }
+      
+    }
+    $this->set(compact('usuarios', 'flujos','procesos'));
   }
 
   public function registra_fecha() {
@@ -183,23 +204,39 @@ class TareasController extends AppController {
       $fecha_fin = '';
       $fecha_ini = $ta[0]['fecha_inicio'];
       if ($ta[0]['tiempo_inicial'] !== '00:00:00') {
-        $fecha_ini = $fecha_ini .' '. $ta[0]['tiempo_inicial'];
+        $fecha_ini = $fecha_ini . ' ' . $ta[0]['tiempo_inicial'];
       }
       if (!empty($ta[0]['fecha_fin']) && $ta[0]['tiempo_fin'] !== '00:00:00') {
-        $fecha_fin = $ta[0]['fecha_fin'].' '.$ta[0]['tiempo_fin'];
-        /*$fecha_fin = date('Y-m-d', strtotime($ta[0]['fecha_fin'] . ' +1 day'));
-        if ($ta[0]['tiempo_fin'] !== '00:00:00') {
+        $fecha_fin = $ta[0]['fecha_fin'] . ' ' . $ta[0]['tiempo_fin'];
+        /* $fecha_fin = date('Y-m-d', strtotime($ta[0]['fecha_fin'] . ' +1 day'));
+          if ($ta[0]['tiempo_fin'] !== '00:00:00') {
           $fecha_fin = $fecha_fin.' ' . $ta[0]['tiempo_fin'];
-        }*/
-      }elseif (!empty($ta[0]['fecha_fin']) && $ta[0]['tiempo_fin'] === '00:00:00') {
+          } */
+      } elseif (!empty($ta[0]['fecha_fin']) && $ta[0]['tiempo_fin'] === '00:00:00') {
         $fecha_fin = date('Y-m-d', strtotime($ta[0]['fecha_fin'] . ' +1 day'));
+      }
+      if (!empty($ta['Tarea']['id'])) {
+        $idTarea = $ta['Tarea']['id'];
+      } else {
+        $idTarea = 0;
+      }
+      if (!empty($ta['Tarea']['flujos_user_id'])) {
+        $idFlujosUser = $ta['Tarea']['flujos_user_id'];
+      } else {
+        $idFlujosUser = 0;
+      }
+      if (!empty($ta['Tarea']['proceso_id'])) {
+        $idProceso = $ta['Tarea']['proceso_id'];
+      } else {
+        $idProceso = 0;
       }
       $array[$key] = array(
         "id" => $ta['Tarea']['id'],
         "title" => $ta['Tarea']['descripcion'],
         "start" => $fecha_ini,
         "end" => $fecha_fin,
-        "className" => 'fc-event-success'
+        "className" => 'fc-event-success',
+        'url' => "ver_tarea/$idFlujosUser/$idProceso/$idTarea"
       );
     }
 
