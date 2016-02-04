@@ -9,10 +9,11 @@
                 <p class="metro-title">Nuevo Tarea</p>
             </a>
         </div>
-        <div class="col-xs-6 col-sm-3">
-            <?php echo $this->Html->link('<span class="metro-icon fa fa-stop"></span> <p class="metro-title">Finalizar Proceso</p>', array('action' => 'finaliza_proceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de finalizar el Proceso???')) ?>
-
-        </div>
+        <?php if (!empty(current($estados)) && current($estados)['ProcesosEstado']['estado'] !== 'Finalizado'): ?>
+          <div class="col-xs-6 col-sm-3">
+              <?php echo $this->Html->link('<span class="metro-icon fa fa-stop"></span> <p class="metro-title">Finalizar Proceso</p>', array('action' => 'finaliza_proceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de finalizar el Proceso???')) ?>
+          </div>
+        <?php endif; ?>
         <div class="col-xs-6 col-sm-3">
             <a  href="javascript:" class="metro-tile" onclick="cierra_elmenu();
                   cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'adjunto', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0)); ?>');">
@@ -61,7 +62,7 @@
                                     } elseif ($es['ProcesosEstado']['estado'] === 'Vencido') {
                                       $icono = 'fa-exclamation-triangle';
                                       $color = 'danger';
-                                    }elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
+                                    } elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
                                       $icono = 'fa-circle';
                                       $color = 'primary';
                                     }
