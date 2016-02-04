@@ -98,9 +98,14 @@ jQuery(document).ready(function () {
                     $('.tooltip').fadeOut();
                 }, 3500);
             });
-            saveMyData(event);
+            //saveMyData(event);
             //alert($.fullCalendar.moment(event.start).format('YYYY-MM-DD, HH:mm'));
             //alert(event.title+' ------ '+event.start);
+        },
+        eventDrop: function (event, dayDelta, minuteDelta) {
+            //alert(event.title + ' was saved!');
+            saveMyData(event);
+
         }
     });
 

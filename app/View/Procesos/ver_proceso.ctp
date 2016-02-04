@@ -36,7 +36,50 @@
     <h2><?php echo $proceso['Proceso']['nombre'] ?> <small> <?php echo $flujo['FlujosUser']['descripcion'] ?></small></h2>
     <div class="row">
         <div class="col-md-8">
-            <div class="panel">
+            <?php if (!empty($estados)): ?>
+              <div class="panel panel-warning">
+                  <div class="panel-heading">
+                      <span class="panel-icon">
+                          <i class="fa fa-bookmark-o"></i>
+                      </span>
+                      <span class="panel-title"> Estado del Proceso</span>
+                  </div>
+                  <div class="panel-body">
+                      <div class="table-responsive">
+                          <table class="table table-bordered">
+                              <tbody>
+                                  <?php foreach ($estados as $es): ?>
+                                    <?php
+                                    $icono = '';
+                                    $color = '';
+                                    if ($es['ProcesosEstado']['estado'] === 'Finalizado') {
+                                      $icono = 'fa-check-circle';
+                                      $color = 'success';
+                                    } elseif ($es['ProcesosEstado']['estado'] === 'Reanudado') {
+                                      $icono = 'fa-repeat';
+                                      $color = 'info';
+                                    } elseif ($es['ProcesosEstado']['estado'] === 'Vencido') {
+                                      $icono = 'fa-exclamation-triangle';
+                                      $color = 'danger';
+                                    }elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
+                                      $icono = 'fa-circle';
+                                      $color = 'primary';
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td style="font-size: 24px;" class="text-<?php echo $color; ?>" align="center">
+                                            <span class="fa <?php echo $icono; ?>"></span>
+                                        </td>
+                                        <td><?php echo $es['ProcesosEstado']['estado']; ?> en <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['created']; ?></span></td>
+                                    </tr>
+                                  <?php endforeach; ?>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+            <?php endif; ?>
+            <div class="panel panel-info">
                 <div class="panel-heading">
                     <span class="panel-icon">
                         <i class="fa fa-tasks"></i>
@@ -81,7 +124,7 @@
             $adjuntos = $this->requestAction(array('controller' => 'Adjuntos', 'action' => 'get_adjuntos', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0));
             ?>
             <?php if (!empty($adjuntos)): ?>
-              <div class="panel">
+              <div class="panel panel-dark">
                   <div class="panel-heading">
                       <span class="panel-icon"><i class="fa fa-paperclip"></i></span>
                       <span class="panel-title"> Adjuntos</span>
@@ -122,7 +165,7 @@
             <?php endif; ?>
         </div>
         <div class="col-md-4">
-            <div class="panel">
+            <div class="panel panel-success">
                 <div class="panel-heading">
                     <span class="panel-icon"><i class="fa fa-comments"></i></span>
                     <span class="panel-title"> Formulario Comentarios</span>
@@ -151,7 +194,7 @@
             $comentarios = $this->requestAction(array('controller' => 'Comentarios', 'action' => 'get_comentarios', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0));
             ?>
             <?php if (!empty($comentarios)): ?>
-              <div class="panel">
+              <div class="panel panel-system">
                   <div class="panel-heading">
                       <span class="panel-icon">
                           <i class="fa fa-comments-o"></i>

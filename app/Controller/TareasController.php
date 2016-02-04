@@ -3,7 +3,7 @@
 class TareasController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Tarea', 'User', 'Proceso', 'FlujosUser', 'ProcesosEstado');
+  public $uses = array('Tarea', 'User', 'Proceso', 'FlujosUser', 'ProcesosEstado', 'TareasEstado');
   public $components = array('RequestHandler');
 
   public function beforeFilter() {
@@ -39,7 +39,7 @@ class TareasController extends AppController {
     $idUser = $this->Session->read('Auth.User.id');
     $usuarios = $this->User->find('list', array(
       'recursive' => -1,
-      'conditions' => array('User.id !=' => $idUser),
+      //'conditions' => array('User.id !=' => $idUser),
       'fields' => array('User.id', 'User.nombre_completo')
     ));
     $proceso = $this->Proceso->findByid($idProceso, null, null, -1);
@@ -81,7 +81,17 @@ class TareasController extends AppController {
     ));
     $proceso = $this->Proceso->findByid($tarea['Tarea']['proceso_id'], null, null, -1);
     $flujo = $this->FlujosUser->findByid($tarea['Tarea']['flujos_user_id'], null, null, -1);
-    $this->set(compact('tarea', 'proceso', 'flujo', 'idFlujoUser', 'idProceso'));
+    $estados = $this->TareasEstado->find('all', array(
+      'recursive' => -1,
+      'conditions' => array('TareasEstado.tarea_id' => $idTarea),
+      'order' => array('TareasEstado.created DESC')
+    ));
+    $estado = $this->TareasEstado->find('first', array(
+      'recursive' => -1,
+      'conditions' => array('TareasEstado.tarea_id' => $idTarea),
+      'order' => array('TareasEstado.created DESC')
+    ));
+    $this->set(compact('tarea', 'proceso', 'flujo', 'idFlujoUser', 'idProceso', 'estados', 'estado'));
   }
 
   public function calendario() {
@@ -134,7 +144,7 @@ class TareasController extends AppController {
     $idUser = $this->Session->read('Auth.User.id');
     $usuarios = $this->User->find('list', array(
       'recursive' => -1,
-      'conditions' => array('User.id !=' => $idUser),
+      //'conditions' => array('User.id !=' => $idUser),
       'fields' => array('User.id', 'User.nombre_completo')
     ));
     $flujos = $this->FlujosUser->find('list', array(
@@ -153,7 +163,7 @@ class TareasController extends AppController {
       $this->request->data['Tarea']['fechafin'] = $this->request->data['Tarea']['fecha_fin'];
       if (!empty($this->request->data['Tarea']['flujos_user_id'])) {
         $flujo = $this->FlujosUser->findByid($this->request->data['Tarea']['flujos_user_id'], null, null, -1);
-        
+
         if (!empty($flujo)) {
           $procesos = $this->Proceso->find('list', array(
             'recursive' => -1,
@@ -163,9 +173,8 @@ class TareasController extends AppController {
         }
         //debug($this->request->data['Tarea']);exit;
       }
-      
     }
-    $this->set(compact('usuarios', 'flujos','procesos'));
+    $this->set(compact('usuarios', 'flujos', 'procesos'));
   }
 
   public function registra_fecha() {
@@ -244,6 +253,53 @@ class TareasController extends AppController {
     /* debug(date('Y-m-d', strtotime($ta['Tarea']['fecha_fin'] . ' -1 day')));
       exit; */
     $this->respond($array, true);
+  }
+
+  public function completa_tarea($idTarea = null) {
+    $this->TareasEstado->create();
+    $datos['user_id'] = $this->Session->read('Auth.User.id');
+    $datos['tarea_id'] = $idTarea;
+    $datos['estado'] = 'Completado';
+    $this->TareasEstado->save($datos);
+    $this->Session->setFlash("Se ha completado la tarea correctamente!!", 'msgbueno');
+    $this->redirect($this->referer());
+  }
+
+  public function reanudar_tarea($idTarea = null) {
+    $this->TareasEstado->create();
+    $datos['user_id'] = $this->Session->read('Auth.User.id');
+    $datos['tarea_id'] = $idTarea;
+    $datos['estado'] = 'Reanudado';
+    $this->TareasEstado->save($datos);
+    $this->Session->setFlash("Se ha Reanudado la tarea correctamente!!", 'msgbueno');
+    $this->redirect($this->referer());
+  }
+
+  public function c_tareas_vencidas() {
+    $hoy = date("Y-m-d H:i:s");
+    //$hoy = date("Y-m-d");
+    //$hoy_t = date("H:i:s");
+    //debug($hoy_t);exit;
+    $sql1 = "(SELECT tareas_estados.id FROM tareas_estados WHERE tareas_estados.tarea_id = Tarea.id AND tareas_estados.estado = 'Vencido' LIMIT 1)";
+    $sql2 = "(SELECT tareas_estados.estado FROM tareas_estados WHERE tareas_estados.tarea_id = Tarea.id ORDER BY tareas_estados.created DESC LIMIT 1)";
+    $sql3 = "(ISNULL($sql1))";
+    $sql4 = "IF(ISNULL($sql2),TRUE,($sql2 != 'Completado'))";
+    $tareas = $this->Tarea->find('all', array(
+      'recursive' => -1,
+      'conditions' => array('DATE(Tarea.fecha_fin) <' => $hoy,$sql3,$sql4),
+      'fields' => array('Tarea.id', 'Tarea.fecha_fin')
+    ));
+    
+    foreach ($tareas as $ta) {
+      $this->TareasEstado->create();
+      $datos['user_id'] = $this->Session->read('Auth.User.id');
+      $datos['tarea_id'] = $ta['Tarea']['id'];
+      $datos['estado'] = 'Vencido';
+      $datos['created'] = $ta['Tarea']['fecha_fin'];
+      $this->TareasEstado->save($datos);
+    }
+    /*debug($tareas);
+    exit;*/
   }
 
 }
