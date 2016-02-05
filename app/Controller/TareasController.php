@@ -25,6 +25,21 @@ class TareasController extends AppController {
     $this->render('message');
   }
 
+  public function tablero() {
+    $span1 = '<span class="text-primary">';
+    $span2 = '</span>';
+    $com = '"';
+    $icono_tarea = '<div class="timeline-icon bg-dark light"><span class="fa fa-tags"></span></div>';
+    $icono_tarea_estado = '<div class="timeline-icon bg-warning light"><span class="fa fa-bookmark-o"></span></div>';        
+    $sql1 = "(SELECT ('$icono_tarea') AS icono, tareas.created, CONCAT('Tarea') AS tipo, CONCAT('<b>',users.nombre_completo,'</b>',' asigna la tarea de: ',tareas.descripcion, IF(ISNULL(asignado.nombre_completo),'',CONCAT(' a $span1 ',asignado.nombre_completo,' $span2'))) AS contenido FROM tareas LEFT JOIN users ON(users.id = tareas.user_id) LEFT JOIN users AS asignado ON(asignado.id = tareas.asignado_id) WHERE 1 ORDER BY tareas.created DESC LIMIT 20)";
+    $sql2 = "(SELECT ('$icono_tarea_estado') AS icono, tareas_estados.created, CONCAT('Tarea Estado') AS tipo, CONCAT('<b>',IF(ISNULL(users.nombre_completo),'Sistema',users.nombre_completo),'</b> marco como ',tareas_estados.estado,' la tarea: <a href=$com ver_tarea/0/0/',tareas.id,'$com>',tareas.descripcion,'</a>') AS contenido FROM tareas_estados LEFT JOIN users ON(users.id = tareas_estados.user_id) LEFT JOIN tareas ON(tareas.id = tareas_estados.tarea_id) WHERE 1 ORDER BY tareas_estados.created DESC LIMIT 20)";
+    $sql_u = "$sql1 UNION $sql2 ORDER BY created DESC LIMIT 20";
+    $actividades = $this->Tarea->query($sql_u);
+    /* debug($actividades);
+      exit; */
+    $this->set(compact('actividades'));
+  }
+
   public function tarea($idFlujoUser = null, $idProceso = null, $idTarea = null) {
 
     if (!empty($this->request->data['Tarea'])) {
@@ -286,20 +301,20 @@ class TareasController extends AppController {
     $sql4 = "IF(ISNULL($sql2),TRUE,($sql2 != 'Completado'))";
     $tareas = $this->Tarea->find('all', array(
       'recursive' => -1,
-      'conditions' => array('DATE(Tarea.fecha_fin) <' => $hoy,$sql3,$sql4),
+      'conditions' => array('DATE(Tarea.fecha_fin) <' => $hoy, $sql3, $sql4),
       'fields' => array('Tarea.id', 'Tarea.fecha_fin')
     ));
-    
+
     foreach ($tareas as $ta) {
       $this->TareasEstado->create();
-      $datos['user_id'] = $this->Session->read('Auth.User.id');
+      $datos['user_id'] = 0;
       $datos['tarea_id'] = $ta['Tarea']['id'];
       $datos['estado'] = 'Vencido';
       $datos['created'] = $ta['Tarea']['fecha_fin'];
       $this->TareasEstado->save($datos);
     }
-    /*debug($tareas);
-    exit;*/
+    /* debug($tareas);
+      exit; */
   }
 
 }

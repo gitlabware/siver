@@ -24,6 +24,7 @@
     </div>
 </div>
 <script>
+  
   function cierra_elmenu() {
       $('.metro-modal').fadeOut('fast');
       setTimeout(function () {
