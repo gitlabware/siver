@@ -114,8 +114,6 @@ class ProcesosController extends AppController {
       'order' => array('ProcesosEstado.created DESC')
     ));
     
-    
-    
     $this->set(compact('flujo', 'proceso', 'linea_tiempo', 'idFlujoUser', 'idProceso', 'tareas','estados'));
   }
 

@@ -63,387 +63,243 @@
         </div>
 
 
+        <style>
 
+        </style>
         <!-- recent activity table -->
         <div class="panel">
             <div class="panel-heading">
-                <span class="panel-title hidden-xs"> Recent Activity</span>
-                <ul class="nav panel-tabs panel-tabs-merge">
+                <span class="panel-title hidden-xs"> Tareas Ultimas</span>
+                <ul class="nav panel-tabs panel-tabs-merge panel-tabs-border">
                     <li class="active">
-                        <a href="#tab1_1" data-toggle="tab"> Top Sellers</a>
+                        <a href="#tareas" data-toggle="tab"> Tareas</a>
                     </li>
                     <li>
-                        <a href="#tab1_2" data-toggle="tab"> Most Viewed</a>
-                    </li>
-                    <li>
-                        <a href="#tab1_3" class="hidden-xs" data-toggle="tab"> New Customers</a>
+                        <a href="#mistareas" class="hidden-xs" data-toggle="tab"> Mis Tareas</a>
                     </li>
                 </ul>
             </div>
             <div class="panel-body pn">
-                <div class="table-responsive">
-                    <table class="table admin-form theme-warning tc-checkbox-1 fs13">
-                        <thead>
-                            <tr class="bg-light">
-                                <th class="">Image</th>
-                                <th class="">Product Title</th>
-                                <th class="">SKU</th>
-                                <th class="">Price</th>
-                                <th class="">Stock</th>
-                                <th class="text-right">Status</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="w100">
-                                    <img class="img-responsive mw20 ib mr10" title="user" src="assets/img/stock/products/thumb_1.jpg">
-                                </td>
-                                <td class="">Apple Ipod 4G - Silver</td>
-                                <td class="">#21362</td>
-                                <td class="">$215</td>
-                                <td class="">1,400</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="w100">
-                                    <img class="img-responsive mw20 ib mr10" title="user" src="assets/img/stock/products/thumb_2.jpg">
-                                </td>
-                                <td class="">Apple Smart Watch - 1G</td>
-                                <td class="">#15262</td>
-                                <td class="">$455</td>
-                                <td class="">2,100</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="w100">
-                                    <img class="img-responsive mw20 ib mr10" title="user" src="assets/img/stock/products/thumb_6.jpg">
-                                </td>
-                                <td class="">Apple Macbook 4th Gen - Silver</td>
-                                <td class="">#66362</td>
-                                <td class="">$1699</td>
-                                <td class="">6,100</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="w100">
-                                    <img class="img-responsive mw20 ib mr10" title="user" src="assets/img/stock/products/thumb_7.jpg">
-                                </td>
-                                <td class="">Apple Iphone 16GB - Silver</td>
-                                <td class="">#51362</td>
-                                <td class="">$1299</td>
-                                <td class="">5,200</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="tab-content pn br-n">
+                    <div id="tareas" class="tab-pane active">
+                        <div class="table-responsive">
+                            <table class="table admin-form theme-warning table-bordered tc-checkbox-1 fs13">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th>Creado</th>
+                                        <th>Usuario</th>
+                                        <th>Asignado</th>
+                                        <th>Descripcion</th>
+                                        <th>Fechas</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($tareas as $ta): ?>
+                                      <?php
+                                      $estilo = '';
+                                      $color = '';
+                                      if ($ta['Tarea']['estado'] === 'Completado') {
+                                        $estilo = 'text-decoration:line-through;';
+                                        $color = 'success';
+                                      } elseif ($ta['Tarea']['estado'] === 'Reanudado') {
+                                        $estilo = '';
+                                        $color = 'info';
+                                      } elseif ($ta['Tarea']['estado'] === 'Vencido') {
+                                        $estilo = '';
+                                        $color = 'danger';
+                                      }
+                                      ?>
+                                      <tr style="<?php echo $estilo; ?>" class="<?php echo $color; ?>">
+                                          <td><?php echo $ta['Tarea']['created'] ?></td>
+                                          <td><?php echo $ta['User']['nombre_completo'] ?></td>
+                                          <td><?php echo $ta['Asignado']['nombre_completo'] ?></td>
+                                          <td><?php echo $ta['Tarea']['descripcion'] ?></td>
+                                          <td>
+                                              <?php
+                                              echo $ta['Tarea']['fecha_inicio'];
+                                              if (!empty($ta['Tarea']['fecha_fin'])) {
+                                                echo ' a ' . $ta['Tarea']['fecha_fin'];
+                                              }
+                                              ?>
+                                          </td>
+                                          <td class="text-center" style="font-size: 16px;">
+                                              <div class="btn-group" style="width: 120px;">
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                              </div>
+                                          </td>
+                                      </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="mistareas" class="tab-pane">
+                        <div class="table-responsive">
+                            <table class="table admin-form theme-warning table-bordered tc-checkbox-1 fs13">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th>Creado</th>
+                                        <th>Usuario</th>
+                                        <th>Descripcion</th>
+                                        <th>Fechas</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($mis_tareas as $ta): ?>
+                                      <?php
+                                      $estilo = '';
+                                      $color = '';
+                                      if ($ta['Tarea']['estado'] === 'Completado') {
+                                        $estilo = 'text-decoration:line-through;';
+                                        $color = 'success';
+                                      } elseif ($ta['Tarea']['estado'] === 'Reanudado') {
+                                        $estilo = '';
+                                        $color = 'info';
+                                      } elseif ($ta['Tarea']['estado'] === 'Vencido') {
+                                        $estilo = '';
+                                        $color = 'danger';
+                                      }
+                                      ?>
+                                      <tr style="<?php echo $estilo; ?>" class="<?php echo $color; ?>">
+                                          <td><?php echo $ta['Tarea']['created'] ?></td>
+                                          <td><?php echo $ta['User']['nombre_completo'] ?></td>
+                                          <td><?php echo $ta['Tarea']['descripcion'] ?></td>
+                                          <td>
+                                              <?php
+                                              echo $ta['Tarea']['fecha_inicio'];
+                                              if (!empty($ta['Tarea']['fecha_fin'])) {
+                                                echo ' a ' . $ta['Tarea']['fecha_fin'];
+                                              }
+                                              ?>
+                                          </td>
+                                          <td class="text-center" style="font-size: 16px;">
+                                              <div class="btn-group" style="width: 120px;">
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                              </div>
+                                          </td>
+                                      </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- info traffic panels -->
         <div class="row">
-            <div class="col-md-6">
-                <div class="panel">
+            <div class="col-md-12">
+                <div class="panel panel-dark">
                     <div class="panel-heading">
-                        <span class="panel-title">Top Geographic Sources</span>
+                        <span class="panel-icon">
+                            <i class="fa fa-tasks"></i>
+                        </span>
+                        <span class="panel-title"> Flujos</span>
                     </div>
-                    <div class="panel-body pn">
-                        <table class="table mbn tc-med-1 tc-bold-last">
-                            <thead>
-                                <tr class="hidden">
-                                    <th>#</th>
-                                    <th>First Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <span class="flag-xs flag-us mr5 va-b"></span>United States</td>
-                                    <td>28%</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="flag-xs flag-de mr5 va-b"></span>Germany</td>
-                                    <td>25%</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="flag-xs flag-fr mr5 va-b"></span>France</td>
-                                    <td>21%</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="flag-xs flag-tr mr5 va-b"></span>Spain</td>
-                                    <td>18%</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="flag-xs flag-es mr5 va-b"></span>Turkey</td>
-                                    <td>10%</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Creado</th>
+                                        <th>Usuario</th>
+                                        <th>Flujo</th>
+                                        <th>Descripcion</th>
+                                        <th>Accion</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($flujos as $flujo): ?>
+                                    
+                                      <tr>
+                                          <td><?php echo $flujo['FlujosUser']['created']; ?></td>
+                                          <td><?php echo $flujo['User']['nombre_completo']; ?></td>
+                                          <td><?php echo $flujo['Flujo']['nombre']; ?></td>
+                                          <td><?php echo $flujo['FlujosUser']['descripcion']; ?></td>
+                                          <td class="text-center" style="font-size: 16px;">
+                                              <div class="btn-group" style="width: 120px;">
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                              </div>
+                                          </td>
+                                      </tr>
+                                      
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <!-- Search List -->
-                <div class="panel">
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="panel panel-system">
                     <div class="panel-heading">
-                        <span class="panel-title">Top Referals</span>
+                        <span class="panel-icon">
+                            <i class="fa fa-clock-o"></i>
+                        </span>
+                        <span class="panel-title"> Actividades</span>
                     </div>
-                    <div class="panel-body pn">
-                        <table class="table mbn tc-med-1 tc-bold-last">
-                            <thead>
-                                <tr class="hidden">
-                                    <th>#</th>
-                                    <th>First Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <span class="favicons google va-t mr10"></span>http://madeupurl.com/pictures/doors</td>
-                                    <td>28%</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="favicons google va-t mr10"></span>http://secondulr.com/article/14</td>
-                                    <td>25%</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="favicons yahoo va-t mr10"></span>http://urlthird.com/infogram/ten</td>
-                                    <td>21%</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="favicons google va-t mr10"></span>http://fourthlink.com/boats/glass</td>
-                                    <td>18%</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="favicons bing va-t mr10"></span>http://lastlink.com/thebest/ever</td>
-                                    <td>10%</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="panel-body ptn pbn p10">
+                        <ol class="timeline-list">
+                            <?php foreach ($actividades as $ac): ?>
+                              <li class="timeline-item">
+                                  <?php echo $ac[0]['icono'] ?>
+                                  <div class="timeline-desc">
+                                      <?php echo $ac[0]['contenido'] ?>
+
+
+                                  </div>
+                                  <div class="timeline-date"><?php echo $ac[0]['created'] ?></div>
+                              </li>
+                            <?php endforeach; ?>
+
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <span class="panel-icon">
+                            <i class="fa fa-comments-o"></i>
+                        </span>
+                        <span class="panel-title">Comentarios</span>
+                    </div>
+                    <div class="panel-body pb5">
+                        <?php foreach ($comentarios as $com): ?>
+                          <h4>
+                              <?php echo $com['User']['nombre_completo']; ?> 
+                              <div class="widget-menu pull-right mr10">
+                                  <div class="text-muted">
+
+                                      <small><?php echo $com['Comentario']['created']; ?></small>
+                                  </div>
+                              </div>
+                          </h4>
+                          <p class="text-muted"> 
+                              <?php
+                              echo '"' . $com['Comentario']['descripcion'] . '"';
+                              if (!empty($com['Tarea'])) {
+                                echo ' en tarea: <a href="' . $this->Html->url(array('controller' => 'Tareas', 'action' => 'ver_tarea', 0, 0, $com['Tarea']['id'])) . '">' . $com['Tarea']['descripcion'] . '</a>';
+                              } elseif (!empty($com['Proceso'])) {
+                                echo ' en proceso: <a href="' . $this->Html->url(array('controller' => 'Procesos', 'action' => 'ver_ver_proceso', $com['Proceso']['flujos_user_id'], $com['Proceso']['id'])) . '">' . $com['Tarea']['descripcion'] . '</a>';
+                              }
+                              ?>
+
+                          </p>
+                          <hr class="short br-lighter">
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="panel">
-            <div class="panel-heading">
-                <span class="panel-icon">
-                    <i class="fa fa-clock-o"></i>
-                </span>
-                <span class="panel-title"> Actividades</span>
-            </div>
-            <div class="panel-body ptn pbn p10">
-                <ol class="timeline-list">
-                    <?php foreach ($actividades as $ac): ?>
-                      <li class="timeline-item">
-                          <?php echo $ac[0]['icono']?>
-                          <div class="timeline-desc">
-                              <?php echo $ac[0]['contenido']?>
-                              
-                              
-                          </div>
-                          <div class="timeline-date"><?php echo $ac[0]['created']?></div>
-                      </li>
-                    <?php endforeach; ?>
-                    <li class="timeline-item">
-                        <div class="timeline-icon bg-dark light">
-                            <span class="fa fa-tags"></span>
-                        </div>
-                        <div class="timeline-desc">
-                            <b>Sara</b> Added his store:
-                            <a href="#">Notebook</a>
-                        </div>
-                        <div class="timeline-date">3:05am</div>
-                    </li>
-                    <li class="timeline-item">
-                        <div class="timeline-icon bg-success">
-                            <span class="fa fa-usd"></span>
-                        </div>
-                        <div class="timeline-desc">
-                            <b>Admin</b> created invoice for:
-                            <a href="#">Software</a>
-                        </div>
-                        <div class="timeline-date">4:15am</div>
-                    </li>
-                    <li class="timeline-item">
-                        <div class="timeline-icon bg-success">
-                            <span class="fa fa-usd"></span>
-                        </div>
-                        <div class="timeline-desc">
-                            <b>Admin</b> created invoice for:
-                            <a href="#">Apple</a>
-                        </div>
-                        <div class="timeline-date">7:45am</div>
-                    </li>
-                    <li class="timeline-item">
-                        <div class="timeline-icon bg-success">
-                            <span class="fa fa-usd"></span>
-                        </div>
-                        <div class="timeline-desc">
-                            <b>Admin</b> created invoice for:
-                            <a href="#">Software</a>
-                        </div>
-                        <div class="timeline-date">4:15am</div>
-                    </li>
-                    <li class="timeline-item">
-                        <div class="timeline-icon bg-success">
-                            <span class="fa fa-usd"></span>
-                        </div>
-                        <div class="timeline-desc">
-                            <b>Admin</b> created invoice for:
-                            <a href="#">Apple</a>
-                        </div>
-                        <div class="timeline-date">7:45am</div>
-                    </li>
-                    <li class="timeline-item">
-                        <div class="timeline-icon bg-dark light">
-                            <span class="fa fa-tags"></span>
-                        </div>
-                        <div class="timeline-desc">
-                            <b>Michael</b> Added his store:
-                            <a href="#">Ipod</a>
-                        </div>
-                        <div class="timeline-date">8:25am</div>
-                    </li>
-                    <li class="timeline-item">
-                        <div class="timeline-icon bg-system">
-                            <span class="fa fa-fire"></span>
-                        </div>
-                        <div class="timeline-desc">
-                            <b>Admin</b> created invoice for:
-                            <a href="#">Software</a>
-                        </div>
-                        <div class="timeline-date">4:15am</div>
-                    </li>
-                    <li class="timeline-item">
-                        <div class="timeline-icon bg-dark light">
-                            <span class="fa fa-tags"></span>
-                        </div>
-                        <div class="timeline-desc">
-                            <b>Sara</b> Added to his store:
-                            <a href="#">Notebook</a>
-                        </div>
-                        <div class="timeline-date">3:05am</div>
-                    </li>
-                </ol>
-            </div>
-        </div>
+
+
     </div>
     <!-- end: .tray-center -->
 
