@@ -89,9 +89,13 @@ echo $this->Html->script([
                       $('#div_carga_archivo').toggle(100);
                       $('.pocu').toggle(100);
                   },
-                  success: function () {
-
+                  success: function (data) {
+                    if($.parseJSON(data).error === ''){
                       mensaje_m("Excelente!!", 'Se ha registrado el archivo adjunto!!', "success");
+                    }else{
+                      mensaje_m("Error!!", $.parseJSON(data).error, "danger");
+                    }
+                      
                       setTimeout(function () {
                           window.location = '';
                       }, 2000);

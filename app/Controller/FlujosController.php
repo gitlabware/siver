@@ -1,12 +1,15 @@
 <?php
 
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
+
 class FlujosController extends AppController {
 
   public $layout = 'svergara';
   public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado');
 
   public function index() {
-    
+
     $flujos = $this->Flujo->find('all', array(
       'recursive' => -1,
       'order' => 'modified DESC'
@@ -37,9 +40,10 @@ class FlujosController extends AppController {
       'conditions' => array('Proceso.flujo_id' => $idFlujo),
       'order' => array('Proceso.id')
     ));
-    $this->set(compact('flujo', 'procesos','idFlujo'));
+    $this->set(compact('flujo', 'procesos', 'idFlujo'));
   }
-  public function accion_flujo_m($idFlujo = null){
+
+  public function accion_flujo_m($idFlujo = null) {
     $this->layout = 'ajax';
     $flujos = $this->FlujosUser->find('all', array(
       'recursive' => 0,
@@ -48,12 +52,14 @@ class FlujosController extends AppController {
     ));
     $this->set(compact('flujos'));
   }
-  public function accion_flujo_d($idFlujo = null){
+
+  public function accion_flujo_d($idFlujo = null) {
     $this->layout = 'ajax';
     $flujos = $this->FlujosUser->find('all', array(
       'recursive' => 0,
       'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
-      'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*')
+      'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*'),
+      'order' => array('FlujosUser.created DESC')
     ));
     $this->set(compact('flujos'));
   }
@@ -65,7 +71,7 @@ class FlujosController extends AppController {
     $this->redirect(array('action' => 'index'));
   }
 
-  public function iniciar_flujo($idFlujo = null,$idFlujosUser = null) {
+  public function iniciar_flujo($idFlujo = null, $idFlujosUser = null) {
     $this->layout = 'ajax';
     if (!empty($this->request->data['FlujosUser'])) {
       $this->FlujosUser->create();
@@ -74,9 +80,15 @@ class FlujosController extends AppController {
       $d_flujo['user_id'] = $this->Session->read('Auth.User.id');
       $this->FlujosUser->save($d_flujo);
       $idFlujoUser = $this->FlujosUser->getLastInsertID();
+
+      $folder = new Folder();
+      if ($folder->create(WWW_ROOT . 'files' . DS . $d_flujo['descripcion'])) {
+// Successfully created the nested folders
+      }
+
       $this->redirect(array('action' => 'enflujo', $idFlujoUser));
     }
-    if(!empty($idFlujosUser)){
+    if (!empty($idFlujosUser)) {
       $this->FlujosUser->id = $idFlujosUser;
       $this->request->data = $this->FlujosUser->read();
     }
@@ -97,8 +109,8 @@ class FlujosController extends AppController {
       'recursive' => -1,
       'conditions' => array('Proceso.flujo_id' => $flujo['Flujo']['id'])
     ));
-     /*debug($procesos);
-      exit;*/ 
+    /* debug($procesos);
+      exit; */
     $this->set(compact('flujo', 'procesos'));
   }
 
@@ -165,10 +177,10 @@ class FlujosController extends AppController {
       }
     }
   }
-  
-  public function eliminar_e_flujo($idFlujoUser = null){
+
+  public function eliminar_e_flujo($idFlujoUser = null) {
     $this->FlujosUser->delete($idFlujoUser);
-    $this->Session->setFlash("Se ha eliminado correctamente el flujo!!",'msgbueno');
+    $this->Session->setFlash("Se ha eliminado correctamente el flujo!!", 'msgbueno');
     $this->redirect(array('action' => 'index'));
   }
 

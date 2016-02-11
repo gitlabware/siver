@@ -2,13 +2,14 @@
 <div id="topbar-dropmenu">
     <div class="topbar-menu row">
         <div class="col-xs-6 col-sm-3">
-            <a onclick="cierra_elmenu();cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'iniciar_flujo', $flujo['FlujosUser']['flujo_id'], $flujo['FlujosUser']['id'])); ?>');"  href="javascript:" class="metro-tile">
+            <a onclick="cierra_elmenu();
+                cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'iniciar_flujo', $flujo['FlujosUser']['flujo_id'], $flujo['FlujosUser']['id'])); ?>');"  href="javascript:" class="metro-tile">
                 <span class="metro-icon glyphicon glyphicon-edit"></span>
                 <p class="metro-title">Editar Flujo</p>
             </a>
         </div>
         <div class="col-xs-6 col-sm-3">
-            <?php echo $this->Html->link('<span class="metro-icon fa fa-remove"></span> <p class="metro-title">Eliminar este flujo</p>', array('action' => 'eliminar_e_flujo', $flujo['FlujosUser']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de eliminar este flujo???')) ?>
+<?php echo $this->Html->link('<span class="metro-icon fa fa-remove"></span> <p class="metro-title">Eliminar este flujo</p>', array('action' => 'eliminar_e_flujo', $flujo['FlujosUser']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de eliminar este flujo???')) ?>
         </div>
     </div>
 </div>
@@ -26,6 +27,38 @@
 
     <div class="tray tray-center">
         <h2><?php echo $flujo['FlujosUser']['descripcion'] ?> <small> <?php echo $flujo['Flujo']['nombre'] ?></small></h2>
+        <div class="panel-group accordion accordion-lg">
+            <div class="panel">
+                <div class="panel-heading">
+                    <a class="accordion-toggle accordion-icon link-unstyled collapsed" data-toggle="collapse" data-parent="#accordion2" href="#accord2_1">
+                        Will you be providing continuous support and adding new features?
+                        <span class="label hidden label-muted label-sm ph15 mt15 mr5 pull-right">189</span>
+                    </a>
+                </div>
+                <div id="accord2_1" class="panel-collapse collapse" style="height: 0px;">
+                    <div class="panel-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-heading">
+                    <a class="accordion-toggle accordion-icon link-unstyled collapsed" data-toggle="collapse" data-parent="#accordion2" href="#accord2_2">
+                        How did you organize the LESS Structure in this Theme? </a>
+                </div>
+                <div id="accord2_2" class="panel-collapse collapse" style="height: 0px;">
+                    <div class="panel-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.</div>
+                </div>
+            </div>
+            <div class="panel panel-system">
+                <div class="panel-heading">
+                    <a class="accordion-toggle accordion-icon link-unstyled" data-toggle="collapse" data-parent="#accordion2" href="#accord2_3">
+                        How do I create a media object with a responsive image? </a>
+                </div>
+                <div id="accord2_3" class="panel-collapse collapse in">
+                    <div class="panel-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.</div>
+                </div>
+            </div>
+        </div>
+        
         <div class="panel mb25 mt5">
 
             <div class="panel">
@@ -50,7 +83,7 @@
                                       </div>
                                   </td>
                               </tr>
-                            <?php endforeach; ?>
+<?php endforeach; ?>
                         </tbody>
 
                     </table>

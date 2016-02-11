@@ -36,7 +36,7 @@
 
     </head>
 
-    <body class="invoice-page">
+    <body class="invoice-page gallery-page form-treeview-page">
         <!-- Start: Main -->
         <div id="main">
 
@@ -303,6 +303,11 @@
 
         <!-- END: PAGE SCRIPTS -->
         <?php echo $this->fetch('scriptjs'); ?>
+        
+
     </body>
 
 </html>
+
+
+
