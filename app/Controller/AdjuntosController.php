@@ -33,53 +33,75 @@ class AdjuntosController extends AppController {
     $this->set(compact('idFlujosUser', 'idProceso', 'idTarea'));
   }
 
-  public function index() {
+  public function adjunto2($idCarpeta = null) {
+    $this->layout = 'ajax';
+    $this->set(compact('idCarpeta'));
+  }
+
+  public function index($idCarpeta = null) {
 
 
 
-    if ($this->Session->check('Adjunto')) {
+    /* if ($this->Session->check('Adjunto')) {
       $this->request->data = $this->Session->read('Adjunto');
       $this->Session->delete('Adjunto');
-    }
+      }
 
-    if (!empty($this->request->data)) {
+      if (!empty($this->request->data)) {
 
       if (!empty($this->request->data['Adjunto']['direccion_a'])) {
-        $direccion = $this->request->data['Adjunto']['direccion_a'];
+      $direccion = $this->request->data['Adjunto']['direccion_a'];
       }
       if (!empty($this->request->data['Adjunto']['direccion'])) {
-        if (empty($direccion)) {
-          $direccion = DS . $this->request->data['Adjunto']['direccion'];
-        } else {
-          $direccion = $direccion . DS . $this->request->data['Adjunto']['direccion'];
-        }
+      if (empty($direccion)) {
+      $direccion = DS . $this->request->data['Adjunto']['direccion'];
+      } else {
+      $direccion = $direccion . DS . $this->request->data['Adjunto']['direccion'];
       }
-      /* debug($direccion);
-        exit; */
-    } else {
-      $direccion = '';
-    }
-    $dir = new Folder(WWW_ROOT . 'files' . $direccion);
+      }
 
-    /* debug($dir->tree());
+      } else {
+      $direccion = '';
+      }
+      $dir = new Folder(WWW_ROOT . 'files' . $direccion);
+
+      if (WWW_ROOT . 'files' . DS === $dir->path) {
+      $direccion = '';
+      }
+      $files = $dir->read();
+
+      $dir2 = new Folder(WWW_ROOT . 'files' . DS);
+      $files2 = $dir2->read();
+      $array_f = explode("/", $direccion); */
+
+    /* debug($array_f);
+      debug($files2);
+      debug($direccion);
       exit; */
+    $carpetas = $this->Adjunto->find('all', array(
+      'recursive' => -1,
+      'conditions' => array('Adjunto.parent_id' => $idCarpeta, 'Adjunto.tipo LIKE' => 'Carpeta','Adjunto.estado !=' => 'Eliminado')
+    ));
+    //debug($carpetas);exit;
+    $archivos = $this->Adjunto->find('all', array(
+      'recursive' => -1,
+      'conditions' => array('Adjunto.parent_id' => $idCarpeta, 'Adjunto.tipo LIKE' => 'Archivo','Adjunto.estado !=' => 'Eliminado')
+    ));
+    /* debug($idCarpeta);
+      debug($archivos);exit; */
 
-    if (WWW_ROOT . 'files' . DS === $dir->path) {
-      $direccion = '';
-    }
-    $files = $dir->read();
-    
-    $dir2 = new Folder(WWW_ROOT . 'files' . DS);
-    $files2 = $dir2->read();
-    $array_f = explode("/", $direccion);
-    
-    /*debug($array_f);
-    debug($files2);
-    debug($direccion);
-    exit;*/
-
-
-    $this->set(compact('files', 'direccion','array_f','files2'));
+    /* $arbol_car = $this->Adjunto->find('all', array(
+      'recursive' => -1,
+      'conditions' => array('Adjunto.tipo LIKE' => 'Carpeta'),
+      'fields' => array('Adjunto.nombre_original', 'Adjunto.id', 'Adjunto.parent_id', 'Adjunto.tipo')
+      )); */
+    //$arbol = $this->Adjunto->children(NULL, true, array('Adjunto.nombre_original', 'Adjunto.clase', 'Adjunto.id', 'Adjunto.parent_id', 'Adjunto.tipo'));
+    //$menuTree = $this->treeForm($arbol, 0, 'Adjunto');
+    //debug($menuTree);exit;
+    /* debug($arbol);
+      exit; */
+    $direcciones = $this->Adjunto->getPath($idCarpeta);
+    $this->set(compact('carpetas', 'archivos', 'idCarpeta', 'direcciones'));
   }
 
   public function guarda_archivo() {
@@ -91,22 +113,19 @@ class AdjuntosController extends AppController {
     //$ext = end($extension);
     $this->request->data['Adjunto']['nombre_original'] = $nombreOriginal;
     //debug($archivo);exit;
+    $direcciones = $this->Adjunto->getPath($this->request->data['Adjunto']['parent_id']);
     $directorio = '';
-    if (!empty($this->request->data['Adjunto']['flujos_user_id'])) {
-      $flujo = $this->FlujosUser->find('first', array(
-        'recursive' => -1,
-        'conditions' => array('FlujosUser.id' => $this->request->data['Adjunto']['flujos_user_id'])
-      ));
-      $directorio = DS . $flujo['FlujosUser']['descripcion'] . DS;
+    foreach ($direcciones as $dir) {
+      $directorio = $directorio . DS . $dir['Adjunto']['nombre_original'];
     }
+
     //App::uses('String', 'Utility');
     //$nombre = String::uuid() . '.' . $ext;
-    $file = new File(WWW_ROOT . 'files' . $directorio . $nombreOriginal);
+    $file = new File(WWW_ROOT . 'files' . $directorio . DS . $nombreOriginal);
     $array['error'] = '';
 
     if (!$file->exists()) {
-      if ($this->guarda_archivo2($archivo, $directorio . $nombreOriginal)) {
-        $this->request->data['Adjunto']['ubicacion'] = $directorio . $nombreOriginal;
+      if ($this->guarda_archivo2($archivo, $directorio . DS . $nombreOriginal)) {
         $this->Adjunto->create();
         $this->Adjunto->save($this->request->data['Adjunto']);
 
@@ -182,25 +201,24 @@ class AdjuntosController extends AppController {
     }
   }
 
-  public function eliminar_archivo() {
+  public function eliminar_archivo($idAdjunto = null) {
     /* debug($this->request->data['Adjunto']['direccion']);
       exit; */
-    $nombre = $this->request->data['Adjunto']['direccion'];
-    $array['Adjunto']['direccion_a'] = $nombre . DS . '..';
-    $this->Session->write('Adjunto', $array);
-    $directorio = WWW_ROOT . 'files' . $nombre;
-    //debug($directorio);exit;
+    $adjunto = $this->Adjunto->findByid($idAdjunto, null, null, -1);
+    $direcciones = $this->Adjunto->getPath($adjunto['Adjunto']['parent_id']);
+    $directorio = '';
+    foreach ($direcciones as $dir) {
+      $directorio = $directorio . DS . $dir['Adjunto']['nombre_original'];
+    }
 
-    if (file_exists($directorio)) {
+    $file = WWW_ROOT . 'files' . $directorio . DS . $adjunto['Adjunto']['nombre_original'];
+
+    if (file_exists($file)) {
       //debug('Si existe');exit;
-      unlink($directorio);
-      $adjunto = $this->Adjunto->find('first', array(
-        'recursive' => -1,
-        'conditions' => array('Adjunto.ubicacion LIKE' => $nombre)
-      ));
-      if (!empty($adjunto)) {
-        $this->Adjunto->delete($adjunto['Adjunto']['id']);
-      }
+      unlink($file);
+      $adj['estado'] = 'Eliminado';
+      $this->Adjunto->id = $adjunto['Adjunto']['id'];
+      $this->Adjunto->save($adj);
       $this->Session->setFlash("Se ha eliminado correctamente el archivo!!", 'msgbueno');
     } else {
       $this->Session->setFlash("No se ha podido eliminar el archivo!!", 'msgerror');
@@ -209,9 +227,14 @@ class AdjuntosController extends AppController {
   }
 
   public function descargar($idAdjunto = null) {
-
     $adjunto = $this->Adjunto->findByid($idAdjunto, null, null, -1);
-    $file = WWW_ROOT . 'files' . $adjunto['Adjunto']['ubicacion'];
+    $direcciones = $this->Adjunto->getPath($adjunto['Adjunto']['parent_id']);
+    $directorio = '';
+    foreach ($direcciones as $dir) {
+      $directorio = $directorio . DS . $dir['Adjunto']['nombre_original'];
+    }
+
+    $file = WWW_ROOT . 'files' . $directorio . DS . $adjunto['Adjunto']['nombre_original'];
 
     if (file_exists($file)) {
       header('Content-Description: File Transfer');
@@ -265,9 +288,9 @@ class AdjuntosController extends AppController {
   }
 
   public function prueba() {
-    /*$dir = new Folder('/home/eynar/Downloads');
-    $files = $dir->find();
-    debug($files);exit;*/
+    /* $dir = new Folder('/home/eynar/Downloads');
+      $files = $dir->find();
+      debug($files);exit; */
     //$dir = new Folder('/home/eynar/Music', true, 0755);
     //$path = Folder::addPathElement('/home/eynar', 'Music');
     //$files = $dir->findRecursive('(test|index).*');
@@ -302,45 +325,66 @@ class AdjuntosController extends AppController {
       //debug($contents);
       } */
 
-    
+
     exit;
   }
 
-  public function ver_adjunto() {
+  public function ver_adjunto($idAdjunto = null) {
     $this->layout = 'ajax';
 
-    $direccion = '';
-    if (!empty($_POST['direccion'])) {
-      $direccion = $_POST['direccion'];
-    }
-    if (!empty($_POST['nombre'])) {
-      $direccion = $direccion . DS . $_POST['nombre'];
-    }
+
     /* debug($direccion);
       exit; */
     $adjunto = $this->Adjunto->find('first', array(
       'recursive' => -1,
-      'conditions' => array('Adjunto.ubicacion LIKE' => $direccion)
+      'conditions' => array('Adjunto.id' => $idAdjunto)
     ));
 
-    $this->set(compact('adjunto', 'direccion'));
+    $this->set(compact('idAdjunto', 'adjunto'));
 
     /* debug($direccion);
       debug($adjunto);
       exit; */
   }
-  
-  
-  public function arbol(){
+
+  public function arbol($idAdjunto = null) {
     $this->layout = 'ajax';
-    /*debug($this->request->data);
-    exit;*/
+    /* debug($this->request->data);
+      exit; */
+    $adjunto = $this->Adjunto->findByid($idAdjunto, null, null, -1);
+    $this->Adjunto->virtualFields = array(
+      'clase' => "IF(Adjunto.tipo = 'Carpeta','folder','')"
+    );
+    $arbol = $this->Adjunto->children($idAdjunto, true, array('Adjunto.nombre_original', 'Adjunto.clase', 'Adjunto.id', 'Adjunto.parent_id', 'Adjunto.tipo'));
+    $this->set(compact('adjunto', 'arbol'));
   }
-  
-  public function carpeta(){
+
+  public function carpeta($idCarpeta = null) {
     $this->layout = 'ajax';
-    
-    
+    $carpeta = $this->Adjunto->findByid($idCarpeta, null, null, -1);
+    if (!empty($this->request->data['Adjunto']['nombre'])) {
+
+      $this->request->data['Adjunto']['nombre_original'] = $this->request->data['Adjunto']['nombre'];
+      if (!empty($carpeta)) {
+        $direccion = $carpeta['Adjunto']['nombre_original'] . DS . $this->request->data['Adjunto']['nombre_original'];
+      } else {
+        $direccion = $this->request->data['Adjunto']['nombre_original'];
+      }
+      $folder = new Folder();
+      if ($folder->create(WWW_ROOT . 'files' . DS . $direccion)) {
+        $this->Adjunto->create();
+        $this->Adjunto->save($this->request->data['Adjunto']);
+        $this->Session->setFlash("Se ha registrado correctamente la carpeta!!", 'msgbueno');
+      } else {
+        $this->Session->setFlash("No se ha podido crear la carpeta. Intente nuevamente!!!", 'msgerror');
+      }
+      $this->redirect($this->referer());
+    }
+
+
+    /* debug($carpeta);
+      exit; */
+    $this->set(compact('carpeta', 'idCarpeta'));
   }
 
 }

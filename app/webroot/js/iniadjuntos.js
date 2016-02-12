@@ -317,9 +317,4 @@ function cargarmodal2(dir_e) {
 
 }
 
-function miarbol() {
-    $("#tree2").fancytree({
-        clickFolderMode: 2, // 1:activate, 2:expand, 3:activate and expand, 4:activate (dblclick expands)
-    });
-}
-miarbol();
+

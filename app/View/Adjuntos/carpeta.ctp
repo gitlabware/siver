@@ -10,7 +10,7 @@
     <div class="section row">
         <div class="col-md-12">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->textarea('nombre', ['class' => 'gui-textarea','required']); ?>
+                <?php echo $this->Form->text('nombre', ['class' => 'gui-input', 'required', 'placeholder' => 'Ingrese el nombre de la carpeta']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-edit"></i>
                 </label>
@@ -26,7 +26,10 @@
 </div>
 <!-- end .form-footer section -->
 <?php //echo $this->Form->hidden('id')?> 
-<?php echo $this->Form->hidden('user_id',array('value' => $this->Session->read('Auth.User.id')))?> 
+<?php echo $this->Form->hidden('user_id', array('value' => $this->Session->read('Auth.User.id'))) ?> 
+<?php echo $this->Form->hidden('tipo', array('value' => 'Carpeta')); ?>
+<?php echo $this->Form->hidden('parent_id',array('value' => $idCarpeta)); ?>
+<?php echo $this->Form->hidden('estado',array('value' => 'Activo')); ?>
 <?= $this->Form->end(); ?>
 
 <?php

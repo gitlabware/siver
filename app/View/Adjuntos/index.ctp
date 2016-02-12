@@ -4,9 +4,16 @@
     <div class="topbar-menu row">
         <div class="col-xs-6 col-sm-3">
             <a onclick="cierra_elmenu();
-                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'carpeta')); ?>');"  href="javascript:" class="metro-tile">
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'carpeta', $idCarpeta)); ?>');"  href="javascript:" class="metro-tile">
                 <span class="metro-icon fa fa-folder"></span>
                 <p class="metro-title">Nueva Carpeta</p>
+            </a>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <a  href="javascript:" class="metro-tile" onclick="cierra_elmenu();
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'adjunto2', $idCarpeta)); ?>');">
+                <span class="metro-icon glyphicon glyphicon-upload"></span>
+                <p class="metro-title">Subir Archivo</p>
             </a>
         </div>
     </div>
@@ -20,6 +27,27 @@
   }
 
 </script>
+<header id="topbar" class="ph10">
+    <div class="topbar-left">
+        <ul class="nav nav-list nav-list-topbar pull-left">
+            <li>
+                <a href="<?php echo $this->Html->url(array('action' => 'index')) ?>">Archivos</a>
+            </li>
+            <?php foreach ($direcciones as $dir): ?>
+              <?php if ($dir['Adjunto']['id'] == $idCarpeta): ?>
+                <li class="active">
+                    <a href="<?php echo $this->Html->url(array('action' => 'index', $dir['Adjunto']['id'])) ?>"><?php echo $dir['Adjunto']['nombre_original'] ?></a>
+                </li>
+              <?php else: ?>
+                <li>
+                    <a href="<?php echo $this->Html->url(array('action' => 'index', $dir['Adjunto']['id'])) ?>"><?php echo $dir['Adjunto']['nombre_original'] ?></a>
+                </li>
+              <?php endif; ?>
+            <?php endforeach; ?>
+
+        </ul>
+    </div>
+</header>
 <section id="content" class="table-layout animated fadeIn">
 
     <div class="tray tray-center">
@@ -95,42 +123,21 @@
 
             </div>
         </div>
-        <?php echo $this->Form->create('Adjunto', array('id' => 'form-direccion')); ?>
-        <?php echo $this->Form->hidden('direccion_a', array('value' => $direccion)); ?>
-        <?php echo $this->Form->hidden('direccion', array('id' => 'tdireccion')); ?>
-        <?php echo $this->Form->end(); ?>
-        <?php echo $this->Form->create('Adjunto', array('id' => 'form-direccion-d', 'action' => 'descargar2')); ?>
-        <?php echo $this->Form->hidden('direccion_a', array('value' => $direccion)); ?>
-        <?php echo $this->Form->hidden('direccion', array('id' => 'ddireccion')); ?>
-        <?php echo $this->Form->end(); ?>
+
         <div id="mix-container">
 
             <div class="fail-message">
                 <span>No items were found matching the selected filters</span>
             </div>
-            <?php if (!empty($direccion)): ?>
+            
+            <?php foreach ($carpetas as $ca): ?>
               <div class="mix label1 folder1">
                   <div class="panel p6 pbn">
                       <div class="of-h">
-                          <img onclick="enviar_d('..');" src="<?php echo $this->request->webroot; ?>img/iconos/FolderFilled.ico" class="img-responsive" title="Subir">
+                          <img onclick="window.location = '<?php echo $this->Html->url(array('action' => 'index', $ca['Adjunto']['id'])); ?>';" src="<?php echo $this->request->webroot; ?>img/iconos/FolderFilled.ico" class="img-responsive" title="<?php echo $ca['Adjunto']['nombre'] ?>">
                           <div class="row table-layout">
                               <div class="col-xs-8 va-m pln">
-                                  <h6>.....</h6>
-                              </div>
-                          </div>
-                      </div>
-
-                  </div>
-              </div>
-            <?php endif; ?>
-            <?php foreach ($files[0] as $fi): ?>
-              <div class="mix label1 folder1">
-                  <div class="panel p6 pbn">
-                      <div class="of-h">
-                          <img onclick="enviar_d('<?php echo $fi ?>');" src="<?php echo $this->request->webroot; ?>img/iconos/FolderFilled.ico" class="img-responsive" title="<?php echo $fi ?>">
-                          <div class="row table-layout">
-                              <div class="col-xs-8 va-m pln">
-                                  <h6><?php echo $fi ?></h6>
+                                  <h6><?php echo $ca['Adjunto']['nombre'] ?></h6>
                               </div>
                               <div class="col-xs-4 text-right va-m prn">
                                   <a href="javascript:"><span class="fa fa-eye fs12 text-muted"></span></a>
@@ -143,17 +150,17 @@
                   </div>
               </div>
             <?php endforeach; ?>
-            <?php foreach ($files[1] as $fi): ?>
+            <?php foreach ($archivos as $ar): ?>
               <div class="mix label1 folder1">
                   <div class="panel p6 pbn">
                       <div class="of-h">
-                          <img onclick="descargar_d('<?php echo $fi ?>');" src="<?php echo $this->request->webroot; ?>img/iconos/download.jpg" class="img-responsive" title="<?php echo $fi ?>">
+                          <img onclick="window.location = '<?php echo $this->Html->url(array('action'=>'descargar', $ar['Adjunto']['id'])); ?>'" src="<?php echo $this->request->webroot; ?>img/iconos/download.jpg" class="img-responsive" title="<?php echo $ar['Adjunto']['nombre'] ?>">
                           <div class="row table-layout">
                               <div class="col-xs-8 va-m pln">
-                                  <h6><?php echo $fi ?></h6>
+                                  <h6><?php echo $ar['Adjunto']['nombre_original'] ?></h6>
                               </div>
                               <div class="col-xs-4 text-right va-m prn">
-                                  <a href="javascript:" onclick="cargarmodal2('<?php echo $fi ?>');"><span class="fa fa-eye fs12 text-info"></span></a>
+                                  <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_adjunto',$ar['Adjunto']['id'])) ?>');"><span class="fa fa-eye fs12 text-info"></span></a>
                                   <span class="fa fa-circle fs10 text-alert ml10"></span>
                               </div>
                           </div>
@@ -173,60 +180,8 @@
     </div>
 
     <aside class="tray tray-right tray320">
-        <?php echo $this->Form->create('Adjunto', array('id' => 'form-tree', 'action' => 'arbol')); ?>
-        <?php echo $this->Form->hidden('direccion', array('value' => $direccion)); ?>
-        <?php echo $this->Form->hidden('puntero', array('value' => 1)); ?>
-        <?php echo $this->Form->end(); ?>
-        <div class="panel mt30">
-            <div class="panel-heading">
-                <span class="panel-title"> Treeview with Icons</span>
-            </div>
-            <div class="panel-body">
-                <div id="tree2">
-                    <ul id="treeData">
-                        <?php foreach ($files2[0] as $key => $fi): ?>
 
-                          <?php if (!empty($array_f[1]) && $fi === $array_f[1]): ?>
-                            <li id="<?php echo 'f-' . $key; ?>" class="folder expanded"><?php echo $fi; ?> </li>
 
-                            <script>
-                              var postData = $('#form-tree').serializeArray();
-                              var formURL = '<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'arbol')); ?>';
-                              $.ajax(
-                                      {
-                                          url: formURL,
-                                          type: "POST",
-                                          data: postData,
-                                          /*beforeSend:function (XMLHttpRequest) {
-                                           alert("antes de enviar");
-                                           },
-                                           complete:function (XMLHttpRequest, textStatus) {
-                                           alert('despues de enviar');
-                                           },*/
-                                          success: function (data, textStatus, jqXHR)
-                                          {
-                                              //data: return data from server
-                                              $("#<?php echo 'f-' . $key; ?>").html(data);
-                                          },
-                                          error: function (jqXHR, textStatus, errorThrown)
-                                          {
-                                              //if fails   
-                                              alert("error");
-                                          }
-                                      });
-                            </script>
-                          <?php else: ?>
-                            <li id="<?php echo 'f-' . $key; ?>" class="folder"><?php echo $fi; ?>  
-                              <?php endif; ?>
-                          </li>
-                        <?php endforeach; ?>
-                        <?php foreach ($files2[1] as $key => $fi): ?>
-                          <li id="<?php echo 'a-' . $key; ?>"><?php echo $fi; ?> </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
     </aside>
 </section>
 
@@ -238,23 +193,7 @@ echo $this->Html->script(array(
   'vendor/plugins/mixitup/jquery.mixitup.min',
   'vendor/plugins/holder/holder.min',
   'vendor/plugins/fileupload/fileupload',
-  'vendor/plugins/fancytree/jquery.fancytree-all.min',
   'iniadjuntos'
   ), array('block' => 'scriptjs'));
 ?>
 
-
-<script>
-  function enviar_d(dir) {
-      $('#tdireccion').val(dir);
-      $('#form-direccion').submit();
-  }
-  function descargar_d(dir) {
-      $('#ddireccion').val(dir);
-      $('#form-direccion-d').submit();
-  }
-  var formURL_E = '<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'ver_adjunto')) ?>';
-  var direccion_e = '<?php echo $direccion ?>';
-
-
-</script>
