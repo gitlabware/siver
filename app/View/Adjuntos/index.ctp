@@ -30,7 +30,7 @@
 <header id="topbar" class="ph10">
     <div class="topbar-left">
         <ul class="nav nav-list nav-list-topbar pull-left">
-            <li>
+            <li class="drago" data-id="">
                 <a href="<?php echo $this->Html->url(array('action' => 'index')) ?>">Archivos</a>
             </li>
             <?php foreach ($direcciones as $dir): ?>
@@ -39,7 +39,7 @@
                     <a href="<?php echo $this->Html->url(array('action' => 'index', $dir['Adjunto']['id'])) ?>"><?php echo $dir['Adjunto']['nombre_original'] ?></a>
                 </li>
               <?php else: ?>
-                <li>
+                <li class="drago" data-id="<?php echo $dir['Adjunto']['id'] ?>">
                     <a href="<?php echo $this->Html->url(array('action' => 'index', $dir['Adjunto']['id'])) ?>"><?php echo $dir['Adjunto']['nombre_original'] ?></a>
                 </li>
               <?php endif; ?>
@@ -65,10 +65,10 @@
                                 <div class="btn-group">
                                     <fieldset>
                                         <select id="filter1">
-                                            <option value="">All Folders</option>
-                                            <option value=".folder1">Publicity</option>
-                                            <option value=".folder2">Spain Vacation</option>
-                                            <option value=".folder3">Sony Demo</option>
+                                            <option value="">Todo</option>
+                                            <option value=".scarpetas">Solo Carpetas</option>
+                                            <option value=".car-Mi">Solo mis Carpetas</option>
+                                            <option value=".car-Todos">Todas las carpetas</option>
                                         </select>
                                     </fieldset>
                                 </div>
@@ -129,18 +129,23 @@
             <div class="fail-message">
                 <span>No items were found matching the selected filters</span>
             </div>
-            
+
             <?php foreach ($carpetas as $ca): ?>
-              <div class="mix label1 folder1">
+              <div class="mix label1 scarpetas <?php echo 'car-'.$ca['Adjunto']['visible'] ?> drope drago" data-id="<?php echo $ca['Adjunto']['id'] ?>">
                   <div class="panel p6 pbn">
                       <div class="of-h">
-                          <img onclick="window.location = '<?php echo $this->Html->url(array('action' => 'index', $ca['Adjunto']['id'])); ?>';" src="<?php echo $this->request->webroot; ?>img/iconos/FolderFilled.ico" class="img-responsive" title="<?php echo $ca['Adjunto']['nombre'] ?>">
+                          <img onclick="//alert($(this).attr('class'));
+                                  if (!$(this).hasClass('noclick')) {
+                                      window.location = '<?php echo $this->Html->url(array('action' => 'index', $ca['Adjunto']['id'])); ?>';
+                                  } else {
+                                      $(this).removeClass('noclick');
+                                  }" src="<?php echo $this->request->webroot; ?>img/iconos/FolderFilled.ico" class="img-responsive" title="<?php echo $ca['Adjunto']['nombre'] ?>">
                           <div class="row table-layout">
                               <div class="col-xs-8 va-m pln">
                                   <h6><?php echo $ca['Adjunto']['nombre'] ?></h6>
                               </div>
                               <div class="col-xs-4 text-right va-m prn">
-                                  <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_carpeta',$ca['Adjunto']['id'])) ?>');"><span class="fa fa-eye fs12 text-info"></span></a>
+                                  <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_carpeta', $ca['Adjunto']['id'])) ?>');"><span class="fa fa-eye fs12 text-info"></span></a>
 
                                   <span class="fa fa-circle fs10 text-alert ml10"></span>
                               </div>
@@ -151,16 +156,22 @@
               </div>
             <?php endforeach; ?>
             <?php foreach ($archivos as $ar): ?>
-              <div class="mix label1 folder1">
+              <div class="mix label1 folder1 drope" data-id="<?php echo $ar['Adjunto']['id'] ?>">
                   <div class="panel p6 pbn">
                       <div class="of-h">
-                          <img onclick="window.location = '<?php echo $this->Html->url(array('action'=>'descargar', $ar['Adjunto']['id'])); ?>'" src="<?php echo $this->request->webroot; ?>img/iconos/download.jpg" class="img-responsive" title="<?php echo $ar['Adjunto']['nombre'] ?>">
+                          <img onclick="
+                                  if (!$(this).hasClass('noclick')) {
+                                      window.location = '<?php echo $this->Html->url(array('action' => 'descargar', $ar['Adjunto']['id'])); ?>';
+                                  } else {
+                                      $(this).removeClass('noclick');
+                                  }
+                               " src="<?php echo $this->request->webroot; ?>img/iconos/download.jpg" class="img-responsive" title="<?php echo $ar['Adjunto']['nombre'] ?>">
                           <div class="row table-layout">
                               <div class="col-xs-8 va-m pln">
                                   <h6><?php echo $ar['Adjunto']['nombre_original'] ?></h6>
                               </div>
                               <div class="col-xs-4 text-right va-m prn">
-                                  <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_adjunto',$ar['Adjunto']['id'])) ?>');"><span class="fa fa-eye fs12 text-info"></span></a>
+                                  <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_adjunto', $ar['Adjunto']['id'])) ?>');"><span class="fa fa-eye fs12 text-info"></span></a>
                                   <span class="fa fa-circle fs10 text-alert ml10"></span>
                               </div>
                           </div>
@@ -197,3 +208,24 @@ echo $this->Html->script(array(
   ), array('block' => 'scriptjs'));
 ?>
 
+<script>
+  $(function () {
+      $(".drope").draggable({
+          stack: ".drago",
+          revert: "invalid",
+          start: function (event, ui) {
+
+              $(this).find('img').addClass('noclick');
+          },
+          stop: function () {
+              //$(this).find('img').removeClass('noclick');
+          }
+      });
+
+      $(".drago").droppable({
+          drop: function (event, ui) {
+              window.location = '<?php echo $this->Html->url(array('action' => 'mover')); ?>/' + $(ui.draggable).attr('data-id') + '/' + $(this).attr('data-id');
+          }
+      });
+  });
+</script>

@@ -64,10 +64,12 @@
     </div>
 </div>
 <!-- end .form-body section -->
+<?php if ($this->Session->read('Auth.User.id') == $adjunto['Adjunto']['user_id']):?>
 <div class="panel-footer">
     <?php echo $this->Html->link('Eliminar', array('action' => 'eliminar_archivo', $idAdjunto), array('class' => 'button btn-danger', 'confirm' => 'Esta seguro de eliminar el archivo??')); ?>
     <button type="submit" class="button btn-primary">Registrar</button>
 </div>
+<?php endif;?>
 <?= $this->Form->end(); ?>
 <?php
 echo $this->Html->script([

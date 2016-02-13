@@ -40,9 +40,16 @@
 </div>
 <!-- end .form-body section -->
 
+<?php if ($this->Session->read('Auth.User.id') == $carpeta['Adjunto']['user_id']):?>
 <div class="panel-footer">
+    <?php if (empty($flujo)): ?>
+      <?php echo $this->Html->link('Eliminar', array('action' => 'eliminar_carpeta', $idCarpeta), array('class' => 'button btn-danger ', 'confirm' => 'Esta seguro de eliminar la carpeta??')); ?>
+    <?php else: ?>
+      <?php //echo $this->Html->link('Eliminar', array('action' => 'eliminar_carpeta', $idCarpeta), array('class' => 'button btn-danger', 'confirm' => 'Esta seguro de eliminar la carpeta??', 'disabled')); ?>
+    <?php endif; ?>
     <button type="submit" class="button btn-primary">Registrar</button>
 </div>
+<?php endif;?>
 <!-- end .form-footer section -->
 <?php //echo $this->Form->hidden('id')?> 
 <?= $this->Form->end(); ?>
