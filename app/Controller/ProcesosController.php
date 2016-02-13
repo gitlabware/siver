@@ -194,7 +194,7 @@ class ProcesosController extends AppController {
     }
   }
 
-  public function ajax_sel_procesos($idFlujosUser = null) {
+  public function ajax_sel_procesos($idFlujosUser = null,$modelo = null,$idProceso = null,$idTarea = null) {
     //debug($idFlujosUser);exit;
     $this->layout = 'ajax';
     $flujo = $this->FlujosUser->findByid($idFlujosUser, null, null, -1);
@@ -206,9 +206,9 @@ class ProcesosController extends AppController {
         'fields' => array('Proceso.nombre')
       ));
     }
-
+    $this->request->data[$modelo]['proceso_id'] = $idProceso;
     //debug($procesos);exit;
-    $this->set(compact('procesos'));
+    $this->set(compact('procesos','modelo','idTarea','idProceso'));
   }
 
 }

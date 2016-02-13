@@ -17,6 +17,14 @@
             </label>
         </div>
     </div>
+    <div class="section row">
+        <div class="col-md-12">
+            <label class="field select">
+                <?php echo $this->Form->select('Visible', array('Todos' => 'Todos', 'Mi' => 'Mi'), array('empty' => 'Visible para...', 'required', 'value' => 'Todos')) ?>
+                <i class="arrow double"></i>
+            </label>
+        </div>
+    </div>
 
 </div>
 <!-- end .form-body section -->
@@ -28,8 +36,8 @@
 <?php //echo $this->Form->hidden('id')?> 
 <?php echo $this->Form->hidden('user_id', array('value' => $this->Session->read('Auth.User.id'))) ?> 
 <?php echo $this->Form->hidden('tipo', array('value' => 'Carpeta')); ?>
-<?php echo $this->Form->hidden('parent_id',array('value' => $idCarpeta)); ?>
-<?php echo $this->Form->hidden('estado',array('value' => 'Activo')); ?>
+<?php echo $this->Form->hidden('parent_id', array('value' => $idCarpeta)); ?>
+<?php echo $this->Form->hidden('estado', array('value' => 'Activo')); ?>
 <?= $this->Form->end(); ?>
 
 <?php

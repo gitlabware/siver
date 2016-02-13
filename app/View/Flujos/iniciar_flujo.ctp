@@ -27,6 +27,7 @@
 <!-- end .form-footer section -->
 <?php echo $this->Form->hidden('FlujosUser.id')?> 
 <?php echo $this->Form->hidden('FlujosUser.user_id',array('value' => $this->Session->read('Auth.User.id')))?> 
+<?php echo $this->Form->hidden('FlujosUser.estado',array('value' => 'Activo'))?> 
 <?= $this->Form->end(); ?>
 
 <?php

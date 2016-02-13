@@ -139,7 +139,6 @@
                                       <th>Creado</th>
                                       <th>Creado Por</th>
                                       <th>Nombre</th>
-                                      <th>Descripcion</th>
                                       <th>Accion</th>
                                   </tr>
                               <tbody>
@@ -148,11 +147,10 @@
                                         <td><?php echo $ad['Adjunto']['created'] ?></td>
                                         <td><?php echo $ad['User']['nombre_completo'] ?></td>
                                         <td><?php echo $ad['Adjunto']['nombre'] ?></td>
-                                        <td><?php echo $ad['Adjunto']['descripcion'] ?></td>
                                         <td>
                                             <?php echo $this->Html->link('<i class="fa fa-download"></i>', array('controller' => 'Adjuntos', 'action' => 'descargar', $ad['Adjunto']['id']), array('class' => 'btn btn-success', 'title' => 'Descargar archivo', 'escape' => FALSE)) ?>
                                             <?php if ($this->Session->read('Auth.User.id') == $ad['Adjunto']['user_id']): ?>
-                                              <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Adjuntos', 'action' => 'eliminar', $ad['Adjunto']['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar el archivo adjunto??')) ?>
+                                              <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Adjuntos', 'action' => 'eliminar_archivo', $ad['Adjunto']['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar el archivo adjunto??')) ?>
                                             <?php endif; ?>
                                         </td>
                                     </tr>

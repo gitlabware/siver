@@ -18,16 +18,6 @@
         </div>
     </div>
     <div class="section row pocu">
-        <div class="col-md-12">
-            <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->textarea('descripcion', ['class' => 'gui-textarea', 'placeholder' => 'Descripcion']); ?>
-                <label for="email" class="field-icon">
-                    <i class="fa fa-pencil"></i>
-                </label>
-            </label>
-        </div>
-    </div>
-    <div class="section row pocu">
         <label class="field prepend-icon append-button file">
             <span class="button btn-primary">Seleccione el archivo</span>
             <?php echo $this->Form->file('archivo', array('id' => 'file1', 'class' => 'gui-file', 'onchange' => "document.getElementById('uploader1').value = this.value;", 'required')); ?>
@@ -36,6 +26,12 @@
             <label class="field-icon">
                 <i class="fa fa-upload"></i>
             </label>
+        </label>
+    </div>
+    <div class="section row pocu">
+        <label class="field select">
+            <?php echo $this->Form->select('visible', array('Todos' => 'Todos','Mi' => 'Mi'), array('empty' => 'Visible para...','required' ,'value' => 'Todos')) ?>
+            <i class="arrow double"></i>
         </label>
     </div>
     <div class="section row">
@@ -52,6 +48,10 @@
     <button type="submit" class="button btn-primary">Registrar</button>
 </div>
 <!-- end .form-footer section -->
+<?php echo $this->Form->hidden('parent_id', array('value' => $idAdjunto)) ?> 
+<?php echo $this->Form->hidden('tipo', array('value' => 'Archivo')) ?> 
+<?php echo $this->Form->hidden('estado', array('value' => 'Activo')) ?> 
+
 <?php echo $this->Form->hidden('tarea_id', array('value' => $idTarea)) ?> 
 <?php echo $this->Form->hidden('proceso_id', array('value' => $idProceso)) ?> 
 <?php echo $this->Form->hidden('flujos_user_id', array('value' => $idFlujosUser)) ?> 

@@ -29,13 +29,32 @@ class AdjuntosController extends AppController {
   }
 
   public function adjunto($idFlujosUser = null, $idProceso = null, $idTarea = null) {
+
     $this->layout = 'ajax';
-    $this->set(compact('idFlujosUser', 'idProceso', 'idTarea'));
+    if (!empty($idFlujosUser)) {
+      $flujo = $this->FlujosUser->find('first', array(
+        'recursive' => 0,
+        'conditions' => array('FlujosUser.id' => $idFlujosUser),
+        'fields' => array('Adjunto.id')
+      ));
+      $idAdjunto = $flujo['Adjunto']['id'];
+    }
+    $this->set(compact('idFlujosUser', 'idProceso', 'idTarea', 'idAdjunto'));
   }
 
   public function adjunto2($idCarpeta = null) {
     $this->layout = 'ajax';
-    $this->set(compact('idCarpeta'));
+    $flujos = $this->FlujosUser->find('list', array(
+      'recursive' => -1,
+      'conditions' => array(
+        'FlujosUser.estado LIKE' => 'Activo'
+      ),
+      'order' => array('FlujosUser.created DESC'),
+      'fields' => array('FlujosUser.id', 'FlujosUser.descripcion')
+    ));
+
+    $procesos = array();
+    $this->set(compact('idCarpeta', 'flujos', 'procesos'));
   }
 
   public function index($idCarpeta = null) {
@@ -80,12 +99,12 @@ class AdjuntosController extends AppController {
       exit; */
     $carpetas = $this->Adjunto->find('all', array(
       'recursive' => -1,
-      'conditions' => array('Adjunto.parent_id' => $idCarpeta, 'Adjunto.tipo LIKE' => 'Carpeta','Adjunto.estado !=' => 'Eliminado')
+      'conditions' => array('Adjunto.parent_id' => $idCarpeta, 'Adjunto.tipo LIKE' => 'Carpeta', 'Adjunto.estado !=' => 'Eliminado')
     ));
     //debug($carpetas);exit;
     $archivos = $this->Adjunto->find('all', array(
       'recursive' => -1,
-      'conditions' => array('Adjunto.parent_id' => $idCarpeta, 'Adjunto.tipo LIKE' => 'Archivo','Adjunto.estado !=' => 'Eliminado')
+      'conditions' => array('Adjunto.parent_id' => $idCarpeta, 'Adjunto.tipo LIKE' => 'Archivo', 'Adjunto.estado !=' => 'Eliminado')
     ));
     /* debug($idCarpeta);
       debug($archivos);exit; */
@@ -111,6 +130,15 @@ class AdjuntosController extends AppController {
     //$extencion = split('.', $nombreOriginal);
     //$extension = explode('.', $nombreOriginal);
     //$ext = end($extension);
+    if (empty($this->request->data['Adjunto']['flujos_user_id'])) {
+      $this->request->data['Adjunto']['flujos_user_id'] = 0;
+    }
+    if (empty($this->request->data['Adjunto']['proceso_id'])) {
+      $this->request->data['Adjunto']['proceso_id'] = 0;
+    }
+    if (empty($this->request->data['Adjunto']['tarea_id'])) {
+      $this->request->data['Adjunto']['tarea_id'] = 0;
+    }
     $this->request->data['Adjunto']['nombre_original'] = $nombreOriginal;
     //debug($archivo);exit;
     $direcciones = $this->Adjunto->getPath($this->request->data['Adjunto']['parent_id']);
@@ -173,6 +201,8 @@ class AdjuntosController extends AppController {
     } else {
       $condiciones['Adjunto.tarea_id'] = 0;
     }
+    $condiciones['Adjunto.tipo LIKE'] = 'Archivo';
+    $condiciones['Adjunto.estado LIKE'] = 'Activo';
     return $this->Adjunto->find('all', array(
         'recursive' => 0,
         'conditions' => $condiciones,
@@ -217,6 +247,7 @@ class AdjuntosController extends AppController {
       //debug('Si existe');exit;
       unlink($file);
       $adj['estado'] = 'Eliminado';
+      $adj['created'] = date('Y-m-d');
       $this->Adjunto->id = $adjunto['Adjunto']['id'];
       $this->Adjunto->save($adj);
       $this->Session->setFlash("Se ha eliminado correctamente el archivo!!", 'msgbueno');
@@ -324,27 +355,70 @@ class AdjuntosController extends AppController {
       $file->close(); // Be sure to close the file when you're done
       //debug($contents);
       } */
-
-
+    /* $folder1 = new Folder('/home/eynar/Music/ddddd/mi texto.txt');
+      $folder1->move('/home/eynar/Music/ddddd/mocos.txt'); */
+    rename("/home/eynar/Music/ddddd/mi texto2.txt", "/home/eynar/Music/ddddd/Eynar.txt");
     exit;
   }
 
   public function ver_adjunto($idAdjunto = null) {
     $this->layout = 'ajax';
 
-
-    /* debug($direccion);
-      exit; */
     $adjunto = $this->Adjunto->find('first', array(
       'recursive' => -1,
       'conditions' => array('Adjunto.id' => $idAdjunto)
     ));
+    if (!empty($this->request->data['Adjunto'])) {
+      //debug($this->request->data['Adjunto']);exit;
 
-    $this->set(compact('idAdjunto', 'adjunto'));
+      if (empty($this->request->data['Adjunto']['flujos_user_id'])) {
+        $this->request->data['Adjunto']['flujos_user_id'] = 0;
+      }
+      if (empty($this->request->data['Adjunto']['proceso_id'])) {
+        $this->request->data['Adjunto']['proceso_id'] = 0;
+      }
+      if (empty($this->request->data['Adjunto']['tarea_id'])) {
+        $this->request->data['Adjunto']['tarea_id'] = 0;
+      }
+      $direcciones = $this->Adjunto->getPath($adjunto['Adjunto']['parent_id']);
+      $directorio = '';
+      foreach ($direcciones as $dir) {
+        $directorio = $directorio . DS . $dir['Adjunto']['nombre_original'];
+      }
 
+      if (!file_exists(WWW_ROOT . 'files' . $directorio . DS . $this->request->data['Adjunto']['nombre_original']) || $adjunto['Adjunto']['nombre_original'] == $this->request->data['Adjunto']['nombre_original']) {
+        $this->Adjunto->id = $idAdjunto;
+        $this->Adjunto->save($this->request->data['Adjunto']);
+        //debug($archivo);exit;
+
+        rename(WWW_ROOT . 'files' . $directorio . DS . $adjunto['Adjunto']['nombre_original'], WWW_ROOT . 'files' . $directorio . DS . $this->request->data['Adjunto']['nombre_original']);
+        $this->Session->setFlash("Se ha registrado correctamente los cambios del archivo!!", 'msgbueno');
+      }else{
+        $this->Session->setFlash("El nombre del archivo ya existe en el directorio. No se ha registrado los cambios del archivo!!", 'msgerror');
+      }
+      
+      $this->redirect($this->referer());
+    }
     /* debug($direccion);
-      debug($adjunto);
       exit; */
+
+    $this->Adjunto->id = $idAdjunto;
+    $this->request->data = $this->Adjunto->read();
+    $flujos = $this->FlujosUser->find('list', array(
+      'recursive' => -1,
+      'conditions' => array(
+        'FlujosUser.estado LIKE' => 'Activo'
+      ),
+      'order' => array('FlujosUser.created DESC'),
+      'fields' => array('FlujosUser.id', 'FlujosUser.descripcion')
+    ));
+
+
+
+
+
+    $procesos = array();
+    $this->set(compact('idAdjunto', 'adjunto', 'flujos', 'procesos'));
   }
 
   public function arbol($idAdjunto = null) {
@@ -385,6 +459,46 @@ class AdjuntosController extends AppController {
     /* debug($carpeta);
       exit; */
     $this->set(compact('carpeta', 'idCarpeta'));
+  }
+
+  public function ver_carpeta($idCarpeta = null) {
+    $this->layout = 'ajax';
+    $carpeta = $this->Adjunto->findByid($idCarpeta, null, null, -1);
+    $flujo = $this->FlujosUser->find('first', array(
+      'recursive' => -1,
+      'conditions' => array('FlujosUser.adjunto_id' => $idCarpeta)
+    ));
+    if (!empty($this->request->data['Adjunto']['nombre'])) {
+
+      $this->request->data['Adjunto']['nombre_original'] = $this->request->data['Adjunto']['nombre'];
+
+      $direcciones = $this->Adjunto->getPath($carpeta['Adjunto']['parent_id']);
+      $directorio = '';
+      foreach ($direcciones as $dir) {
+        $directorio = $directorio . DS . $dir['Adjunto']['nombre_original'];
+      }
+      /* debug(WWW_ROOT . 'files' . $directorio . DS . $carpeta['Adjunto']['nombre_original']);
+        debug(WWW_ROOT . 'files' . $directorio . DS . $this->request->data['Adjunto']['nombre_original']);
+        exit; */
+      
+      if (!file_exists(WWW_ROOT . 'files' . $directorio . DS . $this->request->data['Adjunto']['nombre_original']) || $carpeta['Adjunto']['nombre_original'] == $this->request->data['Adjunto']['nombre_original']) {
+        rename(WWW_ROOT . 'files' . $directorio . DS . $carpeta['Adjunto']['nombre_original'], WWW_ROOT . 'files' . $directorio . DS . $this->request->data['Adjunto']['nombre_original']);
+
+        $this->Adjunto->id = $idCarpeta;
+        $this->Adjunto->save($this->request->data['Adjunto']);
+        $this->Session->setFlash("Se ha registrado los cambios de la carpeta!!!", 'msgbueno');
+      } else {
+        $this->Session->setFlash("Ya existe una carpeta con el mismo nombre. No se ha podido registrar los cambios!!", 'msgerror');
+      }
+
+      $this->redirect($this->referer());
+    }
+
+    $this->Adjunto->id = $idCarpeta;
+    $this->request->data = $this->Adjunto->read();
+    /* debug($carpeta);
+      exit; */
+    $this->set(compact('carpeta', 'idCarpeta', 'flujo'));
   }
 
 }

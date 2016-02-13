@@ -6,7 +6,7 @@ App::uses('File', 'Utility');
 class FlujosController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado');
+  public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado', 'Adjunto');
 
   public function index() {
 
@@ -74,19 +74,54 @@ class FlujosController extends AppController {
   public function iniciar_flujo($idFlujo = null, $idFlujosUser = null) {
     $this->layout = 'ajax';
     if (!empty($this->request->data['FlujosUser'])) {
+
+
       $this->FlujosUser->create();
       $d_flujo['descripcion'] = $this->request->data['FlujosUser']['descripcion'];
       $d_flujo['flujo_id'] = $idFlujo;
       $d_flujo['user_id'] = $this->Session->read('Auth.User.id');
-      $this->FlujosUser->save($d_flujo);
-      $idFlujoUser = $this->FlujosUser->getLastInsertID();
+      $error = $this->validar('FlujosUser');
+      if (empty($error)) {
+        $this->FlujosUser->save($d_flujo);
+        if (empty($idFlujosUser)) {
+          $idFlujosUser = $this->FlujosUser->getLastInsertID();
+          $folder = new Folder();
 
-      $folder = new Folder();
-      if ($folder->create(WWW_ROOT . 'files' . DS . $d_flujo['descripcion'])) {
+          if ($folder->create(WWW_ROOT . 'files' . DS . $d_flujo['descripcion'])) {
 // Successfully created the nested folders
+            $this->Adjunto->create();
+            $adj['nombre_original'] = $adj['nombre'] = $d_flujo['descripcion'];
+            $adj['user_id'] = $this->Session->read('Auth.User.id');
+            $adj['tipo'] = 'Carpeta';
+            $adj['estado'] = 'Activo';
+            $adj['flujos_user_id'] = $idFlujosUser;
+            $adj['proceso_id'] = 0;
+            $adj['tarea_id'] = 0;
+            $this->Adjunto->save($adj);
+
+            $dflujo['adjunto_id'] = $this->Adjunto->getLastInsertID();
+            $this->FlujosUser->id = $idFlujosUser;
+            $this->FlujosUser->save($dflujo);
+          }
+        } else {
+          $flujo = $this->FlujosUser->findByid($idFlujosUser, NULL, NULL, 0);
+
+          $this->Adjunto->id = $flujo['FlujosUser']['adjunto_id'];
+          $adj['nombre_original'] = $adj['nombre'] = $d_flujo['descripcion'];
+          $this->Adjunto->save($adj);
+
+          $folder = new Folder(WWW_ROOT . 'files' . DS . $flujo['Adjunto']['nombre_original']);
+          $folder->move(WWW_ROOT . 'files' . DS . $d_flujo['descripcion']);
+          $this->Session->setFlash('Se ha registrado correctamente!!', 'msgbueno');
+          $this->redirect($this->referer());
+        }
+      } else {
+        $this->Session->setFlash($error, 'msgerror');
+        $this->redirect($this->referer());
       }
 
-      $this->redirect(array('action' => 'enflujo', $idFlujoUser));
+
+      $this->redirect(array('action' => 'enflujo', $idFlujosUser));
     }
     if (!empty($idFlujosUser)) {
       $this->FlujosUser->id = $idFlujosUser;

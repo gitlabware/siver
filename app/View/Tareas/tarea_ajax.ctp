@@ -105,6 +105,6 @@ echo $this->Html->script([
 <script>
 
   $('#idflujo').change(function () {
-      $('#carga_proceso_d').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ajax_sel_procesos')); ?>/' + $('#idflujo').val());
+      $('#carga_proceso_d').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ajax_sel_procesos')); ?>/' + $('#idflujo').val()+'/Tarea');
   });
 </script>

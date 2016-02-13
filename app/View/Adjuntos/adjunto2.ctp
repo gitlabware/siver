@@ -28,6 +28,33 @@
             </label>
         </label>
     </div>
+    <div class="section row pocu">
+        <label class="field select">
+            <?php echo $this->Form->select('visible', array('Todos' => 'Todos','Mi' => 'Mi'), array('empty' => 'Visible para...','required' ,'value' => 'Todos')) ?>
+            <i class="arrow double"></i>
+        </label>
+    </div>
+    <div class="section row pocu">
+        <label class="field select">
+            <?php echo $this->Form->select('flujos_user_id', $flujos, array('empty' => 'En Flujo....', 'id' => 'idflujo')) ?>
+            <i class="arrow double"></i>
+        </label>
+    </div>
+    <div class="section row pocu">
+        <label class="field select" id="carga_proceso_d">
+            <?php
+            $disabled_p = 'disabled';
+            if (!empty($procesos)) {
+              $disabled_p = '';
+            }
+            ?>
+            <?php echo $this->Form->select('proceso_id', $procesos, array('empty' => 'En Proceso....', $disabled_p)) ?>
+            <i class="arrow double"></i>
+        </label>
+    </div>
+    <div class="section row pocu" id="carga_tarea_d">
+        
+    </div>
     <div class="section row">
         <div class="col-md-12" id="div_carga_archivo" style="display: none;">
             <div class="progress"> 
@@ -42,13 +69,11 @@
     <button type="submit" class="button btn-primary">Registrar</button>
 </div>
 <!-- end .form-footer section -->
-<?php echo $this->Form->hidden('tarea_id', array('value' => 0)) ?> 
-<?php echo $this->Form->hidden('proceso_id', array('value' => 0)) ?> 
-<?php echo $this->Form->hidden('flujos_user_id', array('value' => 0)) ?> 
-<?php echo $this->Form->hidden('parent_id',array('value' => $idCarpeta)); ?>
-<?php echo $this->Form->hidden('tipo',array('value' => 'Archivo')); ?>
+
+<?php echo $this->Form->hidden('parent_id', array('value' => $idCarpeta)); ?>
+<?php echo $this->Form->hidden('tipo', array('value' => 'Archivo')); ?>
 <?php echo $this->Form->hidden('user_id', array('value' => $this->Session->read('Auth.User.id'))) ?> 
-<?php echo $this->Form->hidden('estado',array('value' => 'Activo')); ?>
+<?php echo $this->Form->hidden('estado', array('value' => 'Activo')); ?>
 <?= $this->Form->end(); ?>
 
 <?php
@@ -83,12 +108,12 @@ echo $this->Html->script([
                       $('.pocu').toggle(100);
                   },
                   success: function (data) {
-                    if($.parseJSON(data).error === ''){
-                      mensaje_m("Excelente!!", 'Se ha registrado el archivo adjunto!!', "success");
-                    }else{
-                      mensaje_m("Error!!", $.parseJSON(data).error, "danger");
-                    }
-                      
+                      if ($.parseJSON(data).error === '') {
+                          mensaje_m("Excelente!!", 'Se ha registrado el archivo adjunto!!', "success");
+                      } else {
+                          mensaje_m("Error!!", $.parseJSON(data).error, "danger");
+                      }
+
                       setTimeout(function () {
                           window.location = '';
                       }, 2000);
@@ -112,7 +137,7 @@ echo $this->Html->script([
 
 </script>
 <script>
-  
+
   function progressHandlingFunction(e) {
       if (e.lengthComputable) {
           $('#cargaarchivo').css({width: parseInt((e.loaded / e.total) * 100) + '%'});
@@ -146,4 +171,12 @@ echo $this->Html->script([
           delay: 2000
       });
   }
+</script>
+
+<script>
+
+  $('#idflujo').change(function () {
+      $('#carga_proceso_d').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ajax_sel_procesos')); ?>/' + $('#idflujo').val()+'/Adjunto');
+  });
+  
 </script>

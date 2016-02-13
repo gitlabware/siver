@@ -140,7 +140,7 @@
                                   <h6><?php echo $ca['Adjunto']['nombre'] ?></h6>
                               </div>
                               <div class="col-xs-4 text-right va-m prn">
-                                  <a href="javascript:"><span class="fa fa-eye fs12 text-muted"></span></a>
+                                  <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_carpeta',$ca['Adjunto']['id'])) ?>');"><span class="fa fa-eye fs12 text-info"></span></a>
 
                                   <span class="fa fa-circle fs10 text-alert ml10"></span>
                               </div>
