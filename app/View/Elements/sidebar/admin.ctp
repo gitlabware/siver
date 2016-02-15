@@ -7,6 +7,19 @@
         <ul class="nav sidebar-menu">
             <li class="sidebar-label pt20">Menu</li>
             <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'tablero')); ?>">
+                    <span class="fa fa-dashboard"></span>
+                    <span class="sidebar-title">Principal</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'index')); ?>">
+                    <span class="fa fa-files-o"></span>
+                    <span class="sidebar-title">Archivos</span>
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'calendario')); ?>">
                     <span class="fa fa-calendar"></span>
                     <span class="sidebar-title">Calendario</span>

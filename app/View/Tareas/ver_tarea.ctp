@@ -172,7 +172,6 @@
                                       <th>Creado</th>
                                       <th>Creado Por</th>
                                       <th>Nombre</th>
-                                      <th>Descripcion</th>
                                       <th>Accion</th>
                                   </tr>
                               <tbody>
@@ -181,7 +180,6 @@
                                         <td><?php echo $ad['Adjunto']['created'] ?></td>
                                         <td><?php echo $ad['User']['nombre_completo'] ?></td>
                                         <td><?php echo $ad['Adjunto']['nombre'] ?></td>
-                                        <td><?php echo $ad['Adjunto']['descripcion'] ?></td>
                                         <td>
                                             <?php echo $this->Html->link('<i class="fa fa-download"></i>', array('controller' => 'Adjuntos', 'action' => 'descargar', $ad['Adjunto']['id']), array('class' => 'btn btn-success', 'title' => 'Descargar archivo', 'escape' => FALSE)) ?>
                                             <?php if ($this->Session->read('Auth.User.id') == $ad['Adjunto']['user_id']): ?>

@@ -27,7 +27,7 @@
 
     <div class="tray tray-center">
         <h2><?php echo $flujo['FlujosUser']['descripcion'] ?> <small> <?php echo $flujo['Flujo']['nombre'] ?></small></h2>
-        <div class="panel-group accordion accordion-lg">
+        <!--<div class="panel-group accordion accordion-lg">
             <div class="panel">
                 <div class="panel-heading">
                     <a class="accordion-toggle accordion-icon link-unstyled collapsed" data-toggle="collapse" data-parent="#accordion2" href="#accord2_1">
@@ -57,7 +57,7 @@
                     <div class="panel-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.</div>
                 </div>
             </div>
-        </div>
+        </div>-->
         
         <div class="panel mb25 mt5">
 

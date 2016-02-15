@@ -56,7 +56,7 @@ class UsersController extends AppController {
         $role = $this->Session->read('Auth.User.role');
         switch ($role) {
           case 'Usuario':
-            $this->redirect(array('controller' => 'Flujos', 'action' => 'index'));
+            $this->redirect(array('controller' => 'Tareas', 'action' => 'tablero'));
           default:
             break;
         }
