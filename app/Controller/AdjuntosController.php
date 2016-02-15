@@ -59,83 +59,53 @@ class AdjuntosController extends AppController {
 
   public function index($idCarpeta = null) {
 
-
-
-    /* if ($this->Session->check('Adjunto')) {
-      $this->request->data = $this->Session->read('Adjunto');
-      $this->Session->delete('Adjunto');
-      }
-
-      if (!empty($this->request->data)) {
-
-      if (!empty($this->request->data['Adjunto']['direccion_a'])) {
-      $direccion = $this->request->data['Adjunto']['direccion_a'];
-      }
-      if (!empty($this->request->data['Adjunto']['direccion'])) {
-      if (empty($direccion)) {
-      $direccion = DS . $this->request->data['Adjunto']['direccion'];
-      } else {
-      $direccion = $direccion . DS . $this->request->data['Adjunto']['direccion'];
-      }
-      }
-
-      } else {
-      $direccion = '';
-      }
-      $dir = new Folder(WWW_ROOT . 'files' . $direccion);
-
-      if (WWW_ROOT . 'files' . DS === $dir->path) {
-      $direccion = '';
-      }
-      $files = $dir->read();
-
-      $dir2 = new Folder(WWW_ROOT . 'files' . DS);
-      $files2 = $dir2->read();
-      $array_f = explode("/", $direccion); */
-
-    /* debug($array_f);
-      debug($files2);
-      debug($direccion);
-      exit; */
     $idUser = $this->Session->read('Auth.User.id');
+    $condiciones_c = array();
+    $condiciones_a = array();
+    //$condiciones_a['Adjunto.parent_id'] = $idCarpeta;
+    $condiciones_a['Adjunto.tipo LIKE'] = 'Archivo';
+    $condiciones_a['Adjunto.estado !='] = 'Eliminado';
+    $condiciones_a["( IF(Adjunto.user_id = $idUser,1,IF(Adjunto.visible = 'Todos',1,0)) )"] = 1;
+    //$condiciones_a["(IF(Adjunto.user_id = $idUser,TRUE,IF(Adjunto.visible = 'Todos',TRUE,FALSE))) ="] = 'TRUE';
+    
+    //$condiciones_c['Adjunto.parent_id'] = $idCarpeta;
+    $condiciones_c['Adjunto.tipo LIKE'] = 'Carpeta';
+    $condiciones_c['Adjunto.estado !='] = 'Eliminado';
+    $condiciones_c["( IF(Adjunto.user_id = $idUser,1,IF(Adjunto.visible = 'Todos',1,0)) )"] = 1;
+    
+    if (!empty($this->request->data['Adjunto']['dato'])) {
+      $condiciones_a['Adjunto.nombre_original LIKE'] =  '%'.$this->request->data['Adjunto']['dato'].'%';
+      $condiciones_c['Adjunto.nombre_original LIKE'] =  '%'.$this->request->data['Adjunto']['dato'].'%';
+      
+    }else{
+      $condiciones_a['Adjunto.parent_id'] = $idCarpeta;
+      $condiciones_c['Adjunto.parent_id'] = $idCarpeta;
+    }
 
-    
-    
-    
+
+    $this->Adjunto->virtualFields = array(
+      'filtro' => "(IF(Adjunto.user_id = $idUser,'mio','nomio'))",
+      //'ext' => "SUBSTRING_INDEX(Adjunto.extension,'.',-1)"
+    );
+    $extensiones = $this->Adjunto->find('all', array(
+      'recursive' => -1,
+      'conditions' => $condiciones_a,
+      'fields' => array('Adjunto.id', 'Adjunto.extension'),
+      'group' => array('Adjunto.extension')
+    ));
+    /* debug($extensiones);
+      exit; */
     $carpetas = $this->Adjunto->find('all', array(
       'recursive' => -1,
-      'conditions' => array(
-        'Adjunto.parent_id' => $idCarpeta,
-        'Adjunto.tipo LIKE' => 'Carpeta',
-        'Adjunto.estado !=' => 'Eliminado',
-        "IF(Adjunto.user_id = $idUser,TRUE,IF(Adjunto.visible = 'Todos',TRUE,FALSE))"
-      )
+      'conditions' => $condiciones_c
     ));
     //debug($carpetas);exit;
     $archivos = $this->Adjunto->find('all', array(
       'recursive' => -1,
-      'conditions' => array(
-        'Adjunto.parent_id' => $idCarpeta,
-        'Adjunto.tipo LIKE' => 'Archivo',
-        'Adjunto.estado !=' => 'Eliminado',
-        "IF(Adjunto.user_id = $idUser,TRUE,IF(Adjunto.visible = 'Todos',TRUE,FALSE))"
-      )
+      'conditions' => $condiciones_a
     ));
-    /* debug($idCarpeta);
-      debug($archivos);exit; */
-
-    /* $arbol_car = $this->Adjunto->find('all', array(
-      'recursive' => -1,
-      'conditions' => array('Adjunto.tipo LIKE' => 'Carpeta'),
-      'fields' => array('Adjunto.nombre_original', 'Adjunto.id', 'Adjunto.parent_id', 'Adjunto.tipo')
-      )); */
-    //$arbol = $this->Adjunto->children(NULL, true, array('Adjunto.nombre_original', 'Adjunto.clase', 'Adjunto.id', 'Adjunto.parent_id', 'Adjunto.tipo'));
-    //$menuTree = $this->treeForm($arbol, 0, 'Adjunto');
-    //debug($menuTree);exit;
-    /* debug($arbol);
-      exit; */
     $direcciones = $this->Adjunto->getPath($idCarpeta);
-    $this->set(compact('carpetas', 'archivos', 'idCarpeta', 'direcciones'));
+    $this->set(compact('carpetas', 'archivos', 'idCarpeta', 'direcciones', 'extensiones'));
   }
 
   public function guarda_archivo() {
@@ -145,7 +115,15 @@ class AdjuntosController extends AppController {
     //$extencion = split('.', $nombreOriginal);
     //$extension = explode('.', $nombreOriginal);
     //$ext = end($extension);
-    $this->request->data['Adjunto']['extension'] = $this->request->data['Adjunto']['archivo']['type'];
+    //$this->request->data['Adjunto']['extension'] = $this->request->data['Adjunto']['archivo']['type'];
+    $extension = explode('.', $nombreOriginal);
+    $ext = end($extension);
+    if (!empty($ext)) {
+      $this->request->data['Adjunto']['extension'] = $ext;
+    } else {
+      $this->request->data['Adjunto']['extension'] = '';
+    }
+
     if (empty($this->request->data['Adjunto']['flujos_user_id'])) {
       $this->request->data['Adjunto']['flujos_user_id'] = 0;
     }

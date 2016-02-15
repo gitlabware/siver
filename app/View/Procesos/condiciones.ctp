@@ -37,8 +37,8 @@
                             <td><?php echo $con['ProcesosCondicione']['tipo'] ?></td>
                             <td>
                                 <a href="javascript:" title="Quitar condicion" onclick="if (confirm('Esta seguro de quitar la condicion??')) {
-                                              eliminar_cond(<?php echo $con['ProcesosCondicione']['id'] ?>);
-                                          }" class="btn btn-danger"><i class="fa fa-remove"></i></a>
+                                          eliminar_cond(<?php echo $con['ProcesosCondicione']['id'] ?>);
+                                      }" class="btn btn-danger"><i class="fa fa-remove"></i></a>
                             </td>
                         </tr>
                       <?php endforeach; ?>
@@ -88,33 +88,30 @@ echo $this->Html->script([
   }
   $("#f-add").submit(function (e)
   {
-      var postData = $(this).serializeArray();
-      var formURL = $(this).attr("action");
-      $.ajax(
-              {
-                  url: formURL,
-                  type: "POST",
-                  data: postData,
-                  /*beforeSend:function (XMLHttpRequest) {
-                   alert("antes de enviar");
-                   },
-                   complete:function (XMLHttpRequest, textStatus) {
-                   alert('despues de enviar');
-                   },*/
-                  success: function (data, textStatus, jqXHR)
+      if ($("#f-add").valid()) {
+          var postData = $(this).serializeArray();
+          var formURL = $(this).attr("action");
+          $.ajax(
                   {
-                      //data: return data from server
-                      //$("#parte").html(data);
-                      texto_noyif = "Se ha registrado correctamente";
-                      cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'condiciones', $proceso['Proceso']['flujo_id'], $proceso['Proceso']['id'])); ?>');
-                      mensaje_b();
-                  },
-                  error: function (jqXHR, textStatus, errorThrown)
-                  {
-                      //if fails   
-                      alert("error");
-                  }
-              });
+                      url: formURL,
+                      type: "POST",
+                      data: postData,
+                      success: function (data, textStatus, jqXHR)
+                      {
+                          //data: return data from server
+                          //$("#parte").html(data);
+                          texto_noyif = "Se ha registrado correctamente";
+                          cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'condiciones', $proceso['Proceso']['flujo_id'], $proceso['Proceso']['id'])); ?>');
+                          mensaje_b();
+                      },
+                      error: function (jqXHR, textStatus, errorThrown)
+                      {
+                          //if fails   
+                          alert("error");
+                      }
+                  });
+      }
+
       e.preventDefault(); //STOP default action
       //e.unbind(); //unbind. to stop multiple form submit.
   });

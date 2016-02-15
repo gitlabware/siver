@@ -67,8 +67,8 @@
                                         <select id="filter1">
                                             <option value="">Todo</option>
                                             <option value=".scarpetas">Solo Carpetas</option>
-                                            <option value=".car-Mi">Solo mis Carpetas</option>
-                                            <option value=".car-Todos">Todas las carpetas</option>
+                                            <option value=".car-mio">Mis Carpetas</option>
+                                            <option value=".car-Mi-mio">Mis Carpetas no visibles</option>
                                         </select>
                                     </fieldset>
                                 </div>
@@ -80,10 +80,10 @@
                                 <div class="btn-group">
                                     <fieldset>
                                         <select id="filter2">
-                                            <option value="">All Labels</option>
-                                            <option value=".label1">Work</option>
-                                            <option value=".label3">Clients</option>
-                                            <option value=".label2">Family</option>
+                                            <option value="">Todos los tipos</option>
+                                            <?php foreach ($extensiones as $ex): ?>
+                                              <option value=".ext-<?php echo $ex['Adjunto']['extension'] ?>"><?php echo $ex['Adjunto']['extension'] ?></option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </fieldset>
                                 </div>
@@ -93,7 +93,7 @@
 
                 </div>
                 <div class="col-xs-5 text-right">
-                    <button type="button" id="mix-reset" class="btn btn-default mr5">Clear Filters</button>
+                    <button type="button" id="mix-reset" class="btn btn-default mr5">Limpiar Filtros</button>
                     <div class="btn-group">
                         <button type="button" class="btn btn-default to-grid">
                             <span class="fa fa-th"></span>
@@ -131,15 +131,15 @@
             </div>
 
             <?php foreach ($carpetas as $ca): ?>
-              <div class="mix label1 scarpetas <?php echo 'car-'.$ca['Adjunto']['visible'] ?> drope drago" data-id="<?php echo $ca['Adjunto']['id'] ?>">
+              <div class="mix label1 scarpetas <?php echo 'car-' . $ca['Adjunto']['filtro'] ?> <?php echo 'car-' . $ca['Adjunto']['visible'] . '-' . $ca['Adjunto']['filtro'] ?> drope drago" data-id="<?php echo $ca['Adjunto']['id'] ?>">
                   <div class="panel p6 pbn">
                       <div class="of-h">
                           <img onclick="//alert($(this).attr('class'));
-                                  if (!$(this).hasClass('noclick')) {
-                                      window.location = '<?php echo $this->Html->url(array('action' => 'index', $ca['Adjunto']['id'])); ?>';
-                                  } else {
-                                      $(this).removeClass('noclick');
-                                  }" src="<?php echo $this->request->webroot; ?>img/iconos/FolderFilled.ico" class="img-responsive" title="<?php echo $ca['Adjunto']['nombre'] ?>">
+                                if (!$(this).hasClass('noclick')) {
+                                    window.location = '<?php echo $this->Html->url(array('action' => 'index', $ca['Adjunto']['id'])); ?>';
+                                } else {
+                                    $(this).removeClass('noclick');
+                                }" src="<?php echo $this->request->webroot; ?>img/iconos/FolderFilled.ico" class="img-responsive" title="<?php echo $ca['Adjunto']['nombre'] ?>">
                           <div class="row table-layout">
                               <div class="col-xs-8 va-m pln">
                                   <h6><?php echo $ca['Adjunto']['nombre'] ?></h6>
@@ -156,15 +156,15 @@
               </div>
             <?php endforeach; ?>
             <?php foreach ($archivos as $ar): ?>
-              <div class="mix label1 folder1 drope" data-id="<?php echo $ar['Adjunto']['id'] ?>">
+              <div class="mix label1 folder1 drope ext-<?php echo $ar['Adjunto']['extension'] ?>" data-id="<?php echo $ar['Adjunto']['id'] ?>">
                   <div class="panel p6 pbn">
                       <div class="of-h">
                           <img onclick="
-                                  if (!$(this).hasClass('noclick')) {
-                                      window.location = '<?php echo $this->Html->url(array('action' => 'descargar', $ar['Adjunto']['id'])); ?>';
-                                  } else {
-                                      $(this).removeClass('noclick');
-                                  }
+                                if (!$(this).hasClass('noclick')) {
+                                    window.location = '<?php echo $this->Html->url(array('action' => 'descargar', $ar['Adjunto']['id'])); ?>';
+                                } else {
+                                    $(this).removeClass('noclick');
+                                }
                                " src="<?php echo $this->request->webroot; ?>img/iconos/download.jpg" class="img-responsive" title="<?php echo $ar['Adjunto']['nombre'] ?>">
                           <div class="row table-layout">
                               <div class="col-xs-8 va-m pln">
@@ -197,8 +197,14 @@
 </section>
 
 
+<?php $this->start('bbuscador'); ?>
+<?php echo $this->Form->create('Adjunto', array('class' => 'navbar-form navbar-left navbar-search', 'role' => 'search')); ?>
+<div class="form-group">
+    <?php echo $this->Form->text('dato',array('class' => 'form-control','placeholder' => 'Buscar Archivo.....'));?>
+</div>
+<?php echo $this->Form->end(); ?>
 
-
+<?php $this->end(); ?>
 <?php
 echo $this->Html->script(array(
   'vendor/plugins/mixitup/jquery.mixitup.min',
