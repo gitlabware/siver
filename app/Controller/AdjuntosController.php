@@ -6,7 +6,7 @@ App::uses('File', 'Utility');
 class AdjuntosController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Adjunto', 'FlujosUser');
+  public $uses = array('Adjunto', 'FlujosUser', 'User', 'UsersVisible');
   public $components = array('RequestHandler');
 
   public function beforeFilter() {
@@ -52,9 +52,13 @@ class AdjuntosController extends AppController {
       'order' => array('FlujosUser.created DESC'),
       'fields' => array('FlujosUser.id', 'FlujosUser.descripcion')
     ));
-
+    $users = $this->User->find('list', array(
+      'recursive' => -1,
+      'conditions' => array('User.id !=' => $this->Session->read('Auth.User.id')),
+      'fields' => array('User.id', 'User.nombre_completo')
+    ));
     $procesos = array();
-    $this->set(compact('idCarpeta', 'flujos', 'procesos'));
+    $this->set(compact('idCarpeta', 'flujos', 'procesos', 'users'));
   }
 
   public function index($idCarpeta = null) {
@@ -67,17 +71,17 @@ class AdjuntosController extends AppController {
     $condiciones_a['Adjunto.estado !='] = 'Eliminado';
     $condiciones_a["( IF(Adjunto.user_id = $idUser,1,IF(Adjunto.visible = 'Todos',1,0)) )"] = 1;
     //$condiciones_a["(IF(Adjunto.user_id = $idUser,TRUE,IF(Adjunto.visible = 'Todos',TRUE,FALSE))) ="] = 'TRUE';
-    
     //$condiciones_c['Adjunto.parent_id'] = $idCarpeta;
     $condiciones_c['Adjunto.tipo LIKE'] = 'Carpeta';
     $condiciones_c['Adjunto.estado !='] = 'Eliminado';
     $condiciones_c["( IF(Adjunto.user_id = $idUser,1,IF(Adjunto.visible = 'Todos',1,0)) )"] = 1;
-    
+
+
+
     if (!empty($this->request->data['Adjunto']['dato'])) {
-      $condiciones_a['Adjunto.nombre_original LIKE'] =  '%'.$this->request->data['Adjunto']['dato'].'%';
-      $condiciones_c['Adjunto.nombre_original LIKE'] =  '%'.$this->request->data['Adjunto']['dato'].'%';
-      
-    }else{
+      $condiciones_a['Adjunto.nombre_original LIKE'] = '%' . $this->request->data['Adjunto']['dato'] . '%';
+      $condiciones_c['Adjunto.nombre_original LIKE'] = '%' . $this->request->data['Adjunto']['dato'] . '%';
+    } else {
       $condiciones_a['Adjunto.parent_id'] = $idCarpeta;
       $condiciones_c['Adjunto.parent_id'] = $idCarpeta;
     }
@@ -109,7 +113,7 @@ class AdjuntosController extends AppController {
   }
 
   public function guarda_archivo() {
-    //debug($this->request->data['Adjunto']['archivo']['type']);exit;
+    //debug($this->request->data);exit;
     $archivo = $this->request->data['Adjunto']['archivo'];
     $nombreOriginal = $this->request->data['Adjunto']['archivo']['name'];
     //$extencion = split('.', $nombreOriginal);
@@ -123,6 +127,8 @@ class AdjuntosController extends AppController {
     } else {
       $this->request->data['Adjunto']['extension'] = '';
     }
+
+
 
     if (empty($this->request->data['Adjunto']['flujos_user_id'])) {
       $this->request->data['Adjunto']['flujos_user_id'] = 0;
@@ -150,7 +156,18 @@ class AdjuntosController extends AppController {
       if ($this->guarda_archivo2($archivo, $directorio . DS . $nombreOriginal)) {
         $this->Adjunto->create();
         $this->Adjunto->save($this->request->data['Adjunto']);
+        $idAdjunto = $this->Adjunto->getLastInsertID();
 
+        if ($this->request->data['Adjunto']['visible'] == 'Seleccion Personalizada') {
+          foreach ($this->request->data['Usuarios'] as $key => $us) {
+            $d_v_s['user_id'] = $key;
+            $d_v_s['adjunto_id'] = $idAdjunto;
+            $d_v_s['visible'] = $us['visible'];
+            $this->UsersVisible->create();
+            $this->UsersVisible->save();
+          }
+        }
+        
         //$this->Session->setFlash('Se ha registrado correctamente el archivo!!!', 'msgbueno');
       } else {
 
