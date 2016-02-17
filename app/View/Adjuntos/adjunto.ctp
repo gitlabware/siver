@@ -30,10 +30,29 @@
     </div>
     <div class="section row pocu">
         <label class="field select">
-            <?php echo $this->Form->select('visible', array('Todos' => 'Todos','Mi' => 'Mi'), array('empty' => 'Visible para...','required' ,'value' => 'Todos')) ?>
+            <?php echo $this->Form->select('visible', array('Todos' => 'Todos', 'Mi' => 'Mi', 'Seleccion Personalizada' => 'Seleccion Personalizada'), array('id' => 'idvisible', 'empty' => 'Visible para...', 'required', 'value' => 'Todos')) ?>
             <i class="arrow double"></i>
         </label>
     </div>
+    <div class="section pocu" id="susuarios" style="display: none;">
+        <div class="option-group field section">
+            <?php foreach ($users as $key => $us): ?>
+              <label class="option block mt15">
+                  <?php echo $this->Form->hidden("Usuarios.$key.user_id",array('value' => $us['User']['id'])) ?>
+                  <?php echo $this->Form->checkbox("Usuarios.$key.visible") ?>
+                  <span class="checkbox"></span><?php echo $us['User']['nombre_completo'] ?></label>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <script>
+      $('#idvisible').change(function () {
+          if ($('#idvisible').val() === 'Seleccion Personalizada') {
+              $('#susuarios').show(400);
+          } else {
+              $('#susuarios').hide(400);
+          }
+      });
+    </script>
     <div class="section row">
         <div class="col-md-12" id="div_carga_archivo" style="display: none;">
             <div class="progress"> 

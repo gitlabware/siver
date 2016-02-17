@@ -36,7 +36,7 @@
 
     </head>
 
-    <body class="invoice-page gallery-page form-treeview-page">
+    <body class="invoice-page gallery-page form-treeview-page sb-l-o sb-r-o">
         <!-- Start: Main -->
         <div id="main">
 
@@ -95,7 +95,7 @@
 
             </section>
 
-
+            <?= $this->fetch('fueracontent') ?>
             <!-- End: Right Sidebar -->
 
             <!-- Admin Form Popup -->

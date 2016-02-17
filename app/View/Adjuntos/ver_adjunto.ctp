@@ -30,10 +30,41 @@
     </div>
     <div class="section row pocu">
         <label class="field select">
-            <?php echo $this->Form->select('visible', array('Todos' => 'Todos', 'Mi' => 'Mi'), array('empty' => 'Visible para...', 'required', 'value' => 'Todos')) ?>
+            <?php echo $this->Form->select('visible', array('Todos' => 'Todos', 'Mi' => 'Mi', 'Seleccion Personalizada' => 'Seleccion Personalizada'), array('id' => 'idvisible','empty' => 'Visible para...', 'required')) ?>
             <i class="arrow double"></i>
         </label>
     </div>
+    <?php
+    $visible_us = 'style="display: none;"';
+    if (!empty($this->request->data['Adjunto']['visible']) && $this->request->data['Adjunto']['visible'] == 'Seleccion Personalizada') {
+      $visible_us = '';
+    }
+    ?>
+    <div class="section pocu" id="susuarios" <?php echo $visible_us; ?>>
+        <div class="option-group field section">
+            <?php foreach ($users as $key => $us): ?>
+              <label class="option block mt15">
+                  <?php echo $this->Form->hidden("Usuarios.$key.user_id", array('value' => $us['User']['id'])) ?>
+                  <?php
+                  $checked = '';
+                  if (!empty($us['UsersVisible']['visible']) && $us['UsersVisible']['visible'] == 1) {
+                    $checked = 'checked';
+                  }
+                  ?>
+                  <?php echo $this->Form->checkbox("Usuarios.$key.visible", array($checked)) ?>
+                  <span class="checkbox"></span><?php echo $us['User']['nombre_completo'] ?></label>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <script>
+      $('#idvisible').change(function () {
+          if ($('#idvisible').val() === 'Seleccion Personalizada') {
+              $('#susuarios').show(400);
+          } else {
+              $('#susuarios').hide(400);
+          }
+      });
+    </script>
     <div class="section row pocu">
         <label class="field select">
             <?php echo $this->Form->select('flujos_user_id', $flujos, array('empty' => 'En Flujo....', 'id' => 'idflujo')) ?>
@@ -83,7 +114,7 @@ echo $this->Html->script([
       $('#carga_proceso_d').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ajax_sel_procesos')); ?>/' + $('#idflujo').val());
   });
 <?php if (!empty($this->request->data['Adjunto']['flujos_user_id'])): ?>
-$('#carga_proceso_d').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ajax_sel_procesos',$this->request->data['Adjunto']['flujos_user_id'],'Adjunto',$this->request->data['Adjunto']['proceso_id'])); ?>' );
+$('#carga_proceso_d').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ajax_sel_procesos',$this->request->data['Adjunto']['flujos_user_id'],'Adjunto',$this->request->data['Adjunto']['proceso_id'],$this->request->data['Adjunto']['tarea_id'])); ?>' );
 <?php endif; ?>
 
 </script>

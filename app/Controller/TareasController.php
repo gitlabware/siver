@@ -144,6 +144,9 @@ class TareasController extends AppController {
       'conditions' => array('TareasEstado.tarea_id' => $idTarea),
       'order' => array('TareasEstado.created DESC')
     ));
+    
+    
+    
     $this->set(compact('tarea', 'proceso', 'flujo', 'idFlujoUser', 'idProceso', 'estados', 'estado'));
   }
 

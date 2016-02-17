@@ -195,7 +195,7 @@ class ProcesosController extends AppController {
   }
 
   public function ajax_sel_procesos($idFlujosUser = null,$modelo = null,$idProceso = null,$idTarea = null) {
-    //debug($idFlujosUser);exit;
+    //debug($idTarea);exit;
     $this->layout = 'ajax';
     $flujo = $this->FlujosUser->findByid($idFlujosUser, null, null, -1);
     $procesos = array();

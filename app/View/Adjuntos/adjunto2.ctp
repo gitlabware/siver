@@ -34,12 +34,13 @@
             <i class="arrow double"></i>
         </label>
     </div>
-    <div class="section" id="susuarios" style="display: none;">
+    <div class="section pocu" id="susuarios" style="display: none;">
         <div class="option-group field section">
             <?php foreach ($users as $key => $us): ?>
               <label class="option block mt15">
+                  <?php echo $this->Form->hidden("Usuarios.$key.user_id",array('value' => $us['User']['id'])) ?>
                   <?php echo $this->Form->checkbox("Usuarios.$key.visible") ?>
-                  <span class="checkbox"></span><?php echo $us ?></label>
+                  <span class="checkbox"></span><?php echo $us['User']['nombre_completo'] ?></label>
             <?php endforeach; ?>
         </div>
     </div>
@@ -123,8 +124,8 @@ echo $this->Html->script([
                   },
                   //Ajax events
                   beforeSend: function () {
-                      $('#div_carga_archivo').toggle(100);
-                      $('.pocu').toggle(100);
+                      $('#div_carga_archivo').show(100);
+                      $('.pocu').hide(100);
                   },
                   success: function (data) {
                       if ($.parseJSON(data).error === '') {
