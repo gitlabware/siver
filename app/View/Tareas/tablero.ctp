@@ -125,7 +125,7 @@
                                           </td>
                                           <td class="text-center" style="font-size: 16px;">
                                               <div class="btn-group" style="width: 120px;">
-                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea',0,0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
                                               </div>
                                           </td>
                                       </tr>
@@ -176,7 +176,7 @@
                                           </td>
                                           <td class="text-center" style="font-size: 16px;">
                                               <div class="btn-group" style="width: 120px;">
-                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea',0,0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
                                               </div>
                                           </td>
                                       </tr>
@@ -220,7 +220,7 @@
                                           <td><?php echo $flujo['FlujosUser']['descripcion']; ?></td>
                                           <td class="text-center" style="font-size: 16px;">
                                               <div class="btn-group" style="width: 120px;">
-                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea',0,0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
                                               </div>
                                           </td>
                                       </tr>

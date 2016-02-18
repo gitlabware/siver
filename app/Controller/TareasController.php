@@ -26,23 +26,26 @@ class TareasController extends AppController {
   }
 
   public function tablero() {
+    $idUser = $this->Session->read('Auth.User.id');
     $span1 = '<span class="text-primary">';
     $span2 = '</span>';
     $com = '"';
     $icono_tarea = '<div class="timeline-icon bg-dark light"><span class="fa fa-tags"></span></div>';
     $icono_flujo = '<div class="timeline-icon bg-info light"><span class="fa fa-desktop"></span></div>';
     $icono_adjuntos = '<div class="timeline-icon bg-system light"><span class="fa fa-file"></span></div>';
+    $icono_adjuntos_e = '<div class="timeline-icon bg-danger light"><span class="fa fa-file"></span></div>';
     $icono_tarea_estado = '<div class="timeline-icon bg-warning light"><span class="fa fa-bookmark-o"></span></div>';
     $icono_procesos_estado = '<div class="timeline-icon bg-primary light"><span class="fa fa-bookmark-o"></span></div>';
     $sql1 = "(SELECT ('$icono_tarea') AS icono, tareas.created, CONCAT('Tarea') AS tipo, CONCAT('<b>',users.nombre_completo,'</b>',' asigna la tarea de: <a href=$com ver_tarea/0/0/',tareas.id,'$com>',tareas.descripcion,'</a>', IF(ISNULL(asignado.nombre_completo),'',CONCAT(' a $span1 ',asignado.nombre_completo,' $span2'))) AS contenido FROM tareas LEFT JOIN users ON(users.id = tareas.user_id) LEFT JOIN users AS asignado ON(asignado.id = tareas.asignado_id) WHERE 1 ORDER BY tareas.created DESC LIMIT 20)";
     $sql2 = "(SELECT ('$icono_tarea_estado') AS icono, tareas_estados.created, CONCAT('Tarea Estado') AS tipo, CONCAT('<b>',IF(ISNULL(users.nombre_completo),'Sistema',users.nombre_completo),'</b> marco como ',tareas_estados.estado,' la tarea: <a href=$com ver_tarea/0/0/',tareas.id,'$com>',tareas.descripcion,'</a>') AS contenido FROM tareas_estados LEFT JOIN users ON(users.id = tareas_estados.user_id) LEFT JOIN tareas ON(tareas.id = tareas_estados.tarea_id) WHERE 1 ORDER BY tareas_estados.created DESC LIMIT 20)";
     $sql3 = "(SELECT ('$icono_procesos_estado') AS icono, procesos_estados.created, CONCAT('Proceso Estado') AS tipo, CONCAT('<b>',IF(ISNULL(users.nombre_completo),'Sistema',users.nombre_completo),'</b> marco como ',procesos_estados.estado,' el proceso: <a href=$com ../Procesos/ver_proceso/',procesos_estados.flujos_user_id,'/',procesos_estados.proceso_id,'$com>',procesos.nombre,'</a> de: ',flujos_users.descripcion) AS contenido FROM procesos_estados LEFT JOIN users ON(users.id = procesos_estados.user_id) LEFT JOIN procesos ON(procesos.id = procesos_estados.proceso_id) LEFT JOIN flujos_users ON(flujos_users.id = procesos_estados.flujos_user_id) WHERE 1 ORDER BY procesos_estados.created DESC LIMIT 20)";
     $sql4 = "(SELECT ('$icono_flujo') AS icono, flujos_users.created, CONCAT('Flujos Usuario') AS tipo, CONCAT('<b>',users.nombre_completo,'</b>',' creo el flujo: <a href=$com ../Flujos/enflujo/',flujos_users.id,'$com>',flujos_users.descripcion,'</a>') AS contenido FROM flujos_users LEFT JOIN users ON(users.id = flujos_users.user_id) WHERE 1 ORDER BY flujos_users.created DESC LIMIT 20)";
-    $sql5 = "(SELECT ('$icono_adjuntos') AS icono, adjuntos.created, CONCAT('Adjuntos') AS tipo, CONCAT('<b>',users.nombre_completo,'</b>',' subio un archivo: ','<a href=$com ../Adjuntos/listado $com>',adjuntos.nombre,'</a> ',IF(adjuntos.tarea_id != 0,CONCAT('en tarea <a href=$com ../Tareas/ver_tarea/0/0/',adjuntos.tarea_id,'$com>',tareas.descripcion,'</a>'),IF(adjuntos.proceso_id != 0,CONCAT('en proceso <a href=$com ../Procesos/ver_proceso/',adjuntos.flujos_user_id,'/',adjuntos.proceso_id,'$com>',procesos.nombre,'</a>'), IF(adjuntos.flujos_user_id != 0,CONCAT('en flujo <a href=$com ../Flujos/enflujo/',adjuntos.flujos_user_id,'$com>',flujos_users.descripcion,'</a>'),'' ) )  ) ) AS contenido FROM adjuntos LEFT JOIN users ON(users.id = adjuntos.user_id)  LEFT JOIN flujos_users ON(flujos_users.id = adjuntos.flujos_user_id)  LEFT JOIN procesos ON(procesos.id = adjuntos.proceso_id) LEFT JOIN tareas ON(tareas.id = adjuntos.tarea_id) WHERE 1 ORDER BY adjuntos.created DESC LIMIT 20)";
-    $sql_u = "$sql1 UNION $sql2 UNION $sql3 UNION $sql4 UNION $sql5 ORDER BY created DESC LIMIT 15";
+    $sql5 = "(SELECT ('$icono_adjuntos') AS icono, adjuntos.created, CONCAT('Adjuntos') AS tipo, CONCAT('<b>',users.nombre_completo,'</b>',' subio un archivo: ','<a href=$com ../Adjuntos/index/',IF(ISNULL(adjuntos.parent_id),'',adjuntos.parent_id),' $com>',adjuntos.nombre_original,'</a> ',IF(adjuntos.tarea_id != 0,CONCAT('en tarea <a href=$com ../Tareas/ver_tarea/0/0/',adjuntos.tarea_id,'$com>',tareas.descripcion,'</a>'),IF(adjuntos.proceso_id != 0,CONCAT('en proceso <a href=$com ../Procesos/ver_proceso/',adjuntos.flujos_user_id,'/',adjuntos.proceso_id,'$com>',procesos.nombre,'</a>'), IF(adjuntos.flujos_user_id != 0,CONCAT('en flujo <a href=$com ../Flujos/enflujo/',adjuntos.flujos_user_id,'$com>',flujos_users.descripcion,'</a>'),'' ) )  ) ) AS contenido FROM adjuntos LEFT JOIN users ON(users.id = adjuntos.user_id)  LEFT JOIN flujos_users ON(flujos_users.id = adjuntos.flujos_user_id)  LEFT JOIN procesos ON(procesos.id = adjuntos.proceso_id) LEFT JOIN tareas ON(tareas.id = adjuntos.tarea_id) WHERE ( IF(adjuntos.user_id = $idUser,1,IF(adjuntos.visible = 'Todos',1,  IF(adjuntos.visible = 'Seleccion Personalizada',( IF( ISNULL( (SELECT users_visibles.id FROM users_visibles WHERE users_visibles.user_id = $idUser AND users_visibles.adjunto_id = adjuntos.id AND users_visibles.visible = 1) ),0,1 ) ),0)  )) ) = 1 ORDER BY adjuntos.created DESC LIMIT 20)";
+    $sql6 = "(SELECT ('$icono_adjuntos_e') AS icono, adjuntos.modified AS created, CONCAT('Adjuntos') AS tipo, CONCAT('<b>',users.nombre_completo,'</b>',' elimino un archivo: ','<a href=$com ../Adjuntos/index/',IF(ISNULL(adjuntos.parent_id),'',adjuntos.parent_id),' $com>',adjuntos.nombre_original,'</a> ',IF(adjuntos.tarea_id != 0,CONCAT('en tarea <a href=$com ../Tareas/ver_tarea/0/0/',adjuntos.tarea_id,'$com>',tareas.descripcion,'</a>'),IF(adjuntos.proceso_id != 0,CONCAT('en proceso <a href=$com ../Procesos/ver_proceso/',adjuntos.flujos_user_id,'/',adjuntos.proceso_id,'$com>',procesos.nombre,'</a>'), IF(adjuntos.flujos_user_id != 0,CONCAT('en flujo <a href=$com ../Flujos/enflujo/',adjuntos.flujos_user_id,'$com>',flujos_users.descripcion,'</a>'),'' ) )  ) ) AS contenido FROM adjuntos LEFT JOIN users ON(users.id = adjuntos.user_id)  LEFT JOIN flujos_users ON(flujos_users.id = adjuntos.flujos_user_id)  LEFT JOIN procesos ON(procesos.id = adjuntos.proceso_id) LEFT JOIN tareas ON(tareas.id = adjuntos.tarea_id) WHERE adjuntos.estado = 'Eliminado' AND ( IF(adjuntos.user_id = $idUser,1,IF(adjuntos.visible = 'Todos',1,  IF(adjuntos.visible = 'Seleccion Personalizada',( IF( ISNULL( (SELECT users_visibles.id FROM users_visibles WHERE users_visibles.user_id = $idUser AND users_visibles.adjunto_id = adjuntos.id AND users_visibles.visible = 1) ),0,1 ) ),0)  )) ) = 1 ORDER BY adjuntos.modified DESC LIMIT 20)";
+    $sql_u = "$sql1 UNION $sql2 UNION $sql3 UNION $sql4 UNION $sql5 UNION $sql6 ORDER BY created DESC LIMIT 15";
 
     $actividades = $this->Tarea->query($sql_u);
-    /* debug($actividades);
+     /*debug($actividades);
       exit; */
     $comentarios = $this->Comentario->find('all', array(
       'recursive' => 0,
@@ -61,7 +64,7 @@ class TareasController extends AppController {
       'order' => array('Tarea.created DESC'),
       'limit' => 10
     ));
-    $idUser = $this->Session->read('Auth.User.id');
+    
     $mis_tareas = $this->Tarea->find('all', array(
       'recursive' => 0,
       'conditions' => array(
@@ -144,7 +147,6 @@ class TareasController extends AppController {
       'conditions' => array('TareasEstado.tarea_id' => $idTarea),
       'order' => array('TareasEstado.created DESC')
     ));
-    
     
     
     $this->set(compact('tarea', 'proceso', 'flujo', 'idFlujoUser', 'idProceso', 'estados', 'estado'));

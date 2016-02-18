@@ -263,7 +263,7 @@ class AdjuntosController extends AppController {
       //debug('Si existe');exit;
       unlink($file);
       $adj['estado'] = 'Eliminado';
-      $adj['created'] = date('Y-m-d');
+      //$adj['created'] = date('Y-m-d');
       $this->Adjunto->id = $adjunto['Adjunto']['id'];
       $this->Adjunto->save($adj);
       $this->Session->setFlash("Se ha eliminado correctamente el archivo!!", 'msgbueno');

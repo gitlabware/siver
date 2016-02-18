@@ -1,15 +1,18 @@
+<script>
+  $('body').addClass('sb-r-o');
+</script>
 <!-- Start: Topbar-Dropdown -->
 <div id="topbar-dropmenu">
     <div class="topbar-menu row">
         <div class="col-xs-6 col-sm-3">
             <a onclick="cierra_elmenu();
-                cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'iniciar_flujo', $flujo['FlujosUser']['flujo_id'], $flujo['FlujosUser']['id'])); ?>');"  href="javascript:" class="metro-tile">
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'iniciar_flujo', $flujo['FlujosUser']['flujo_id'], $flujo['FlujosUser']['id'])); ?>');"  href="javascript:" class="metro-tile">
                 <span class="metro-icon glyphicon glyphicon-edit"></span>
                 <p class="metro-title">Editar Flujo</p>
             </a>
         </div>
         <div class="col-xs-6 col-sm-3">
-<?php echo $this->Html->link('<span class="metro-icon fa fa-remove"></span> <p class="metro-title">Eliminar este flujo</p>', array('action' => 'eliminar_e_flujo', $flujo['FlujosUser']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de eliminar este flujo???')) ?>
+            <?php echo $this->Html->link('<span class="metro-icon fa fa-remove"></span> <p class="metro-title">Eliminar este flujo</p>', array('action' => 'eliminar_e_flujo', $flujo['FlujosUser']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de eliminar este flujo???')) ?>
         </div>
     </div>
 </div>
@@ -22,71 +25,45 @@
   }
 
 </script>
-
+<header id="topbar">
+    <div class="topbar-left">
+        <ol class="breadcrumb">
+            <li class="crumb-active">
+                <a href="dashboard.html">
+                    <?php echo $flujo['FlujosUser']['descripcion'] ?> <b> <?php echo $flujo['Flujo']['nombre'] ?></b>
+                </a>
+            </li>
+        </ol>
+    </div>
+</header>
 <section id="content" class="table-layout animated fadeIn">
-
     <div class="tray tray-center">
-        <h2><?php echo $flujo['FlujosUser']['descripcion'] ?> <small> <?php echo $flujo['Flujo']['nombre'] ?></small></h2>
-        <!--<div class="panel-group accordion accordion-lg">
-            <div class="panel">
-                <div class="panel-heading">
-                    <a class="accordion-toggle accordion-icon link-unstyled collapsed" data-toggle="collapse" data-parent="#accordion2" href="#accord2_1">
-                        Will you be providing continuous support and adding new features?
-                        <span class="label hidden label-muted label-sm ph15 mt15 mr5 pull-right">189</span>
-                    </a>
-                </div>
-                <div id="accord2_1" class="panel-collapse collapse" style="height: 0px;">
-                    <div class="panel-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.</div>
-                </div>
-            </div>
-            <div class="panel">
-                <div class="panel-heading">
-                    <a class="accordion-toggle accordion-icon link-unstyled collapsed" data-toggle="collapse" data-parent="#accordion2" href="#accord2_2">
-                        How did you organize the LESS Structure in this Theme? </a>
-                </div>
-                <div id="accord2_2" class="panel-collapse collapse" style="height: 0px;">
-                    <div class="panel-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.</div>
-                </div>
-            </div>
-            <div class="panel panel-system">
-                <div class="panel-heading">
-                    <a class="accordion-toggle accordion-icon link-unstyled" data-toggle="collapse" data-parent="#accordion2" href="#accord2_3">
-                        How do I create a media object with a responsive image? </a>
-                </div>
-                <div id="accord2_3" class="panel-collapse collapse in">
-                    <div class="panel-body">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.</div>
-                </div>
-            </div>
-        </div>-->
-        
+
         <div class="panel mb25 mt5">
 
-            <div class="panel">
+            <div class="panel panel-system">
+                <div class="panel-heading">
+                    <span class="panel-icon">
+                        <i class="fa fa-clock-o"></i>
+                    </span>
+                    <span class="panel-title"> Actividades</span>
+                </div>
+                <div class="panel-body ptn pbn p10">
+                    <ol class="timeline-list">
+                        <?php if (!empty($actividades)): ?>
+                          <?php foreach ($actividades as $ac): ?>
+                            <li class="timeline-item">
+                                <?php echo $ac[0]['icono'] ?>
+                                <div class="timeline-desc">
+                                    <?php echo $ac[0]['contenido'] ?>
 
-                <div class="panel-body pn">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <?php foreach ($procesos as $pro): ?>
-                              <?php
-                              $btncss = '';
-                              if ($pro['Proceso']['estado'] == 'Activo') {
-                                $btncss = 'primary';
-                              } elseif ($pro['Proceso']['estado'] == 'Finalizado') {
-                                $btncss = 'success';
-                              }
-                              ?>
-                              <tr class="<?php echo $btncss ?>" style="cursor: pointer;" onclick="cargarproceso(<?php echo $pro['Proceso']['id'] ?>);">
-                                  <td class="text-center" style="font-size: 18px;">
-                                      <b><?php echo $pro['Proceso']['nombre'] ?></b>
-                                      <div id="d-proceso-<?php echo $pro['Proceso']['id']; ?>" class="row" style="display: none;">
 
-                                      </div>
-                                  </td>
-                              </tr>
-<?php endforeach; ?>
-                        </tbody>
-
-                    </table>
+                                </div>
+                                <div class="timeline-date"><?php echo $ac[0]['created'] ?></div>
+                            </li>
+                          <?php endforeach; ?>
+                        <?php endif; ?>
+                    </ol>
                 </div>
             </div>
 
@@ -94,12 +71,61 @@
     </div>
 </section>
 
+<?php $this->start('fueracontent'); ?>
+<aside id="sidebar_right" class="nano">
+
+    <?php if (!empty($estados)): ?>
+      <?php foreach ($estados as $es): ?>
+        <?php
+        $icono = '';
+        $color = '';
+        if ($es['TareasEstado']['estado'] === 'Completado') {
+          $icono = 'fa-check-circle';
+          $color = 'success';
+        } elseif ($es['TareasEstado']['estado'] === 'Reanudado') {
+          $icono = 'fa-repeat';
+          $color = 'info';
+        } elseif ($es['TareasEstado']['estado'] === 'Vencido') {
+          $icono = 'fa-exclamation-triangle';
+          $color = 'danger';
+        }
+        ?>
+        <blockquote class="blockquote-<?php echo $color; ?>">
+            <p><?php echo $es['TareasEstado']['estado']; ?> <span class="label label-<?php echo $color; ?>"><?php echo $es['TareasEstado']['created']; ?></span></p>
+        </blockquote>
+      <?php endforeach; ?>
+
+    <?php endif; ?>
+</ul>
+
+<div data-offset-top="200">
+    <div>
+        <ul class="nav tray-nav" data-smoothscroll="-90">
+            <?php foreach ($procesos as $pro): ?>
+              <?php
+              $btncss = '';
+              if ($pro['Proceso']['estado'] == 'Activo') {
+                $btncss = 'primary';
+              } elseif ($pro['Proceso']['estado'] == 'Finalizado') {
+                $btncss = 'success';
+              }
+              ?>
+              <li class="">
+                  <a href="<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ver_proceso', $idFlujoUser, $pro['Proceso']['id'])); ?>">
+                      <span class="text-<?php echo $btncss ?> fa fa-circle-o fa-lg"></span> <?php echo $pro['Proceso']['nombre'] ?></a>
+              </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</div>
+</aside>
+<?php $this->end(); ?>
+
 <script>
   function cargarproceso(idProceso) {
       var display = $('#d-proceso-' + idProceso).css('display');
       //alert(display);
       if (display === 'none') {
-
           $('#d-proceso-' + idProceso).load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'verproceso', $flujo['FlujosUser']['id'])); ?>/' + idProceso, function () {
               $('#d-proceso-' + idProceso).show(400);
           });

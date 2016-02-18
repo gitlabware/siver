@@ -1,3 +1,7 @@
+
+<script>
+  $('body').addClass('sb-r-o');
+</script>
 <!-- Start: Topbar-Dropdown -->
 <div id="topbar-dropmenu">
     <div class="topbar-menu row">
@@ -24,7 +28,7 @@
     </div>
 </div>
 <script>
-  
+
   function cierra_elmenu() {
       $('.metro-modal').fadeOut('fast');
       setTimeout(function () {
@@ -33,54 +37,25 @@
   }
 
 </script>
+
+<header id="topbar">
+    <div class="topbar-left">
+        <ol class="breadcrumb">
+            <li class="crumb-active">
+                <a href="javascript:">
+                    <?php echo $proceso['Proceso']['nombre'] ?> <b> <?php echo $flujo['FlujosUser']['descripcion'] ?></b>
+                </a>
+            </li>
+
+        </ol>
+    </div>
+
+</header>
+
 <section id="content" class=" animated fadeIn">
 
-    <h2><?php echo $proceso['Proceso']['nombre'] ?> <small> <?php echo $flujo['FlujosUser']['descripcion'] ?></small></h2>
     <div class="row">
         <div class="col-md-8">
-            <?php if (!empty($estados)): ?>
-              <div class="panel panel-warning">
-                  <div class="panel-heading">
-                      <span class="panel-icon">
-                          <i class="fa fa-bookmark-o"></i>
-                      </span>
-                      <span class="panel-title"> Estado del Proceso</span>
-                  </div>
-                  <div class="panel-body">
-                      <div class="table-responsive">
-                          <table class="table table-bordered">
-                              <tbody>
-                                  <?php foreach ($estados as $es): ?>
-                                    <?php
-                                    $icono = '';
-                                    $color = '';
-                                    if ($es['ProcesosEstado']['estado'] === 'Finalizado') {
-                                      $icono = 'fa-check-circle';
-                                      $color = 'success';
-                                    } elseif ($es['ProcesosEstado']['estado'] === 'Reanudado') {
-                                      $icono = 'fa-repeat';
-                                      $color = 'info';
-                                    } elseif ($es['ProcesosEstado']['estado'] === 'Vencido') {
-                                      $icono = 'fa-exclamation-triangle';
-                                      $color = 'danger';
-                                    } elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
-                                      $icono = 'fa-circle';
-                                      $color = 'primary';
-                                    }
-                                    ?>
-                                    <tr>
-                                        <td style="font-size: 24px;" class="text-<?php echo $color; ?>" align="center">
-                                            <span class="fa <?php echo $icono; ?>"></span>
-                                        </td>
-                                        <td><?php echo $es['ProcesosEstado']['estado']; ?> en <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['created']; ?></span></td>
-                                    </tr>
-                                  <?php endforeach; ?>
-                              </tbody>
-                          </table>
-                      </div>
-                  </div>
-              </div>
-            <?php endif; ?>
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <span class="panel-icon">
@@ -94,7 +69,7 @@
                             <thead>
                                 <tr>
                                     <th>Creado</th>
-                                    <th>Creado Por Usuario</th>
+                                    <th>Usuario</th>
                                     <th>Contenido</th>
                                     <th>Accion</th>
                                 </tr>
@@ -228,7 +203,63 @@
 
 
 </section>
+<?php $this->start('fueracontent'); ?>
+<aside id="sidebar_right" class="nano">
 
+    <?php if (!empty($estados)): ?>
+      <?php foreach ($estados as $es): ?>
+        <?php
+        $icono = '';
+        $color = '';
+        if ($es['ProcesosEstado']['estado'] === 'Finalizado') {
+          $icono = 'fa-check-circle';
+          $color = 'success';
+        } elseif ($es['ProcesosEstado']['estado'] === 'Reanudado') {
+          $icono = 'fa-repeat';
+          $color = 'info';
+        } elseif ($es['ProcesosEstado']['estado'] === 'Vencido') {
+          $icono = 'fa-exclamation-triangle';
+          $color = 'danger';
+        } elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
+          $icono = 'fa-circle';
+          $color = 'primary';
+        }
+        ?>
+        <blockquote class="blockquote-<?php echo $color; ?>">
+            <p><?php echo $es['ProcesosEstado']['estado']; ?> <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['created']; ?></span></p>
+        </blockquote>
+      <?php endforeach; ?>
+
+    <?php endif; ?>
+</ul>
+
+<div data-offset-top="200">
+    <div>
+        <?php
+        $procesos = $this->requestAction(array('controller' => 'Flujos', 'action' => 'get_procesos', $idFlujoUser));
+        ?>
+        <ul class="nav tray-nav" data-smoothscroll="-90">
+
+            <?php foreach ($procesos as $pro): ?>
+              <?php
+              $activo = '';
+              if ($idProceso == $pro['Proceso']['id']) {
+                $activo = 'active';
+              }
+              ?>
+
+              <li class="<?php echo $activo ?>">
+                  <a href="<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ver_proceso', $idFlujoUser, $pro['Proceso']['id'])); ?>">
+                      <span class="fa fa-circle-o fa-lg"></span> <?php echo $pro['Proceso']['nombre'] ?></a>
+              </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+
+</div>
+
+</aside>
+<?php $this->end(); ?>
 <script>
   $('#carga-proc').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'verproceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'])); ?>', function () {
 

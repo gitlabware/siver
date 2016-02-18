@@ -36,7 +36,7 @@
 
     </head>
 
-    <body class="invoice-page gallery-page form-treeview-page sb-l-o sb-r-o">
+    <body class="invoice-page gallery-page">
         <!-- Start: Main -->
         <div id="main">
 
