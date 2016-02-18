@@ -8,7 +8,7 @@
         <?php if ($this->Session->read('Auth.User.id') == $tarea['Tarea']['user_id']): ?>
           <div class="col-xs-6 col-sm-3">
               <a  href="javascript:" onclick="cierra_elmenu();
-                      cargarmodal('<?php echo $this->Html->url(array('action' => 'tarea_ajax', $tarea['Tarea']['id'])); ?>', true);" class="metro-tile">
+                    cargarmodal('<?php echo $this->Html->url(array('action' => 'tarea_ajax', $tarea['Tarea']['id'])); ?>', true);" class="metro-tile">
                   <span class="metro-icon glyphicon glyphicon-edit"></span>
                   <p class="metro-title">Editar Tarea</p>
               </a>
@@ -49,7 +49,7 @@
     <div class="topbar-left">
         <ol class="breadcrumb">
             <li class="crumb-active">
-                <a href="dashboard.html">
+                <a href="<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'enflujo', $flujo['FlujosUser']['id'])); ?>">
                     <?php
                     if (!empty($flujo['FlujosUser']['descripcion'])) {
                       echo $flujo['FlujosUser']['descripcion'];
@@ -152,6 +152,7 @@
                                               <th>Archivos</th>
                                               <th>Accion</th>
                                           </tr>
+                                      </thead>
                                       <tbody>
                                           <?php foreach ($adjuntos as $ad): ?>
                                             <tr>
@@ -160,16 +161,18 @@
                                                 <td><?php echo $ad['Adjunto']['nombre'] ?></td>
                                                 <td><?php echo $ad['Adjunto']['nombre_original'] ?></td>
                                                 <td>
-                                                    <?php echo $this->Html->link('<i class="fa fa-download"></i>', array('controller' => 'Adjuntos', 'action' => 'descargar', $ad['Adjunto']['id']), array('class' => 'btn btn-success', 'title' => 'Descargar archivo', 'escape' => FALSE)) ?>
+                                                    <div class="btn-group" style="width: 120px;">
+                                                      <?php echo $this->Html->link('<i class="fa fa-download"></i>', array('controller' => 'Adjuntos', 'action' => 'descargar', $ad['Adjunto']['id']), array('class' => 'btn btn-success', 'title' => 'Descargar archivo', 'escape' => FALSE)) ?>
                                                     <?php if ($this->Session->read('Auth.User.id') == $ad['Adjunto']['user_id']): ?>
                                                       <a href="javascript:" class="btn btn-warning" title="Editar" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'ver_adjunto', $ad['Adjunto']['id'])); ?>');"><i class="fa fa-edit"></i></a>
                                                       <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Adjuntos', 'action' => 'eliminar', $ad['Adjunto']['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar el archivo adjunto??')) ?>
                                                     <?php endif; ?>
+                                                    </div>
+                                                    
                                                 </td>
                                             </tr>
                                           <?php endforeach; ?>
                                       </tbody>
-                                      </thead>
                                   </table>
 
                               </div>
@@ -298,11 +301,17 @@
               if ($idProceso == $pro['Proceso']['id']) {
                 $activo = 'active';
               }
+              $btncss = '';
+              if ($pro['Proceso']['estado'] == 'Activo') {
+                $btncss = 'primary';
+              } elseif ($pro['Proceso']['estado'] == 'Finalizado') {
+                $btncss = 'success';
+              }
               ?>
 
               <li class="<?php echo $activo ?>">
                   <a href="<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ver_proceso', $tarea['Tarea']['flujos_user_id'], $pro['Proceso']['id'])); ?>">
-                      <span class="fa fa-circle-o fa-lg"></span> <?php echo $pro['Proceso']['nombre'] ?></a>
+                      <span class="text-<?php echo $btncss ?> fa fa-circle-o fa-lg"></span> <?php echo $pro['Proceso']['nombre'] ?></a>
               </li>
             <?php endforeach; ?>
         </ul>

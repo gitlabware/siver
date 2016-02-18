@@ -42,12 +42,18 @@
     <div class="topbar-left">
         <ol class="breadcrumb">
             <li class="crumb-active">
-                <a href="javascript:">
-                    <?php echo $proceso['Proceso']['nombre'] ?> <b> <?php echo $flujo['FlujosUser']['descripcion'] ?></b>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'enflujo', $flujo['FlujosUser']['id'])); ?>">
+                    <?php echo $proceso['Proceso']['nombre'] ?> <b> <?php echo '(' . $flujo['FlujosUser']['descripcion'] . ')' ?></b>
                 </a>
             </li>
-
         </ol>
+    </div>
+    <div class="topbar-right hidden-lg">
+        <div class="ml15 ib va-m" id="toggle_sidemenu_r">
+            <a href="#" class="pl5">
+                <i class="fa fa-sign-in fs22 text-primary"></i>
+            </a>
+        </div>
     </div>
 
 </header>
@@ -204,59 +210,66 @@
 
 </section>
 <?php $this->start('fueracontent'); ?>
-<aside id="sidebar_right" class="nano">
+<aside id="sidebar_right" class="nano affix">
+    <div class="sidebar-right-content nano-content p15">
+        <?php if (!empty($estados)): ?>
+          <?php foreach ($estados as $es): ?>
+            <?php
+            $icono = '';
+            $color = '';
+            if ($es['ProcesosEstado']['estado'] === 'Finalizado') {
+              $icono = 'fa-check-circle';
+              $color = 'success';
+            } elseif ($es['ProcesosEstado']['estado'] === 'Reanudado') {
+              $icono = 'fa-repeat';
+              $color = 'info';
+            } elseif ($es['ProcesosEstado']['estado'] === 'Vencido') {
+              $icono = 'fa-exclamation-triangle';
+              $color = 'danger';
+            } elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
+              $icono = 'fa-circle';
+              $color = 'primary';
+            }
+            ?>
+            <blockquote class="blockquote-<?php echo $color; ?>">
+                <p><?php echo $es['ProcesosEstado']['estado']; ?> <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['created']; ?></span></p>
+            </blockquote>
+          <?php endforeach; ?>
 
-    <?php if (!empty($estados)): ?>
-      <?php foreach ($estados as $es): ?>
-        <?php
-        $icono = '';
-        $color = '';
-        if ($es['ProcesosEstado']['estado'] === 'Finalizado') {
-          $icono = 'fa-check-circle';
-          $color = 'success';
-        } elseif ($es['ProcesosEstado']['estado'] === 'Reanudado') {
-          $icono = 'fa-repeat';
-          $color = 'info';
-        } elseif ($es['ProcesosEstado']['estado'] === 'Vencido') {
-          $icono = 'fa-exclamation-triangle';
-          $color = 'danger';
-        } elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
-          $icono = 'fa-circle';
-          $color = 'primary';
-        }
-        ?>
-        <blockquote class="blockquote-<?php echo $color; ?>">
-            <p><?php echo $es['ProcesosEstado']['estado']; ?> <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['created']; ?></span></p>
-        </blockquote>
-      <?php endforeach; ?>
-
-    <?php endif; ?>
-</ul>
-
-<div data-offset-top="200">
-    <div>
-        <?php
-        $procesos = $this->requestAction(array('controller' => 'Flujos', 'action' => 'get_procesos', $idFlujoUser));
-        ?>
-        <ul class="nav tray-nav" data-smoothscroll="-90">
-
-            <?php foreach ($procesos as $pro): ?>
-              <?php
-              $activo = '';
-              if ($idProceso == $pro['Proceso']['id']) {
-                $activo = 'active';
-              }
-              ?>
-
-              <li class="<?php echo $activo ?>">
-                  <a href="<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ver_proceso', $idFlujoUser, $pro['Proceso']['id'])); ?>">
-                      <span class="fa fa-circle-o fa-lg"></span> <?php echo $pro['Proceso']['nombre'] ?></a>
-              </li>
-            <?php endforeach; ?>
+        <?php endif; ?>
         </ul>
+
+        <div data-offset-top="200">
+            <div>
+                <?php
+                $procesos = $this->requestAction(array('controller' => 'Flujos', 'action' => 'get_procesos', $idFlujoUser));
+                ?>
+                <ul class="nav tray-nav" data-smoothscroll="-90">
+
+                    <?php foreach ($procesos as $pro): ?>
+                      <?php
+                      $activo = '';
+                      if ($idProceso == $pro['Proceso']['id']) {
+                        $activo = 'active';
+                      }
+                      $btncss = '';
+                      if ($pro['Proceso']['estado'] == 'Activo') {
+                        $btncss = 'primary';
+                      } elseif ($pro['Proceso']['estado'] == 'Finalizado') {
+                        $btncss = 'success';
+                      }
+                      ?>
+                      <li class="<?php echo $activo ?>">
+                          <a href="<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'ver_proceso', $idFlujoUser, $pro['Proceso']['id'])); ?>">
+                              <span class="text-<?php echo $btncss ?> fa fa-circle-o fa-lg"></span> <?php echo $pro['Proceso']['nombre'] ?></a>
+                      </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+
+        </div>
     </div>
 
-</div>
 
 </aside>
 <?php $this->end(); ?>

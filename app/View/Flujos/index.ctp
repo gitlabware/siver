@@ -56,7 +56,24 @@
   }
 
 </script>
-
+<header id="topbar">
+    <div class="topbar-left">
+        <ol class="breadcrumb">
+            <li class="crumb-active">
+                <a href="javascript:">
+                    Flujos
+                </a>
+            </li>
+        </ol>
+    </div>
+    <div class="topbar-right hidden-lg">
+        <div class="ml15 ib va-m" id="toggle_sidemenu_r">
+            <a href="#" class="pl5">
+                <i class="fa fa-sign-in fs22 text-primary"></i>
+            </a>
+        </div>
+    </div>
+</header>
 
 
 <section id="content" class="table-layout animated fadeIn">
@@ -109,30 +126,33 @@
 </section>
 
 <?php $this->start('fueracontent'); ?>
-<aside id="sidebar_right" class="nano">
-    <div data-offset-top="200">
-        <div class="panel">
-            <div class="panel-body">
-                <div class="table-responsive">
-                    <table class="table admin-form theme-warning tc-checkbox-1 fs13">
-                        <thead>
-                            <tr class="bg-light">
-                                <th class="text-center" style="font-size: 16px;">FLUJOS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($flujos as $flu): ?>
-                              <tr>
-                                  <td class="primary text-center" onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'accion_flujo', $flu['Flujo']['id'])); ?>';" style="font-size: 16px; cursor: pointer;">
-                                      <b><?= $flu['Flujo']['nombre'] ?></b>
-                                  </td>
-                              </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+<aside id="sidebar_right" class="nano affix">
+    <div class="sidebar-right-content nano-content p15">
+        <div data-offset-top="200">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table admin-form theme-warning tc-checkbox-1 fs13">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th class="text-center" style="font-size: 16px;">FLUJOS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($flujos as $flu): ?>
+                                  <tr>
+                                      <td class="primary text-center" onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'accion_flujo', $flu['Flujo']['id'])); ?>';" style="font-size: 16px; cursor: pointer;">
+                                          <b><?= $flu['Flujo']['nombre'] ?></b>
+                                      </td>
+                                  </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
 </aside>
 <?php $this->end(); ?>

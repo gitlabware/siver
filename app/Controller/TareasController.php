@@ -126,7 +126,7 @@ class TareasController extends AppController {
       }
     }
     //debug($proceso);exit;
-    $this->set(compact('usuarios', 'proceso', 'flujo'));
+    $this->set(compact('usuarios', 'proceso', 'flujo','idFlujoUser','idProceso'));
   }
 
   public function ver_tarea($idFlujoUser = null, $idProceso = null, $idTarea = null) {

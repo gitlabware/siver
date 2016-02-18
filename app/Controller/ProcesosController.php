@@ -116,6 +116,15 @@ class ProcesosController extends AppController {
     
     $this->set(compact('flujo', 'proceso', 'linea_tiempo', 'idFlujoUser', 'idProceso', 'tareas','estados'));
   }
+  
+  public function get_estados($idFlujoUser = null, $idProceso = null){
+    $estados = $this->ProcesosEstado->find('all',array(
+      'recursive' => -1,
+      'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser,'ProcesosEstado.proceso_id' => $idProceso),
+      'order' => array('ProcesosEstado.created DESC')
+    ));
+    return $estados;
+  }
 
   public function finaliza_proceso($idFlujoUser = null, $idProceso = null) {
     $d_proest['user_id'] = $this->Session->read('Auth.User.id');

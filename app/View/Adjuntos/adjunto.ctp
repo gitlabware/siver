@@ -105,8 +105,8 @@ echo $this->Html->script([
                   },
                   //Ajax events
                   beforeSend: function () {
-                      $('#div_carga_archivo').toggle(100);
-                      $('.pocu').toggle(100);
+                      $('#div_carga_archivo').show(100);
+                      $('.pocu').hide(100);
                   },
                   success: function (data) {
                     if($.parseJSON(data).error === ''){
