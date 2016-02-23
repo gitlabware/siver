@@ -34,6 +34,13 @@
               <?php echo $this->Html->link('<span class="metro-icon fa fa-repeat"></span> <p class="metro-title"> Reanudar Tarea</p>', array('action' => 'reanudar_tarea', $tarea['Tarea']['id']), array('class' => 'metro-tile', 'escape' => false)) ?>
           </div>
         <?php endif; ?>
+        <div class="col-xs-6 col-sm-3">
+            <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'vinculo', $tarea['Tarea']['flujos_user_id'], $tarea['Tarea']['proceso_id'], $tarea['Tarea']['id'])); ?>');">
+                <span class="metro-icon fa fa-chain"></span>
+                <p class="metro-title">Vincular con Archivo</p>
+            </a>
+        </div>
     </div>
 </div>
 <script>
@@ -155,20 +162,22 @@
                                       </thead>
                                       <tbody>
                                           <?php foreach ($adjuntos as $ad): ?>
-                                            <tr>
-                                                <td><?php echo $ad['Adjunto']['created'] ?></td>
-                                                <td><?php echo $ad['User']['nombre_completo'] ?></td>
-                                                <td><?php echo $ad['Adjunto']['nombre'] ?></td>
-                                                <td><?php echo $ad['Adjunto']['nombre_original'] ?></td>
+                                            <tr class="<?php echo $ad[0]['mclase'] ?>">
+                                                <td><?php echo $ad[0]['created'] ?></td>
+                                                <td><?php echo $ad[0]['nombre_usuario'] ?></td>
+                                                <td><?php echo $ad[0]['nombre'] ?></td>
+                                                <td><?php echo $ad[0]['nombre_original'] ?></td>
                                                 <td>
                                                     <div class="btn-group" style="width: 120px;">
-                                                      <?php echo $this->Html->link('<i class="fa fa-download"></i>', array('controller' => 'Adjuntos', 'action' => 'descargar', $ad['Adjunto']['id']), array('class' => 'btn btn-success', 'title' => 'Descargar archivo', 'escape' => FALSE)) ?>
-                                                    <?php if ($this->Session->read('Auth.User.id') == $ad['Adjunto']['user_id']): ?>
-                                                      <a href="javascript:" class="btn btn-warning" title="Editar" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'ver_adjunto', $ad['Adjunto']['id'])); ?>');"><i class="fa fa-edit"></i></a>
-                                                      <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Adjuntos', 'action' => 'eliminar', $ad['Adjunto']['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar el archivo adjunto??')) ?>
-                                                    <?php endif; ?>
+                                                        <?php echo $this->Html->link('<i class="fa fa-download"></i>', array('controller' => 'Adjuntos', 'action' => 'descargar', $ad[0]['id']), array('class' => 'btn btn-success', 'title' => 'Descargar archivo', 'escape' => FALSE)) ?>
+                                                        <?php if ($ad[0]['atipo'] == 'Adjuntos'): ?>
+                                                          <?php if ($this->Session->read('Auth.User.id') == $ad[0]['user_id']): ?>
+                                                            <a href="javascript:" class="btn btn-warning" title="Editar" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'ver_adjunto', $ad[0]['id'])); ?>');"><i class="fa fa-edit"></i></a>
+                                                            <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Adjuntos', 'action' => 'eliminar', $ad[0]['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar el archivo adjunto??')) ?>
+                                                          <?php endif; ?>
+                                                        <?php endif; ?>
                                                     </div>
-                                                    
+
                                                 </td>
                                             </tr>
                                           <?php endforeach; ?>

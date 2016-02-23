@@ -47,14 +47,22 @@
 
             <?php if ($this->Session->read('Auth.User.id') == $flujo['Flujo']['user_id']): ?>
 
+              <?php
+              $p_head = 'class="accordion-toggle accordion-icon link-unstyled collapsed"';
+              $p_acor = 'class="panel-collapse collapse" style="height: 0px;"';
+              if (empty($flujos)) {
+                $p_head = 'class="accordion-toggle accordion-icon link-unstyled" aria-expanded="true"';
+                $p_acor = 'class="panel-collapse collapse in"';
+              }
+              ?>
               <div class="panel">
                   <div class="panel-heading">
-                      <a class="accordion-toggle accordion-icon link-unstyled collapsed" data-toggle="collapse" data-parent="#accordion2" href="#acor-procesos">
+                      <a <?php echo $p_head; ?> data-toggle="collapse" data-parent="#accordion2" href="#acor-procesos">
                           Listado de Procesos
                           <span class="label hidden label-muted label-sm ph15 mt15 mr5 pull-right">189</span>
                       </a>
                   </div>
-                  <div id="acor-procesos" class="panel-collapse collapse" style="height: 0px;">
+                  <div id="acor-procesos" <?php echo $p_acor; ?>>
                       <?php if (!empty($procesos)): ?>
                         <div class="panel-body pn">
                             <div class="table-responsive">
@@ -64,6 +72,7 @@
                                             <tr class="bg-light">
                                                 <th></th>
                                                 <th class="text-center" style="font-size: 16px;">Proceso</th>
+                                                <th class="text-center" style="font-size: 16px;">Requisitos</th>
                                                 <th>Accion </th>
                                             </tr>
                                         </thead>
@@ -72,6 +81,7 @@
                                               <tr class="blockquote-info">
                                                   <td><?php echo ($key + 1) ?></td>
                                                   <td><?php echo $pro['Proceso']['nombre'] ?></td>
+                                                  <td><?php echo $pro['Proceso']['requisitos'] ?></td>
                                                   <td>
                                                       <div class="btn-group" style="width: 120px;;">
                                                           <button type="button" class="btn btn-warning" title="Editar Proceso" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'proceso', $flujo['Flujo']['id'], $pro['Proceso']['id'])); ?>');">
@@ -113,16 +123,18 @@
                           </thead>
                           <tbody>
                               <?php foreach ($flujos as $flu): ?>
-                                <tr>
+                                <tr class="<?php echo $flu['FlujosUser']['estado_color']; ?>">
                                     <td><?php echo $flu['FlujosUser']['descripcion']; ?></td>
                                     <td><?php echo $flu['User']['nombre_completo']; ?></td>
                                     <td><?php echo $flu['FlujosUser']['created']; ?></td>
                                     <td class="text-center" style="font-size: 16px;">
-                                        <div class="btn-group" style="width: 120px;">
+                                            <div class="btn-group" style="width: 120px;">
 
-                                            <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
-                                        </div>
-                                    </td>
+                                                <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
+                                                <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>');" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
+                                                <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??','class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
+                                            </div>
+                                        </td>
                                 </tr>
                               <?php endforeach; ?>
                           </tbody>

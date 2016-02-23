@@ -6,7 +6,7 @@ App::uses('File', 'Utility');
 class AdjuntosController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Adjunto', 'FlujosUser', 'User', 'UsersVisible');
+  public $uses = array('Adjunto', 'FlujosUser', 'User', 'UsersVisible', 'Vinculacione');
   public $components = array('RequestHandler');
 
   public function beforeFilter() {
@@ -44,7 +44,7 @@ class AdjuntosController extends AppController {
       'conditions' => array('User.id !=' => $this->Session->read('Auth.User.id')),
       'fields' => array('User.id', 'User.nombre_completo')
     ));
-    $this->set(compact('idFlujosUser', 'idProceso', 'idTarea', 'idAdjunto','users'));
+    $this->set(compact('idFlujosUser', 'idProceso', 'idTarea', 'idAdjunto', 'users'));
   }
 
   public function adjunto2($idCarpeta = null) {
@@ -199,32 +199,46 @@ class AdjuntosController extends AppController {
   }
 
   public function get_adjuntos($idFlujosUser = null, $idProceso = null, $idTarea = null) {
-    $condiciones = array();
+    //$condiciones = array();
+    $idUser = $this->Session->read('Auth.User.id');
+    $cond_visible = "( IF(Adjunto.user_id = $idUser,1,IF(Adjunto.visible = 'Todos',1,  IF(Adjunto.visible = 'Seleccion Personalizada',( IF( ISNULL( (SELECT users_visibles.id FROM users_visibles WHERE users_visibles.user_id = $idUser AND users_visibles.adjunto_id = Adjunto.id AND users_visibles.visible = 1) ),0,1 ) ),0)  )) ) = 1";
+    $condiciones2 = "Adjunto.tipo LIKE 'Archivo' AND Adjunto.estado LIKE 'Activo' AND $cond_visible";
+
+    $condiciones3 = "1";
     if (!empty($idFlujosUser)) {
-      $condiciones['Adjunto.flujos_user_id'] = $idFlujosUser;
+      $condiciones2 = "$condiciones2 AND Adjunto.flujos_user_id = $idFlujosUser";
+      $condiciones3 = "$condiciones3 AND Vinculacione.flujos_user_id = $idFlujosUser";
+      //$condiciones['Adjunto.flujos_user_id'] = $idFlujosUser;
     } else {
-      $condiciones['Adjunto.flujos_user_id'] = 0;
+      $condiciones2 = "$condiciones2 AND Adjunto.flujos_user_id = 0";
+      $condiciones3 = "$condiciones3 AND Vinculacione.flujos_user_id = 0";
+      //$condiciones['Adjunto.flujos_user_id'] = 0;
     }
     if (!empty($idProceso)) {
-      $condiciones['Adjunto.proceso_id'] = $idProceso;
+      $condiciones2 = "$condiciones2 AND Adjunto.proceso_id = $idProceso";
+      $condiciones3 = "$condiciones3 AND Vinculacione.proceso_id = $idProceso";
+      //$condiciones['Adjunto.proceso_id'] = $idProceso;
     } else {
-      $condiciones['Adjunto.proceso_id'] = 0;
+      $condiciones2 = "$condiciones2 AND Adjunto.proceso_id = 0";
+      $condiciones3 = "$condiciones3 AND Vinculacione.proceso_id = 0";
+      //$condiciones['Adjunto.proceso_id'] = 0;
     }
     if (!empty($idTarea)) {
-      $condiciones['Adjunto.tarea_id'] = $idTarea;
+      $condiciones2 = "$condiciones2 AND Adjunto.tarea_id = $idTarea";
+      $condiciones3 = "$condiciones3 AND Vinculacione.tarea_id = $idTarea";
+      //$condiciones['Adjunto.tarea_id'] = $idTarea;
     } else {
-      $condiciones['Adjunto.tarea_id'] = 0;
+      $condiciones2 = "$condiciones2 AND Adjunto.tarea_id = 0";
+      $condiciones3 = "$condiciones3 AND Vinculacione.tarea_id = 0";
+      //$condiciones['Adjunto.tarea_id'] = 0;
     }
-    $condiciones['Adjunto.tipo LIKE'] = 'Archivo';
-    $condiciones['Adjunto.estado LIKE'] = 'Activo';
-    $idUser = $this->Session->read('Auth.User.id');
-    $condiciones["( IF(Adjunto.user_id = $idUser,1,IF(Adjunto.visible = 'Todos',1,  IF(Adjunto.visible = 'Seleccion Personalizada',( IF( ISNULL( (SELECT users_visibles.id FROM users_visibles WHERE users_visibles.user_id = $idUser AND users_visibles.adjunto_id = Adjunto.id AND users_visibles.visible = 1) ),0,1 ) ),0)  )) )"] = 1;
-    return $this->Adjunto->find('all', array(
-        'recursive' => 0,
-        'conditions' => $condiciones,
-        'fields' => array('Adjunto.*', 'User.nombre_completo'),
-        'order' => array('Adjunto.created DESC')
-    ));
+    //debug($condiciones3);exit;
+    $sql1 = "SELECT Adjunto.*, User.nombre_completo AS nombre_usuario, ('Adjuntos') AS atipo, (' ') AS mclase FROM adjuntos AS Adjunto LEFT JOIN users AS User ON (User.id = Adjunto.user_id) WHERE $condiciones2 ORDER BY Adjunto.created DESC";
+    $sql2 = "SELECT Adjunto.*, User.nombre_completo AS nombre_usuario, ('Vinculados') AS atipo, ('info') AS mclase FROM vinculaciones AS Vinculacione LEFT JOIN adjuntos AS Adjunto ON (Adjunto.id = Vinculacione.adjunto_id) LEFT JOIN users AS User ON (User.id = Adjunto.user_id) WHERE $condiciones3 ORDER BY Adjunto.created DESC";
+    $sql = "($sql1) UNION ($sql2) ORDER BY created DESC";
+    $adjuntos = $this->Adjunto->query($sql);
+    //debug($adjuntos);exit;
+    return $adjuntos;
   }
 
   public function eliminar($idAdjunto = null) {
@@ -660,6 +674,100 @@ class AdjuntosController extends AppController {
     $this->Adjunto->save($d_adj);
 
     $this->Session->setFlash("Se ha realizado el movimiento correctamente!!", 'msgbueno');
+    $this->redirect($this->referer());
+  }
+
+  public function vinculo($idFlujosUser = null, $idProceso = null, $idTarea = null) {
+    $this->layout = 'ajax';
+
+
+    $condiciones = array();
+    $condiciones2 = array();
+    $condiciones2['Vinculacione.flujos_user_id'] = $idFlujosUser;
+    
+    $condiciones['Adjunto.flujos_user_id'] = $idFlujosUser;
+    $condiciones['Adjunto.estado LIKE'] = 'Activo';
+    $condiciones['Adjunto.tipo LIKE'] = 'Archivo';
+    $idUser = $this->Session->read('Auth.User.id');
+    $condiciones["( IF(Adjunto.user_id = $idUser,1,IF(Adjunto.visible = 'Todos',1,  IF(Adjunto.visible = 'Seleccion Personalizada',( IF( ISNULL( (SELECT users_visibles.id FROM users_visibles WHERE users_visibles.user_id = $idUser AND users_visibles.adjunto_id = Adjunto.id AND users_visibles.visible = 1) ),0,1 ) ),0)  )) )"] = 1;
+    if (!empty($idProceso)) {
+      //$condiciones['Adjunto.proceso_id !='] = $idProceso;
+      $condiciones2['Vinculacione.proceso_id'] = $idProceso;
+    } else {
+      //$condiciones['Adjunto.proceso_id !='] = 0;
+      $condiciones2['Vinculacione.proceso_id'] = 0;
+      $idProceso = 0;
+    }
+    if (!empty($idTarea)) {
+      $condiciones2['Vinculacione.tarea_id'] = $idTarea;
+      //$condiciones['Adjunto.tarea_id !='] = $idTarea;
+    } else {
+      $condiciones2['Vinculacione.tarea_id'] = 0;
+      //$condiciones['Adjunto.tarea_id !='] = 0;
+      $idTarea = 0;
+    }
+    //debug($condiciones2);exit;
+    $vinculados = $this->Vinculacione->find('list', array(
+      'recursive' => -1,
+      'conditions' => $condiciones2,
+      'fields' => array('Vinculacione.id', 'Vinculacione.adjunto_id')
+    ));
+    if (count($vinculados) > 1) {
+      $condiciones['Adjunto.id NOT IN'] = $vinculados;
+    } elseif (count($vinculados) == 1) {
+      $condiciones['Adjunto.id !='] = current($vinculados);
+    }
+    /* debug($condiciones);
+      exit; */
+    $adjuntos = $this->Adjunto->find('all', array(
+      'recursive' => -1,
+      'conditions' => array($condiciones)
+    ));
+
+    $this->set(compact('adjuntos', 'idFlujosUser', 'idProceso', 'idTarea'));
+  }
+
+  public function vincular($idAdjunto = null, $idFlujosUser = null, $idProceso = null, $idTarea = null) {
+    $d_vinc['user_id'] = $this->Session->read('Auth.User.id');
+    $d_vinc['adjunto_id'] = $idAdjunto;
+    $d_vinc['flujos_user_id'] = $idFlujosUser;
+    if (!empty($idProceso)) {
+      $d_vinc['proceso_id'] = $idProceso;
+    } else {
+      $d_vinc['proceso_id'] = 0;
+    }
+
+    if (!empty($idTarea)) {
+      $d_vinc['tarea_id'] = $idTarea;
+    } else {
+      $d_vinc['tarea_id'] = 0;
+    }
+    $this->Vinculacione->create();
+    $this->Vinculacione->save($d_vinc);
+    $this->Session->setFlash("Se ha vinculado correctamente el archivo!!!", 'msgbueno');
+    $this->redirect($this->referer());
+  }
+
+  public function desvincular($idAdjunto = null, $idFlujosUser = null, $idProceso = null, $idTarea = null) {
+    $d_vinc['Vinculacione.user_id'] = $this->Session->read('Auth.User.id');
+    $d_vinc['Vinculacione.adjunto_id'] = $idAdjunto;
+    $d_vinc['Vinculacione.flujos_user_id'] = $idFlujosUser;
+    if (!empty($idProceso)) {
+      $d_vinc['Vinculacione.proceso_id'] = $idProceso;
+    } else {
+      $d_vinc['Vinculacione.proceso_id'] = 0;
+    }
+    if (!empty($idTarea)) {
+      $d_vinc['Vinculacione.tarea_id'] = $idTarea;
+    } else {
+      $d_vinc['Vinculacione.tarea_id'] = 0;
+    }
+
+    if ($this->Vinculacione->deleteAll($d_vinc)) {
+      $this->Session->setFlash("Se ha desvinculado correctamente!!!", 'msgbueno');
+    } else {
+      $this->Session->setFlash("No se ha podido desvincular!!!", 'msgerror');
+    }
     $this->redirect($this->referer());
   }
 

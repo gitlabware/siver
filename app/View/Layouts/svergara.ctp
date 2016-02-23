@@ -299,7 +299,7 @@
 
         </script>
 
-        <script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/highcharts/highcharts.js"></script>
+        <!--<script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/highcharts/highcharts.js"></script>-->
 
         <!-- END: PAGE SCRIPTS -->
         <?php echo $this->fetch('scriptjs'); ?>

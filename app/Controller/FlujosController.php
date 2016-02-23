@@ -14,11 +14,15 @@ class FlujosController extends AppController {
       'recursive' => -1,
       'order' => 'modified DESC'
     ));
+    $this->FlujosUser->virtualFields = array(
+      'estado_color' => "(IF(FlujosUser.estado = 'Finalizado','success',''))"
+    );
     $flujos_c = $this->FlujosUser->find('all', array(
       'recursive' => 0,
       'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*'),
       'order' => array('FlujosUser.created DESC')
     ));
+    //debug($flujos_c);exit;
     $this->set(compact('flujos','flujos_c'));
   }
 
@@ -40,39 +44,27 @@ class FlujosController extends AppController {
       'recuusive' => -1,
       'conditions' => array('Flujo.id' => $idFlujo)
     ));
+    
+    $this->Proceso->virtualFields = array(
+      'requisitos' => "(SELECT GROUP_CONCAT(condiciones.nombre SEPARATOR ', ') FROM procesos_condiciones pro_condiciones LEFT JOIN procesos AS condiciones ON (condiciones.id = pro_condiciones.condicion_id) WHERE pro_condiciones.proceso_id = Proceso.id GROUP BY pro_condiciones.proceso_id)"
+    );
+    
     $procesos = $this->Proceso->find('all', array(
       'recursive' => -1,
       'conditions' => array('Proceso.flujo_id' => $idFlujo),
       'order' => array('Proceso.id')
     ));
-    $flujos = $this->FlujosUser->find('all', array(
-      'recursive' => 0,
-      'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
-      'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*'),
-      'order' => array('FlujosUser.user_id')
-    ));
-    $this->set(compact('flujo', 'procesos', 'idFlujo','flujos'));
-  }
-
-  public function accion_flujo_m($idFlujo = null) {
-    $this->layout = 'ajax';
-    $flujos = $this->FlujosUser->find('all', array(
-      'recursive' => 0,
-      'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
-      'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*')
-    ));
-    $this->set(compact('flujos'));
-  }
-
-  public function accion_flujo_d($idFlujo = null) {
-    $this->layout = 'ajax';
+    //debug($procesos);exit;
+    $this->FlujosUser->virtualFields = array(
+      'estado_color' => "(IF(FlujosUser.estado = 'Finalizado','success',''))"
+    );
     $flujos = $this->FlujosUser->find('all', array(
       'recursive' => 0,
       'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
       'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*'),
       'order' => array('FlujosUser.created DESC')
     ));
-    $this->set(compact('flujos'));
+    $this->set(compact('flujo', 'procesos', 'idFlujo','flujos'));
   }
 
   public function eliminar($idFlujo = null) {
@@ -207,7 +199,7 @@ class FlujosController extends AppController {
     );
     $procesos = $this->Proceso->find('all', array(
       'recursive' => -1,
-      'conditions' => array('Proceso.flujo_id' => $idFlujo)
+      'conditions' => array('Proceso.flujo_id' => $idFlujo,'Proceso.auto_inicio' => 1)
     ));
     foreach ($procesos as $pro) {
       if (empty($pro['Proceso']['estado'])) {
@@ -269,5 +261,7 @@ class FlujosController extends AppController {
     $this->Session->setFlash("Se ha eliminado correctamente el flujo!!", 'msgbueno');
     $this->redirect(array('action' => 'index'));
   }
+  
+  
 
 }

@@ -6,7 +6,7 @@
 <!-- end .panel-heading section -->
 
 <?= $this->Form->create('Proceso', ['class' => 'form-validacion', 'id' => 'f-add']); ?>
-<div class="panel-body p25">
+<div class="panel-body p25 theme-primary">
     <div class="section row">
         <div class="col-md-12">
             <label for="firstname" class="field prepend-icon">
@@ -18,14 +18,37 @@
         </div>
     </div>
     <div class="section row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->text('tiempo', ['class' => 'gui-input','type' => 'number','min' => 0,'placeholder' => 'Dias de Vencimiento']); ?>
+                <?php echo $this->Form->text('tiempo', ['class' => 'gui-input', 'type' => 'number', 'min' => 0, 'placeholder' => 'Dias de Vencimiento']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-bookmark-o"></i>
                 </label>
             </label>
-            
+        </div>
+        <div class="col-md-6">
+            <label for="firstname" class="field prepend-icon">
+                <?php echo $this->Form->text('tiempo_alertas', ['class' => 'gui-input', 'type' => 'number', 'min' => 0, 'placeholder' => 'Alerta dias antes']); ?>
+                <label for="email" class="field-icon">
+                    <i class="fa fa-bookmark-o"></i>
+                </label>
+            </label>
+        </div>
+    </div>
+    <div class="section row">
+        <div class="col-md-6">
+            <div class="option-group field">
+                <label class="option">
+                    <?php echo $this->Form->checkbox('auto_inicio'); ?>
+                    <span class="checkbox"></span>Iniciar automatic.</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="option-group field">
+                <label class="option">
+                    <?php echo $this->Form->checkbox('auto_fin'); ?>
+                    <span class="checkbox"></span>Finalizar automatic.</label>
+            </div>
         </div>
     </div>
 </div>
@@ -34,7 +57,7 @@
 <div class="panel-footer">
     <button type="submit" class="button btn-primary">Registrar</button>
     <?php if (!empty($this->request->data['Proceso']['id'])): ?>
-      <?php echo $this->Html->link('Eliminar', array('action' => 'eliminar',$this->request->data['Proceso']['id']), array('class' => 'button btn-danger','confirm' => 'Esta seguro de eliminar el proceso??')) ?>
+      <?php echo $this->Html->link('Eliminar', array('action' => 'eliminar', $this->request->data['Proceso']['id']), array('class' => 'button btn-danger', 'confirm' => 'Esta seguro de eliminar el proceso??')) ?>
     <?php endif; ?>
 </div>
 <!-- end .form-footer section -->

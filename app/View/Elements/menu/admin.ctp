@@ -24,3 +24,12 @@
         </ul>
     </li>
 </ul>
+
+<script type="text/javascript">
+$('.topbar-menu-toggle').click(
+      function()
+      {
+            $('html,body').animate({scrollTop:'0px'}, 500);return false;
+      }
+);
+</script>

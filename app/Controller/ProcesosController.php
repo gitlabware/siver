@@ -113,7 +113,6 @@ class ProcesosController extends AppController {
       'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser,'ProcesosEstado.proceso_id' => $idProceso),
       'order' => array('ProcesosEstado.created DESC')
     ));
-    
     $this->set(compact('flujo', 'proceso', 'linea_tiempo', 'idFlujoUser', 'idProceso', 'tareas','estados'));
   }
   
@@ -146,7 +145,7 @@ class ProcesosController extends AppController {
     );
     $procesos = $this->Proceso->find('all', array(
       'recursive' => -1,
-      'conditions' => array('Proceso.flujo_id' => $idFlujo)
+      'conditions' => array('Proceso.flujo_id' => $idFlujo,'Proceso.auto_inicio' => 1)
     ));
     foreach ($procesos as $pro) {
       if (empty($pro['Proceso']['estado'])) {
@@ -218,6 +217,11 @@ class ProcesosController extends AppController {
     $this->request->data[$modelo]['proceso_id'] = $idProceso;
     //debug($procesos);exit;
     $this->set(compact('procesos','modelo','idTarea','idProceso'));
+  }
+  
+  public function activacion($idFlujoUser = null, $idProceso = null){
+    $this->layout = 'ajax';
+    
   }
 
 }

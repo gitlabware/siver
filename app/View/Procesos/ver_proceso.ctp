@@ -5,8 +5,6 @@
 <!-- Start: Topbar-Dropdown -->
 <div id="topbar-dropmenu">
     <div class="topbar-menu row">
-
-
         <div class="col-xs-6 col-sm-3">
             <a  href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'tarea', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'])); ?>" class="metro-tile">
                 <span class="metro-icon glyphicon glyphicon-plus"></span>
@@ -23,6 +21,20 @@
                   cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'adjunto', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0)); ?>');">
                 <span class="metro-icon glyphicon glyphicon-upload"></span>
                 <p class="metro-title">Subir Archivo</p>
+            </a>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <a  href="javascript:" class="metro-tile" onclick="cierra_elmenu();
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'vinculo', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0)); ?>');">
+                <span class="metro-icon fa fa-chain"></span>
+                <p class="metro-title">Vincular con Archivo</p>
+            </a>
+        </div>
+        <div class="col-xs-6 col-sm-3">
+            <a  href="javascript:" class="metro-tile" onclick="cierra_elmenu();
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'activacion', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0)); ?>');">
+                <span class="metro-icon fa fa-play-circle-o"></span>
+                <p class="metro-title">Activar Proceso</p>
             </a>
         </div>
     </div>
@@ -124,15 +136,23 @@
                                   </tr>
                               <tbody>
                                   <?php foreach ($adjuntos as $ad): ?>
-                                    <tr>
-                                        <td><?php echo $ad['Adjunto']['created'] ?></td>
-                                        <td><?php echo $ad['User']['nombre_completo'] ?></td>
-                                        <td><?php echo $ad['Adjunto']['nombre'] ?></td>
+                                    <tr class="<?php echo $ad[0]['mclase'] ?>">
+                                        <td><?php echo $ad[0]['created'] ?></td>
+                                        <td><?php echo $ad[0]['nombre_usuario'] ?></td>
+                                        <td><?php echo $ad[0]['nombre_original'] ?></td>
                                         <td>
-                                            <?php echo $this->Html->link('<i class="fa fa-download"></i>', array('controller' => 'Adjuntos', 'action' => 'descargar', $ad['Adjunto']['id']), array('class' => 'btn btn-success', 'title' => 'Descargar archivo', 'escape' => FALSE)) ?>
-                                            <?php if ($this->Session->read('Auth.User.id') == $ad['Adjunto']['user_id']): ?>
-                                              <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Adjuntos', 'action' => 'eliminar_archivo', $ad['Adjunto']['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar el archivo adjunto??')) ?>
-                                            <?php endif; ?>
+                                            <div class="btn-group" style="width: 120px;">
+                                                <?php echo $this->Html->link('<i class="fa fa-download"></i>', array('controller' => 'Adjuntos', 'action' => 'descargar', $ad[0]['id']), array('class' => 'btn btn-success', 'title' => 'Descargar archivo', 'escape' => FALSE)) ?>
+                                                <?php if ($ad[0]['atipo'] == 'Adjuntos'): ?>
+                                                  <?php if ($this->Session->read('Auth.User.id') == $ad[0]['user_id']): ?>
+                                                    <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Adjuntos', 'action' => 'eliminar_archivo', $ad[0]['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar el archivo adjunto??')) ?>
+                                                  <?php endif; ?>
+
+                                                <?php else: ?>
+                                                  <?php echo $this->Html->link('<i class="fa fa-unlink"></i>', array('controller' => 'Adjuntos', 'action' => 'desvincular', $ad[0]['id'], $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0), array('class' => 'btn btn-info', 'title' => 'Desvincular Archivo', 'escape' => FALSE)) ?>
+                                                <?php endif; ?>
+                                            </div>
+
                                         </td>
                                     </tr>
                                   <?php endforeach; ?>
