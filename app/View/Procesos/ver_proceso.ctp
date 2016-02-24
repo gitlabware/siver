@@ -209,9 +209,7 @@
                             <?php if ($this->Session->read('Auth.User.id') == $com['Comentario']['user_id']): ?>
                               <div class="widget-menu pull-right mr10">
                                   <div class="btn-group">
-
                                       <?php echo $this->Html->link('<span class="glyphicon glyphicon-remove fs11 "></span>', array('controller' => 'Comentarios', 'action' => 'eliminar', $com['Comentario']['id']), array('class' => 'btn btn-xs btn-danger', 'escape' => false, 'confirm' => 'Esta seguro de eliminar el comentario??', 'title' => 'Eliminar Comentario')) ?>
-
                                   </div>
                               </div>
                             <?php endif; ?>
@@ -233,28 +231,44 @@
 <aside id="sidebar_right" class="nano affix">
     <div class="sidebar-right-content nano-content p15">
         <?php if (!empty($estados)): ?>
-          <?php foreach ($estados as $es): ?>
-            <?php
-            $icono = '';
-            $color = '';
-            if ($es['ProcesosEstado']['estado'] === 'Finalizado') {
-              $icono = 'fa-check-circle';
-              $color = 'success';
-            } elseif ($es['ProcesosEstado']['estado'] === 'Reanudado') {
-              $icono = 'fa-repeat';
-              $color = 'info';
-            } elseif ($es['ProcesosEstado']['estado'] === 'Vencido') {
-              $icono = 'fa-exclamation-triangle';
-              $color = 'danger';
-            } elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
-              $icono = 'fa-circle';
-              $color = 'primary';
-            }
-            ?>
-            <blockquote class="blockquote-<?php echo $color; ?>">
-                <p><?php echo $es['ProcesosEstado']['estado']; ?> <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['created']; ?></span></p>
-            </blockquote>
-          <?php endforeach; ?>
+        <table style="width: 100%;">
+              <?php foreach ($estados as $es): ?>
+                <?php
+                $icono = '';
+                $color = '';
+                if ($es['ProcesosEstado']['estado'] === 'Finalizado') {
+                  $icono = 'fa-check-circle';
+                  $color = 'success';
+                } elseif ($es['ProcesosEstado']['estado'] === 'Reanudado') {
+                  $icono = 'fa-repeat';
+                  $color = 'info';
+                } elseif ($es['ProcesosEstado']['estado'] === 'Vencido') {
+                  $icono = 'fa-exclamation-triangle';
+                  $color = 'danger';
+                } elseif ($es['ProcesosEstado']['estado'] === 'Activo') {
+                  $icono = 'fa-circle';
+                  $color = 'primary';
+                }
+                ?>
+
+                
+                    <td>
+                      <?php echo $es['ProcesosEstado']['estado']; ?> <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['created']; ?></span>
+                    <?php if ($this->Session->read('Auth.User.id') == $flujo['FlujosUser']['user_id']): ?>
+                  <div class="widget-menu pull-right mr10">
+                      <div class="btn-group">
+                          <?php echo $this->Html->link('<span class="glyphicon glyphicon-remove fs11 "></span>', array('controller' => 'Procesos', 'action' => 'eliminar_estado', $es['ProcesosEstado']['id']), array('class' => 'btn btn-xs btn-danger', 'escape' => false, 'confirm' => 'Esta seguro de eliminar el estado del proceso??', 'title' => 'Eliminar Estado')) ?>
+                      </div>
+                  </div>
+                <?php endif; ?>
+                    </td>
+                </tr>
+
+              <?php endforeach; ?>
+
+          </table>
+
+
 
         <?php endif; ?>
         </ul>

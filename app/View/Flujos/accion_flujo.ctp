@@ -1,3 +1,6 @@
+<script>
+  $('body').addClass('sb-r-o');
+</script>
 <!-- Start: Topbar-Dropdown -->
 <div id="topbar-dropmenu">
     <div class="topbar-menu row">
@@ -50,7 +53,7 @@
               <?php
               $p_head = 'class="accordion-toggle accordion-icon link-unstyled collapsed"';
               $p_acor = 'class="panel-collapse collapse" style="height: 0px;"';
-              if (empty($flujos)) {
+              if (empty($flujos_c)) {
                 $p_head = 'class="accordion-toggle accordion-icon link-unstyled" aria-expanded="true"';
                 $p_acor = 'class="panel-collapse collapse in"';
               }
@@ -105,7 +108,7 @@
             <?php endif; ?>
         </div>
 
-        <?php if (!empty($flujos)): ?>
+        <?php if (!empty($flujos_c)): ?>
           <div class="panel panel-success">
               <div class="panel-heading">
                   <span class="fa fa-star-o mr5"></span> Flujos Creados
@@ -122,19 +125,19 @@
                               </tr>
                           </thead>
                           <tbody>
-                              <?php foreach ($flujos as $flu): ?>
+                              <?php foreach ($flujos_c as $flu): ?>
                                 <tr class="<?php echo $flu['FlujosUser']['estado_color']; ?>">
                                     <td><?php echo $flu['FlujosUser']['descripcion']; ?></td>
                                     <td><?php echo $flu['User']['nombre_completo']; ?></td>
                                     <td><?php echo $flu['FlujosUser']['created']; ?></td>
                                     <td class="text-center" style="font-size: 16px;">
-                                            <div class="btn-group" style="width: 120px;">
+                                        <div class="btn-group" style="width: 120px;">
 
-                                                <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
-                                                <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>');" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
-                                                <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??','class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
-                                            </div>
-                                        </td>
+                                            <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
+                                            <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>');" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
+                                            <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
+                                        </div>
+                                    </td>
                                 </tr>
                               <?php endforeach; ?>
                           </tbody>
@@ -145,3 +148,34 @@
         <?php endif; ?>
     </div>
 </section>
+<?php $this->start('fueracontent'); ?>
+<aside id="sidebar_right" class="nano affix">
+    <div class="sidebar-right-content nano-content p15">
+        <div data-offset-top="200">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table admin-form theme-warning tc-checkbox-1 fs13">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th class="text-center" style="font-size: 16px;">FLUJOS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($flujos as $flu): ?>
+                                  <tr>
+                                      <td class="primary text-center" onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'accion_flujo', $flu['Flujo']['id'])); ?>';" style="font-size: 16px; cursor: pointer;">
+                                          <b><?= $flu['Flujo']['nombre'] ?></b>
+                                      </td>
+                                  </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</aside>
+<?php $this->end(); ?>

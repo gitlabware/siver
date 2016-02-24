@@ -51,6 +51,26 @@
             </div>
         </div>
     </div>
+    <?php
+    $checked = '';
+    if (empty($this->request->data['Proceso']['id'])) {
+      $checked = 'checked';
+    }
+    ?>
+    <div class="section row">
+        <input name="data[Proceso][tipo_dias]" value="" type="hidden" />
+        <div class="option-group field">
+            <!--<label class="option">
+                <input type="radio" name="data[Proceso][tipo_dias]" value="ddddd" <?php echo $checked ?> >
+                <span class="radio"></span>D&iacute;as h&aacute;biles y feriados</label>
+            <label class="option">
+                <input type="radio" name="data[Proceso][tipo_dias]" value="eeeee">
+                <span class="radio"></span>Todos los d&iacute;as</label>-->
+
+            <?php //echo $this->Form->radio('tipo_dias', array('ddd' => 'ddd','eee' => 'eee'), array()); ?>
+        </div>
+        <!-- end .option-group section -->
+    </div>
 </div>
 <!-- end .form-body section -->
 

@@ -7,9 +7,13 @@
 
 <?= $this->Form->create('Adjunto', ['class' => 'form-validacion', 'id' => 'f-add']); ?>
 <div class="panel-body p25">
+    <div class="alert alert-info pastel alert-dismissable">
+        <i class="fa fa-info pr10"></i>
+        <strong>Informacion!</strong> Se cambiara o se creara un estado de Activo en el proceso que podria influir en dias de vencimiento y activacion o finalizacion automatica.
+    </div>
     <div class="section">
         <label for="datepicker1" class="field prepend-icon">
-            <?php echo $this->Form->text('Tarea.fechainicio', array('class' => 'form-control', 'placeholder' => 'Fecha de Activacion', 'id' => 'ddatepicker1')); ?>
+            <?php echo $this->Form->text('ProcesosEstado.created', array('class' => 'form-control', 'placeholder' => 'Fecha de Activacion', 'id' => 'ddatepicker1', 'value' => date("Y-m-d H:i:s"),'required')); ?>
             <label class="field-icon">
                 <i class="fa fa-calendar-o"></i>
             </label>
@@ -23,11 +27,10 @@
 </div>
 <!-- end .form-footer section -->
 <?php //echo $this->Form->hidden('id')?> 
-<?php echo $this->Form->hidden('user_id', array('value' => $this->Session->read('Auth.User.id'))) ?> 
-<?php echo $this->Form->hidden('tipo', array('value' => 'Carpeta')); ?>
-<?php echo $this->Form->hidden('extension', array('value' => '')); ?>
-
-<?php echo $this->Form->hidden('estado', array('value' => 'Activo')); ?>
+<?php echo $this->Form->hidden('ProcesosEstado.user_id', array('value' => $this->Session->read('Auth.User.id'))) ?> 
+<?php echo $this->Form->hidden('ProcesosEstado.flujos_user_id', array('value' => $idFlujosUser)); ?>
+<?php echo $this->Form->hidden('ProcesosEstado.proceso_id', array('value' => $idProceso)); ?>
+<?php echo $this->Form->hidden('ProcesosEstado.estado', array('value' => 'Activo')); ?>
 <?= $this->Form->end(); ?>
 <?php
 echo $this->Html->script(

@@ -8,15 +8,18 @@ class ProcesosController extends AppController {
   public function proceso($idFlujo = null, $idProceso = null) {
     $this->layout = 'ajax';
     if (!empty($this->request->data['Proceso'])) {
+      //debug($this->request->data);exit;
       $this->Proceso->create();
       $this->Proceso->save($this->request->data['Proceso']);
       $this->Session->setFlash('Se ha registrado correctamente el registro!!', 'msgbueno');
       $this->redirect($this->referer());
+      
     }
     $this->Proceso->id = $idProceso;
     $this->request->data = $this->Proceso->read();
     $this->request->data['Proceso']['flujo_id'] = $idFlujo;
     $this->request->data['Proceso']['user_id'] = $this->Session->read('Auth.User.id');
+    //debug($this->request->data);exit;
   }
 
   public function condiciones($idFlujo = null, $idProceso = NULL) {
@@ -108,18 +111,18 @@ class ProcesosController extends AppController {
       'fields' => array('Tarea.*', 'Asignado.nombre_completo', 'User.nombre_completo'),
       'order' => array('Tarea.created DESC')
     ));
-    $estados = $this->ProcesosEstado->find('all',array(
+    $estados = $this->ProcesosEstado->find('all', array(
       'recursive' => -1,
-      'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser,'ProcesosEstado.proceso_id' => $idProceso),
+      'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $idProceso),
       'order' => array('ProcesosEstado.created DESC')
     ));
-    $this->set(compact('flujo', 'proceso', 'linea_tiempo', 'idFlujoUser', 'idProceso', 'tareas','estados'));
+    $this->set(compact('flujo', 'proceso', 'linea_tiempo', 'idFlujoUser', 'idProceso', 'tareas', 'estados'));
   }
-  
-  public function get_estados($idFlujoUser = null, $idProceso = null){
-    $estados = $this->ProcesosEstado->find('all',array(
+
+  public function get_estados($idFlujoUser = null, $idProceso = null) {
+    $estados = $this->ProcesosEstado->find('all', array(
       'recursive' => -1,
-      'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser,'ProcesosEstado.proceso_id' => $idProceso),
+      'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $idProceso),
       'order' => array('ProcesosEstado.created DESC')
     ));
     return $estados;
@@ -145,7 +148,7 @@ class ProcesosController extends AppController {
     );
     $procesos = $this->Proceso->find('all', array(
       'recursive' => -1,
-      'conditions' => array('Proceso.flujo_id' => $idFlujo,'Proceso.auto_inicio' => 1)
+      'conditions' => array('Proceso.flujo_id' => $idFlujo, 'Proceso.auto_inicio' => 1)
     ));
     foreach ($procesos as $pro) {
       if (empty($pro['Proceso']['estado'])) {
@@ -202,7 +205,7 @@ class ProcesosController extends AppController {
     }
   }
 
-  public function ajax_sel_procesos($idFlujosUser = null,$modelo = null,$idProceso = null,$idTarea = null) {
+  public function ajax_sel_procesos($idFlujosUser = null, $modelo = null, $idProceso = null, $idTarea = null) {
     //debug($idTarea);exit;
     $this->layout = 'ajax';
     $flujo = $this->FlujosUser->findByid($idFlujosUser, null, null, -1);
@@ -216,12 +219,102 @@ class ProcesosController extends AppController {
     }
     $this->request->data[$modelo]['proceso_id'] = $idProceso;
     //debug($procesos);exit;
-    $this->set(compact('procesos','modelo','idTarea','idProceso'));
-  }
-  
-  public function activacion($idFlujoUser = null, $idProceso = null){
-    $this->layout = 'ajax';
-    
+    $this->set(compact('procesos', 'modelo', 'idTarea', 'idProceso'));
   }
 
+  public function activacion($idFlujosUser = null, $idProceso = null) {
+    $this->layout = 'ajax';
+    if (!empty($this->request->data['ProcesosEstado'])) {
+      $this->ProcesosEstado->create();
+      $this->ProcesosEstado->save($this->request->data['ProcesosEstado']);
+      $this->Session->setFlash("Se ha registrado el proceso activo!!", 'msgbueno');
+      $this->redirect($this->referer());
+    }
+
+    $this->set(compact('idFlujosUser', 'idProceso'));
+  }
+
+  public function eliminar_estado($idProcesosEstado = null) {
+    if ($this->ProcesosEstado->delete($idProcesosEstado)) {
+      $this->Session->setFlash("Se ha eliminado correctamente el estado del Proceso!!", 'msgbueno');
+    } else {
+      $this->Session->setFlash("No se ha podido eliminar el estado. Intente nuevamente!!", 'msgerror');
+    }
+    $this->redirect($this->referer());
+  }
+
+  public function getWorkingDays($startDate, $endDate, $holidays) {
+    // do strtotime calculations just once
+    $endDate = strtotime($endDate);
+    $startDate = strtotime($startDate);
+
+
+    //The total number of days between the two dates. We compute the no. of seconds and divide it to 60*60*24
+    //We add one to inlude both dates in the interval.
+    $days = ($endDate - $startDate) / 86400 + 1;
+
+    $no_full_weeks = floor($days / 7);
+    $no_remaining_days = fmod($days, 7);
+
+    //It will return 1 if it's Monday,.. ,7 for Sunday
+    $the_first_day_of_week = date("N", $startDate);
+    $the_last_day_of_week = date("N", $endDate);
+
+    //---->The two can be equal in leap years when february has 29 days, the equal sign is added here
+    //In the first case the whole interval is within a week, in the second case the interval falls in two weeks.
+    
+    
+    if ($the_first_day_of_week <= $the_last_day_of_week) {
+      if ($the_first_day_of_week <= 6 && 6 <= $the_last_day_of_week)
+        $no_remaining_days--;
+      if ($the_first_day_of_week <= 7 && 7 <= $the_last_day_of_week)
+        $no_remaining_days--;
+    }
+    else {
+      // (edit by Tokes to fix an edge case where the start day was a Sunday
+      // and the end day was NOT a Saturday)
+      // the day of the week for start is later than the day of the week for end
+      if ($the_first_day_of_week == 7) {
+        // if the start date is a Sunday, then we definitely subtract 1 day
+        $no_remaining_days--;
+
+        if ($the_last_day_of_week == 6) {
+          // if the end date is a Saturday, then we subtract another day
+          $no_remaining_days--;
+        }
+      } else {
+        // the start date was a Saturday (or earlier), and the end date was (Mon..Fri)
+        // so we skip an entire weekend and subtract 2 days
+        $no_remaining_days -= 2;
+      }
+    }
+
+    //The no. of business days is: (number of weeks between the two dates) * (5 working days) + the remainder
+//---->february in none leap years gave a remainder of 0 but still calculated weekends between first and last day, this is one way to fix it
+    $workingDays = $no_full_weeks * 5;
+    if ($no_remaining_days > 0) {
+      $workingDays += $no_remaining_days;
+    }
+
+    //We subtract the holidays
+    foreach ($holidays as $holiday) {
+      $time_stamp = strtotime($holiday);
+      //If the holiday doesn't fall in weekend
+      if ($startDate <= $time_stamp && $time_stamp <= $endDate && date("N", $time_stamp) != 6 && date("N", $time_stamp) != 7)
+        $workingDays--;
+    }
+    
+
+    return $workingDays;
+  }
+
+//Example:
+  public function prueba() {
+    //$holidays = array("2008-12-25", "2008-12-26", "2009-01-01");
+    $holidays = array();
+    debug($this->getWorkingDays("2016-02-01", "2016-03-09", $holidays));
+    exit;
+  }
+
+// => will return 7
 }

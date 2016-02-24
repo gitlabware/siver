@@ -58,13 +58,17 @@ class FlujosController extends AppController {
     $this->FlujosUser->virtualFields = array(
       'estado_color' => "(IF(FlujosUser.estado = 'Finalizado','success',''))"
     );
-    $flujos = $this->FlujosUser->find('all', array(
+    $flujos_c = $this->FlujosUser->find('all', array(
       'recursive' => 0,
       'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
       'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*'),
       'order' => array('FlujosUser.created DESC')
     ));
-    $this->set(compact('flujo', 'procesos', 'idFlujo','flujos'));
+    $flujos = $this->Flujo->find('all', array(
+      'recursive' => -1,
+      'order' => 'modified DESC'
+    ));
+    $this->set(compact('flujo', 'procesos', 'idFlujo','flujos','flujos_c'));
   }
 
   public function eliminar($idFlujo = null) {
