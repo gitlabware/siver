@@ -3,7 +3,7 @@
 class ProcesosController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Proceso', 'ProcesosCondicione', 'ProcesosEstado', 'FlujosUser', 'Tarea');
+  public $uses = array('Proceso', 'ProcesosCondicione', 'ProcesosEstado', 'FlujosUser', 'Tarea', 'Feriado', 'Alerta');
 
   public function proceso($idFlujo = null, $idProceso = null) {
     $this->layout = 'ajax';
@@ -13,7 +13,6 @@ class ProcesosController extends AppController {
       $this->Proceso->save($this->request->data['Proceso']);
       $this->Session->setFlash('Se ha registrado correctamente el registro!!', 'msgbueno');
       $this->redirect($this->referer());
-      
     }
     $this->Proceso->id = $idProceso;
     $this->request->data = $this->Proceso->read();
@@ -248,7 +247,6 @@ class ProcesosController extends AppController {
     $endDate = strtotime($endDate);
     $startDate = strtotime($startDate);
 
-
     //The total number of days between the two dates. We compute the no. of seconds and divide it to 60*60*24
     //We add one to inlude both dates in the interval.
     $days = ($endDate - $startDate) / 86400 + 1;
@@ -262,8 +260,8 @@ class ProcesosController extends AppController {
 
     //---->The two can be equal in leap years when february has 29 days, the equal sign is added here
     //In the first case the whole interval is within a week, in the second case the interval falls in two weeks.
-    
-    
+
+
     if ($the_first_day_of_week <= $the_last_day_of_week) {
       if ($the_first_day_of_week <= 6 && 6 <= $the_last_day_of_week)
         $no_remaining_days--;
@@ -303,7 +301,7 @@ class ProcesosController extends AppController {
       if ($startDate <= $time_stamp && $time_stamp <= $endDate && date("N", $time_stamp) != 6 && date("N", $time_stamp) != 7)
         $workingDays--;
     }
-    
+
 
     return $workingDays;
   }
@@ -312,9 +310,160 @@ class ProcesosController extends AppController {
   public function prueba() {
     //$holidays = array("2008-12-25", "2008-12-26", "2009-01-01");
     $holidays = array();
-    debug($this->getWorkingDays("2016-02-01", "2016-03-09", $holidays));
+
+
+    $fecha1 = new DateTime("2016-02-15");
+    $fecha2 = new DateTime("2016-03-02");
+    // desde el dia siguiente
+    $fecha = $fecha1->diff($fecha2);
+
+    //printf('%d años, %d meses, %d días, %d horas, %d minutos', $fecha->y, $fecha->m, $fecha->d, $fecha->h, $fecha->i);
+    debug($fecha->days + 1);
+    //exit;
+    $time_stamp = strtotime("2016-02-28");
+    debug(date("N", $time_stamp));
+
+    debug($this->getWorkingDays("2016-02-15", "2016-03-02", $holidays));
+    exit;
+  }
+//script para ejecutar con cronjob para que pueda generar automaticamente alertas de aviso para procesos en flujos
+  public function creaalertas() {
+
+    $sql1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = ProcesosEstado.flujos_user_id AND pres.proceso_id = ProcesosEstado.proceso_id ORDER BY pres.id DESC LIMIT 1)";
+    $sql2 = "(SELECT DATE(pres.created) FROM procesos_estados pres WHERE pres.flujos_user_id = ProcesosEstado.flujos_user_id AND pres.proceso_id = ProcesosEstado.proceso_id ORDER BY pres.id DESC LIMIT 1)";
+    $sql3 = "(SELECT DATE(alertas.fecha_activacion) FROM alertas WHERE alertas.proceso_id = ProcesosEstado.proceso_id AND alertas.flujos_user_id = ProcesosEstado.flujos_user_id AND alertas.tipo LIKE 'Alerta Proceso' LIMIT 1)";
+    $this->ProcesosEstado->virtualFields = array(
+      'estado' => "$sql1",
+      'fecha_activado' => "$sql2"
+    );
+    $procesos = $this->ProcesosEstado->find('all', array(
+      'recursive' => 0,
+      'conditions' => array(
+        "IF(ISNULL($sql1),FALSE,IF($sql1 = 'Activo',TRUE,FALSE))",
+        'FlujosUser.estado LIKE' => 'Activo',
+        'Proceso.tiempo !=' => NULL,
+        'Proceso.tiempo_alertas !=' => NULL,
+        "IF(ISNULL($sql3),TRUE,IF($sql3 = $sql2,FALSE,TRUE))"
+      ),
+      'group' => array('ProcesosEstado.flujos_user_id', 'ProcesosEstado.proceso_id'),
+      'fields' => array('Proceso.*', 'ProcesosEstado.*', 'FlujosUser.descripcion')
+    ));
+    /*debug($procesos);
+    exit;*/
+    foreach ($procesos as $pro) {
+      if ($pro['Proceso']['tipo_dias'] === 'Dias habiles y feriados') {
+        $feriados = $this->Feriado->find('list', array(
+          'recursive' => -1,
+          'conditions' => array(
+            'Feriado.fecha >=' => $pro['ProcesosEstado']['fecha_activado'],
+            'Feriado.fecha <=' => date('Y-m-d')
+          ),
+          'fields' => array('Feriado.id', 'Feriado.fecha')
+        ));
+        $g_dias = $this->getWorkingDays($pro['ProcesosEstado']['fecha_activado'], date('Y-m-d'), $feriados);
+        if ($g_dias >= ($pro['Proceso']['tiempo'] - $pro['Proceso']['tiempo_alertas'])) {
+          $this->Alerta->create();
+          $d_alerta['user_id'] = 0;
+          $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
+          $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
+          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias!!';
+          $d_alerta['tipo'] = 'Alerta Proceso';
+          $d_alerta['estado'] = 'Activo';
+          $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
+          $this->Alerta->save($d_alerta);
+        }
+      } else {
+        $fecha1 = new DateTime($pro['ProcesosEstado']['fecha_activado']);
+        $fecha2 = new DateTime(date('Y-m-d'));
+        // desde el dia siguiente
+        $fecha = $fecha1->diff($fecha2);
+        $g_dias = ($fecha->days + 1);
+        if ($g_dias >= ($pro['Proceso']['tiempo'] - $pro['Proceso']['tiempo_alertas'])) {
+          $this->Alerta->create();
+          $d_alerta['user_id'] = 0;
+          $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
+          $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
+          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias!!';
+          $d_alerta['tipo'] = 'Alerta Proceso';
+          $d_alerta['estado'] = 'Activo';
+          $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
+          $this->Alerta->save($d_alerta);
+        }
+      }
+    }
+
+    //debug($procesos);
+    exit;
+  }
+  //finaliza el proceso en caso de que este activado la auto  finalizacion para cronjob
+//script para ejecutar con cronjob para que pueda generar automaticamente alertas de finalizacion para procesos en flujos
+  public function creaalertasfin() {
+
+    $sql1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = ProcesosEstado.flujos_user_id AND pres.proceso_id = ProcesosEstado.proceso_id ORDER BY pres.id DESC LIMIT 1)";
+    $sql2 = "(SELECT DATE(pres.created) FROM procesos_estados pres WHERE pres.flujos_user_id = ProcesosEstado.flujos_user_id AND pres.proceso_id = ProcesosEstado.proceso_id ORDER BY pres.id DESC LIMIT 1)";
+    $sql3 = "(SELECT DATE(alertas.fecha_activacion) FROM alertas WHERE alertas.proceso_id = ProcesosEstado.proceso_id AND alertas.flujos_user_id = ProcesosEstado.flujos_user_id AND alertas.tipo LIKE 'Alerta Fin Proceso' LIMIT 1)";
+    $this->ProcesosEstado->virtualFields = array(
+      'estado' => "$sql1",
+      'fecha_activado' => "$sql2"
+    );
+    $procesos = $this->ProcesosEstado->find('all', array(
+      'recursive' => 0,
+      'conditions' => array(
+        'Proceso.auto_fin' => 1,
+        "IF(ISNULL($sql1),FALSE,IF($sql1 = 'Activo',TRUE,FALSE))",
+        'FlujosUser.estado LIKE' => 'Activo',
+        'Proceso.tiempo !=' => NULL,
+        "IF(ISNULL($sql3),TRUE,IF($sql3 = $sql2,FALSE,TRUE))"
+      ),
+      'group' => array('ProcesosEstado.flujos_user_id', 'ProcesosEstado.proceso_id'),
+      'fields' => array('Proceso.*', 'ProcesosEstado.*', 'FlujosUser.descripcion')
+    ));
+    /*debug($procesos);
+    exit;*/
+    foreach ($procesos as $pro) {
+      if ($pro['Proceso']['tipo_dias'] === 'Dias habiles y feriados') {
+        $feriados = $this->Feriado->find('list', array(
+          'recursive' => -1,
+          'conditions' => array(
+            'Feriado.fecha >=' => $pro['ProcesosEstado']['fecha_activado'],
+            'Feriado.fecha <=' => date('Y-m-d')
+          ),
+          'fields' => array('Feriado.id', 'Feriado.fecha')
+        ));
+        $g_dias = $this->getWorkingDays($pro['ProcesosEstado']['fecha_activado'], date('Y-m-d'), $feriados);
+        if ($g_dias >= ($pro['Proceso']['tiempo'])) {
+          $this->Alerta->create();
+          $d_alerta['user_id'] = 0;
+          $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
+          $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
+          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias!!';
+          $d_alerta['tipo'] = 'Alerta Fin Proceso';
+          $d_alerta['estado'] = 'Activo';
+          $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
+          $this->Alerta->save($d_alerta);
+        }
+      } else {
+        $fecha1 = new DateTime($pro['ProcesosEstado']['fecha_activado']);
+        $fecha2 = new DateTime(date('Y-m-d'));
+        // desde el dia siguiente
+        $fecha = $fecha1->diff($fecha2);
+        $g_dias = ($fecha->days + 1);
+        if ($g_dias >= ($pro['Proceso']['tiempo'])) {
+          $this->Alerta->create();
+          $d_alerta['user_id'] = 0;
+          $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
+          $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
+          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' ha vencido en '.date('d/mm/Y');
+          $d_alerta['tipo'] = 'Alerta Fin Proceso';
+          $d_alerta['estado'] = 'Activo';
+          $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
+          $this->Alerta->save($d_alerta);
+        }
+      }
+    }
+
+    //debug($procesos);
     exit;
   }
 
-// => will return 7
 }

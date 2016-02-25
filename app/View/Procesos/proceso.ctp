@@ -52,22 +52,26 @@
         </div>
     </div>
     <?php
-    $checked = '';
     if (empty($this->request->data['Proceso']['id'])) {
-      $checked = 'checked';
+      $checked = 'Dias habiles y feriados';
+    } else {
+      $checked = $this->request->data['Proceso']['tipo_dias'];
     }
     ?>
-    <div class="section row">
-        <input name="data[Proceso][tipo_dias]" value="" type="hidden" />
+    <div class="section">
+        
         <div class="option-group field">
-            <!--<label class="option">
-                <input type="radio" name="data[Proceso][tipo_dias]" value="ddddd" <?php echo $checked ?> >
-                <span class="radio"></span>D&iacute;as h&aacute;biles y feriados</label>
             <label class="option">
-                <input type="radio" name="data[Proceso][tipo_dias]" value="eeeee">
-                <span class="radio"></span>Todos los d&iacute;as</label>-->
-
-            <?php //echo $this->Form->radio('tipo_dias', array('ddd' => 'ddd','eee' => 'eee'), array()); ?>
+                <?php
+                echo $this->Form->radio('Proceso.tipo_dias', array('Dias habiles y feriados' => 'Dias habiles y feriados &nbsp;&nbsp;', 'Todos los dias' => 'Todos los dias &nbsp;&nbsp;'), array(
+                  'separator' => '<span class="radio"></span></label><label class="option">',
+                  'label' => false,
+                  'legend' => false,
+                  'value' => $checked
+                ));
+                ?>
+                <span class="radio"></span>
+            </label>
         </div>
         <!-- end .option-group section -->
     </div>

@@ -3,7 +3,7 @@
 class TareasController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Tarea', 'User', 'Proceso', 'FlujosUser', 'ProcesosEstado', 'TareasEstado', 'Comentario');
+  public $uses = array('Tarea', 'User', 'Proceso', 'FlujosUser', 'ProcesosEstado', 'TareasEstado', 'Comentario', 'Feriado');
   public $components = array('RequestHandler');
 
   public function beforeFilter() {
@@ -45,7 +45,7 @@ class TareasController extends AppController {
     $sql_u = "$sql1 UNION $sql2 UNION $sql3 UNION $sql4 UNION $sql5 UNION $sql6 ORDER BY created DESC LIMIT 15";
 
     $actividades = $this->Tarea->query($sql_u);
-     /*debug($actividades);
+    /* debug($actividades);
       exit; */
     $comentarios = $this->Comentario->find('all', array(
       'recursive' => 0,
@@ -64,7 +64,7 @@ class TareasController extends AppController {
       'order' => array('Tarea.created DESC'),
       'limit' => 10
     ));
-    
+
     $mis_tareas = $this->Tarea->find('all', array(
       'recursive' => 0,
       'conditions' => array(
@@ -126,7 +126,7 @@ class TareasController extends AppController {
       }
     }
     //debug($proceso);exit;
-    $this->set(compact('usuarios', 'proceso', 'flujo','idFlujoUser','idProceso'));
+    $this->set(compact('usuarios', 'proceso', 'flujo', 'idFlujoUser', 'idProceso'));
   }
 
   public function ver_tarea($idFlujoUser = null, $idProceso = null, $idTarea = null) {
@@ -147,8 +147,8 @@ class TareasController extends AppController {
       'conditions' => array('TareasEstado.tarea_id' => $idTarea),
       'order' => array('TareasEstado.created DESC')
     ));
-    
-    
+
+
     $this->set(compact('tarea', 'proceso', 'flujo', 'idFlujoUser', 'idProceso', 'estados', 'estado'));
   }
 
@@ -267,7 +267,9 @@ class TareasController extends AppController {
     ));
     //debug($tareas);exit;
     $array = array();
-    foreach ($tareas as $key => $ta) {
+    $keyi = 0;
+    foreach ($tareas as $ta) {
+      
       $fecha_fin = '';
       $fecha_ini = $ta[0]['fecha_inicio'];
       if ($ta[0]['tiempo_inicial'] !== '00:00:00') {
@@ -297,7 +299,7 @@ class TareasController extends AppController {
       } else {
         $idProceso = 0;
       }
-      $array[$key] = array(
+      $array[$keyi] = array(
         "id" => $ta['Tarea']['id'],
         "title" => $ta['Tarea']['descripcion'],
         "start" => $fecha_ini,
@@ -305,6 +307,27 @@ class TareasController extends AppController {
         "className" => 'fc-event-success',
         'url' => "ver_tarea/$idFlujosUser/$idProceso/$idTarea"
       );
+      $keyi++;
+    }
+
+    $feriados = $this->Feriado->find('all', array(
+      'recursive' => -1,
+      'conditions' => array(
+        'DATE(Feriado.fecha) >=' => $this->request->data['inicio'],
+        'DATE(Feriado.fecha) <=' => $this->request->data['fin']
+      )
+    ));
+    foreach ($feriados as $fe) {
+      
+      $array[$keyi] = array(
+        "id" => 'f-'.$fe['Feriado']['id'],
+        "title" => $fe['Feriado']['nombre'],
+        "start" => $fe['Feriado']['fecha'],
+        "end" => '',
+        "className" => 'fc-event-warning feriados',
+        'url' => ""
+      );
+      $keyi++;
     }
 
 
@@ -360,7 +383,7 @@ class TareasController extends AppController {
       exit; */
   }
 
-  public function ajax_sel_tareas($idFlujosUser = null,$idProceso = null,$idTarea = null) {
+  public function ajax_sel_tareas($idFlujosUser = null, $idProceso = null, $idTarea = null) {
     //debug($idFlujosUser);exit;
     $this->layout = 'ajax';
     $flujo = $this->FlujosUser->findByid($idFlujosUser, null, null, -1);
@@ -368,7 +391,7 @@ class TareasController extends AppController {
     if (!empty($flujo)) {
       $tareas = $this->Tarea->find('list', array(
         'recursive' => -1,
-        'conditions' => array('Tarea.flujos_user_id' => $idFlujosUser,'Tarea.proceso_id' => $idProceso),
+        'conditions' => array('Tarea.flujos_user_id' => $idFlujosUser, 'Tarea.proceso_id' => $idProceso),
         'fields' => array('Tarea.descripcion')
       ));
     }

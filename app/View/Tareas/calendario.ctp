@@ -1,5 +1,40 @@
-<link rel="stylesheet" type="text/css" href="<?php echo $this->request->webroot; ?>js/vendor/plugins/fullcalendar/fullcalendar.min.css" media="screen">
-<!-- Begin: Content -->
+<!--<link rel="stylesheet" type="text/css" href="<?php echo $this->request->webroot; ?>css/../js/vendor/plugins/fullcalendar/fullcalendar.min.css" media="screen">-->
+<?php
+echo $this->Html->css(array(
+  '../js/vendor/plugins/fullcalendar/fullcalendar.min'
+  )
+  , array(
+  'block' => 'addcssb',
+  'media' => 'screen'
+  )
+);
+
+?>
+<script>
+  $('body').addClass('calendar-page');
+</script>
+
+<div id="topbar-dropmenu">
+    <div class="topbar-menu row">
+
+        <div class="col-xs-6 col-sm-3">
+            <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Feriados', 'action' => 'feriado')); ?>');">
+                <span class="metro-icon fa fa-calendar"></span>
+                <p class="metro-title">Nuevo Feriado</p>
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+  function cierra_elmenu() {
+      $('.metro-modal').fadeOut('fast');
+      setTimeout(function () {
+          $('#topbar-dropmenu').slideToggle(150).toggleClass('topbar-menu-open');
+      }, 250);
+  }
+
+</script>
 <section id="content" class="table-layout animated fadeIn">
     <!-- begin: .tray-left -->
     <aside class="tray tray-left tray290" data-tray-mobile="#content > .tray-center">
@@ -19,7 +54,7 @@
 
             <!-- Standard Events -->
             <?php foreach ($tareas_re as $ta): ?>
-            <div class='fc-event fc-event-primary' onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Tareas','action' => 'ver_tarea',$ta['Tarea']['flujos_user_id'],$ta['Tarea']['proceso_id'],$ta['Tarea']['id']))?>';" data-event="primary" data-permiso="no" data-miid="<?php echo $ta['Tarea']['id'] ?>">
+              <div class='fc-event fc-event-primary' onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'ver_tarea', $ta['Tarea']['flujos_user_id'], $ta['Tarea']['proceso_id'], $ta['Tarea']['id'])) ?>';" data-event="primary" data-permiso="no" data-miid="<?php echo $ta['Tarea']['id'] ?>">
                   <div class="fc-event-icon">
                       <span class="fa fa-tasks"></span>
                   </div>
@@ -32,7 +67,7 @@
             <!-- Reoccuring Events -->
             <h6 class="mt20"> Tareas Pendientes: </h6>
             <?php foreach ($tareas_pe as $ta): ?>
-              <div class="fc-event fc-event-system"  onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Tareas','action' => 'ver_tarea',$ta['Tarea']['flujos_user_id'],$ta['Tarea']['proceso_id'],$ta['Tarea']['id']))?>';" data-event="system" data-permiso="si" data-miid="<?php echo $ta['Tarea']['id'] ?>">
+              <div class="fc-event fc-event-system"  onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'ver_tarea', $ta['Tarea']['flujos_user_id'], $ta['Tarea']['proceso_id'], $ta['Tarea']['id'])) ?>';" data-event="system" data-permiso="si" data-miid="<?php echo $ta['Tarea']['id'] ?>">
                   <div class="fc-event-icon">
                       <span class="fa fa-clock-o"></span>
                   </div>
@@ -129,6 +164,7 @@ echo $this->Html->script(array(
                   {
                       //data: return data from server
                       //$("#parte").html(data);
+                      $('#calendar').fullCalendar( 'refetchEvents' );
                   },
                   error: function (jqXHR, textStatus, errorThrown)
                   {
@@ -136,5 +172,10 @@ echo $this->Html->script(array(
                       alert("error");
                   }
               });
+  }
+  
+  function feriado(id){
+    //alert(id);
+    cargarmodal('<?php echo $this->Html->url(array('controller' => 'Feriados', 'action' => 'feriado')); ?>/'+id);
   }
 </script>
