@@ -3,7 +3,7 @@
 class TareasController extends AppController {
 
   public $layout = 'svergara';
-  public $uses = array('Tarea', 'User', 'Proceso', 'FlujosUser', 'ProcesosEstado', 'TareasEstado', 'Comentario', 'Feriado');
+  public $uses = array('Tarea', 'User', 'Proceso', 'FlujosUser', 'ProcesosEstado', 'TareasEstado', 'Comentario', 'Feriado', 'Alerta', 'AlertasUser');
   public $components = array('RequestHandler');
 
   public function beforeFilter() {
@@ -78,6 +78,8 @@ class TareasController extends AppController {
       'order' => array('FlujosUser.created DESC'),
       'limit' => 10
     ));
+
+
     $this->set(compact('actividades', 'comentarios', 'tareas', 'mis_tareas', 'flujos'));
   }
 
@@ -269,7 +271,6 @@ class TareasController extends AppController {
     $array = array();
     $keyi = 0;
     foreach ($tareas as $ta) {
-      
       $fecha_fin = '';
       $fecha_ini = $ta[0]['fecha_inicio'];
       if ($ta[0]['tiempo_inicial'] !== '00:00:00') {
@@ -277,10 +278,6 @@ class TareasController extends AppController {
       }
       if (!empty($ta[0]['fecha_fin']) && $ta[0]['tiempo_fin'] !== '00:00:00') {
         $fecha_fin = $ta[0]['fecha_fin'] . ' ' . $ta[0]['tiempo_fin'];
-        /* $fecha_fin = date('Y-m-d', strtotime($ta[0]['fecha_fin'] . ' +1 day'));
-          if ($ta[0]['tiempo_fin'] !== '00:00:00') {
-          $fecha_fin = $fecha_fin.' ' . $ta[0]['tiempo_fin'];
-          } */
       } elseif (!empty($ta[0]['fecha_fin']) && $ta[0]['tiempo_fin'] === '00:00:00') {
         $fecha_fin = date('Y-m-d', strtotime($ta[0]['fecha_fin'] . ' +1 day'));
       }
@@ -318,9 +315,9 @@ class TareasController extends AppController {
       )
     ));
     foreach ($feriados as $fe) {
-      
+
       $array[$keyi] = array(
-        "id" => 'f-'.$fe['Feriado']['id'],
+        "id" => 'f-' . $fe['Feriado']['id'],
         "title" => $fe['Feriado']['nombre'],
         "start" => $fe['Feriado']['fecha'],
         "end" => '',
@@ -398,6 +395,164 @@ class TareasController extends AppController {
     $this->request->data['Adjunto']['tarea_id'] = $idTarea;
     //debug($procesos);exit;
     $this->set(compact('tareas'));
+  }
+
+  public function creaalertas() {
+    $sql1 = "(SELECT tareas_estados.estado FROM tareas_estados WHERE tareas_estados.tarea_id = Tarea.id ORDER BY tareas_estados.id DESC LIMIT 1)";
+    $sql3 = "(SELECT alertas.fecha_vencimiento FROM alertas WHERE alertas.tarea_id = Tarea.id AND alertas.tipo LIKE 'Alerta Tarea' AND alertas.fecha_vencimiento = Tarea.fecha_fin LIMIT 1)";
+    $tareas = $this->Tarea->find('all', array(
+      'recursive' => 0,
+      'conditions' => array(
+        'FlujosUser.estado LIKE' => 'Activo',
+        'Tarea.fecha_fin !=' => NULL,
+        'Tarea.fecha_fin <=' => date('Y-m-d H:i:s'),
+        "IF(ISNULL($sql1),TRUE,IF($sql1 = 'Completado',FALSE,TRUE))",
+        "IF(ISNULL($sql3),TRUE,FALSE)"
+      )
+    ));
+
+    foreach ($tareas as $ta) {
+      $this->Alerta->create();
+      $d_alerta['user_id'] = $ta['Tarea']['asignado_id'];
+      $d_alerta['flujos_user_id'] = 0;
+      $d_alerta['proceso_id'] = 0;
+      $d_alerta['tarea_id'] = $ta['Tarea']['id'];
+      $d_alerta['mensaje'] = 'La Tarea ' . $ta['Tarea']['descripcion'] . '  (del proceso ' . $ta['Proceso']['nombre'] . ' en el flujo ' . $ta['FlujosUser']['descripcion'] . ') termino su tiempo (' . $ta['Tarea']['fecha_fin'] . ")";
+      $d_alerta['tipo'] = 'Alerta Tarea';
+      $d_alerta['estado'] = 'Activo';
+      $d_alerta['fecha_vencimiento'] = $ta['Tarea']['fecha_fin'];
+      $d_alerta['created'] = $ta['Tarea']['fecha_fin'];
+      $this->Alerta->save($d_alerta);
+    }
+    exit;
+  }
+
+  //devuelve el numero de tareras vencidas sin ser vistas
+  public function get_a_tar_ven() {
+    return $this->Alerta->find('count', array(
+        'recursive' => -1,
+        'conditions' => array(
+          'Alerta.user_id' => $this->Session->read('Auth.User.id'),
+          'Alerta.tipo LIKE' => 'Alerta Tarea',
+          'Alerta.estado' => 'Activo'
+        )
+    ));
+  }
+
+  public function ver_a_tar_ven() {
+    $this->Alerta->virtualFields = array(
+      'clase' => "(IF(Alerta.estado = 'Activo','dark',''))"
+    );
+    $alertas = $this->Alerta->find('all', array(
+      'recursive' => -1,
+      'conditions' => array(
+        'Alerta.user_id' => $this->Session->read('Auth.User.id'),
+        'Alerta.tipo LIKE' => 'Alerta Tarea',
+      //'Alerta.estado' => 'Activo'
+      ),
+      'order' => array('Alerta.id DESC'),
+      'limit' => 7
+    ));
+
+    foreach ($alertas as $al) {
+      if ($al['Alerta']['estado'] == 'Activo') {
+        $this->Alerta->id = $al['Alerta']['id'];
+        $d_aler['estado'] = 'Vencido';
+        $this->Alerta->save($d_aler);
+      }
+    }
+    $this->set(compact('alertas'));
+  }
+
+  //devuelve el numero de procesos a vencer
+  public function get_a_pro_ven() {
+    $idUser = $this->Session->read('Auth.User.id');
+
+    $sql1 = "(SELECT alertas_users.id FROM alertas_users WHERE alertas_users.alerta_id = Alerta.id AND alertas_users.user_id = $idUser LIMIT 1)";
+    return $this->Alerta->find('count', array(
+        'recursive' => -1,
+        'conditions' => array(
+          'Alerta.tipo LIKE' => 'Alerta Proceso',
+          //'Alerta.estado' => 'Activo',
+          "IF(ISNULL($sql1),TRUE,FALSE)"
+        )
+    ));
+  }
+
+  public function ver_a_pro_ven() {
+    $this->layout = 'ajax';
+    $idUser = $this->Session->read('Auth.User.id');
+
+    $sql1 = "(SELECT alertas_users.id FROM alertas_users WHERE alertas_users.alerta_id = Alerta.id AND alertas_users.user_id = $idUser LIMIT 1)";
+    $this->Alerta->virtualFields = array(
+      'clase' => "IF(ISNULL($sql1),'dark','')"
+    );
+    $alertas = $this->Alerta->find('all', array(
+      'recursive' => -1,
+      'conditions' => array(
+        'Alerta.tipo LIKE' => 'Alerta Proceso',
+      //'Alerta.estado' => 'Activo',
+      //"IF(ISNULL($sql1),TRUE,FALSE)"
+      ),
+      'order' => array('Alerta.id DESC'),
+      'limit' => 7
+    ));
+
+    foreach ($alertas as $al) {
+      if ($al['Alerta']['clase'] == 'dark') {
+        $this->AlertasUser->create();
+        $d_al['user_id'] = $idUser;
+        $d_al['alerta_id'] = $al['Alerta']['id'];
+        $this->AlertasUser->save($d_al);
+      }
+    }
+
+    //debug($alertas);exit;
+    $this->set(compact('alertas'));
+  }
+
+  //devuelve el numero de procesos finalizados
+  public function get_a_prof_ven() {
+    $idUser = $this->Session->read('Auth.User.id');
+
+    $sql1 = "(SELECT alertas_users.id FROM alertas_users WHERE alertas_users.alerta_id = Alerta.id AND alertas_users.user_id = $idUser LIMIT 1)";
+    return $this->Alerta->find('count', array(
+        'recursive' => -1,
+        'conditions' => array(
+          'Alerta.tipo LIKE' => 'Alerta Fin Proceso',
+          "IF(ISNULL($sql1),TRUE,FALSE)"
+        )
+    ));
+  }
+
+  public function ver_a_prof_ven() {
+    $this->layout = 'ajax';
+
+    $idUser = $this->Session->read('Auth.User.id');
+    $sql1 = "(SELECT alertas_users.id FROM alertas_users WHERE alertas_users.alerta_id = Alerta.id AND alertas_users.user_id = $idUser LIMIT 1)";
+    $this->Alerta->virtualFields = array(
+      'clase' => "IF(ISNULL($sql1),'dark','')"
+    );
+    $alertas = $this->Alerta->find('all', array(
+      'recursive' => -1,
+      'conditions' => array(
+        'Alerta.tipo LIKE' => 'Alerta Fin Proceso',
+      //"IF(ISNULL($sql1),TRUE,FALSE)"
+      ),
+      'order' => array('Alerta.id DESC'),
+      'limit' => 7
+    ));
+    foreach ($alertas as $al) {
+      if ($al['Alerta']['clase'] == 'dark') {
+        $this->AlertasUser->create();
+        $d_al['user_id'] = $idUser;
+        $d_al['alerta_id'] = $al['Alerta']['id'];
+        $this->AlertasUser->save($d_al);
+      }
+    }
+
+
+    $this->set(compact('alertas'));
   }
 
 }

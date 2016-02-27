@@ -6,14 +6,13 @@
         <div class="row">
             <div class="col-sm-4 col-xl-3">
                 <div class="panel panel-tile text-center br-a br-grey">
-                    <div class="panel-body">
-                        <h1 class="fs30 mt5 mbn">1,426</h1>
-                        <h6 class="text-system">NEW ORDERS</h6>
+                    <div class="panel-body ">
+                        <h1 class="fs30 mt5 mbn"><?php echo $this->requestAction(array('action' => 'get_a_tar_ven')) ?></h1>
+                        <h6 class="text-danger">TAREAS VENCIDAS</h6>
                     </div>
-                    <div class="panel-footer br-t p12">
+                    <div class="panel-footer br-t p12 bg-danger light" style="cursor: pointer;" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_a_tar_ven')); ?>');">
                         <span class="fs11">
-                            <i class="fa fa-arrow-up pr5"></i> 3% INCREASE
-                            <b>1W AGO</b>
+                            <i class="fa fa-warning pr5"></i> Ver Alertas de Aviso
                         </span>
                     </div>
                 </div>
@@ -21,13 +20,12 @@
             <div class="col-sm-4 col-xl-3">
                 <div class="panel panel-tile text-center br-a br-grey">
                     <div class="panel-body">
-                        <h1 class="fs30 mt5 mbn">63,262</h1>
-                        <h6 class="text-success">TOTAL SALES GROSS</h6>
+                        <h1 class="fs30 mt5 mbn"><?php echo $this->requestAction(array('action' => 'get_a_prof_ven')) ?></h1>
+                        <h6 class="text-success">PROCESOS VENCIDOS</h6>
                     </div>
-                    <div class="panel-footer br-t p12">
+                    <div class="panel-footer br-t p12 bg-success light" style="cursor: pointer;" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_a_prof_ven')); ?>');">
                         <span class="fs11">
-                            <i class="fa fa-arrow-up pr5"></i> 2.7% INCREASE
-                            <b>1W AGO</b>
+                            <i class="fa fa-warning pr5"></i> Ver Alertas de Aviso
                         </span>
                     </div>
                 </div>
@@ -35,27 +33,12 @@
             <div class="col-sm-4 col-xl-3">
                 <div class="panel panel-tile text-center br-a br-grey">
                     <div class="panel-body">
-                        <h1 class="fs30 mt5 mbn">248</h1>
-                        <h6 class="text-warning">PENDING SHIPMENTS</h6>
+                        <h1 class="fs30 mt5 mbn"><?php echo $this->requestAction(array('action' => 'get_a_pro_ven')) ?></h1>
+                        <h6 class="text-warning">PROCESOS A VENCER</h6>
                     </div>
-                    <div class="panel-footer br-t p12">
+                    <div class="panel-footer br-t p12 bg-warning light" style="cursor: pointer;" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'ver_a_pro_ven')); ?>');">
                         <span class="fs11">
-                            <i class="fa fa-arrow-up pr5 text-success"></i> 1% INCREASE
-                            <b>1W AGO</b>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-3 col-xl-3 visible-xl">
-                <div class="panel panel-tile text-center br-a br-grey">
-                    <div class="panel-body">
-                        <h1 class="fs30 mt5 mbn">6,718</h1>
-                        <h6 class="text-danger">UNIQUE VISITS</h6>
-                    </div>
-                    <div class="panel-footer br-t p12">
-                        <span class="fs11">
-                            <i class="fa fa-arrow-down pr5 text-danger"></i> 6% DECREASE
-                            <b>1W AGO</b>
+                            <i class="fa fa-warning pr5"></i> Ver Alertas de Aviso
                         </span>
                     </div>
                 </div>
@@ -125,7 +108,7 @@
                                           </td>
                                           <td class="text-center" style="font-size: 16px;">
                                               <div class="btn-group" style="width: 120px;">
-                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea',0,0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', 0, 0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
                                               </div>
                                           </td>
                                       </tr>
@@ -176,7 +159,7 @@
                                           </td>
                                           <td class="text-center" style="font-size: 16px;">
                                               <div class="btn-group" style="width: 120px;">
-                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea',0,0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', 0, 0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
                                               </div>
                                           </td>
                                       </tr>
@@ -212,7 +195,7 @@
                                 </thead>
                                 <tbody>
                                     <?php foreach ($flujos as $flujo): ?>
-                                    
+
                                       <tr>
                                           <td><?php echo $flujo['FlujosUser']['created']; ?></td>
                                           <td><?php echo $flujo['User']['nombre_completo']; ?></td>
@@ -220,11 +203,11 @@
                                           <td><?php echo $flujo['FlujosUser']['descripcion']; ?></td>
                                           <td class="text-center" style="font-size: 16px;">
                                               <div class="btn-group" style="width: 120px;">
-                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea',0,0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', 0, 0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
                                               </div>
                                           </td>
                                       </tr>
-                                      
+
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>

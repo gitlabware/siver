@@ -308,6 +308,10 @@ class ProcesosController extends AppController {
 
 //Example:
   public function prueba() {
+    $fecha_un = date('Y-m-d', strtotime(date('Y-m-d') . ' -1 day'));
+
+    debug($fecha_un);
+    //exit;
     //$holidays = array("2008-12-25", "2008-12-26", "2009-01-01");
     $holidays = array();
 
@@ -326,6 +330,7 @@ class ProcesosController extends AppController {
     debug($this->getWorkingDays("2016-02-15", "2016-03-02", $holidays));
     exit;
   }
+
 //script para ejecutar con cronjob para que pueda generar automaticamente alertas de aviso para procesos en flujos
   public function creaalertas() {
 
@@ -348,8 +353,8 @@ class ProcesosController extends AppController {
       'group' => array('ProcesosEstado.flujos_user_id', 'ProcesosEstado.proceso_id'),
       'fields' => array('Proceso.*', 'ProcesosEstado.*', 'FlujosUser.descripcion')
     ));
-    /*debug($procesos);
-    exit;*/
+    /* debug($procesos);
+      exit; */
     foreach ($procesos as $pro) {
       if ($pro['Proceso']['tipo_dias'] === 'Dias habiles y feriados') {
         $feriados = $this->Feriado->find('list', array(
@@ -366,7 +371,7 @@ class ProcesosController extends AppController {
           $d_alerta['user_id'] = 0;
           $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
           $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
-          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias!!';
+          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias ('.date('Y-m-d').')';
           $d_alerta['tipo'] = 'Alerta Proceso';
           $d_alerta['estado'] = 'Activo';
           $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
@@ -383,7 +388,7 @@ class ProcesosController extends AppController {
           $d_alerta['user_id'] = 0;
           $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
           $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
-          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias!!';
+          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias ('.date('Y-m-d').')';
           $d_alerta['tipo'] = 'Alerta Proceso';
           $d_alerta['estado'] = 'Activo';
           $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
@@ -395,6 +400,7 @@ class ProcesosController extends AppController {
     //debug($procesos);
     exit;
   }
+
   //finaliza el proceso en caso de que este activado la auto  finalizacion para cronjob
 //script para ejecutar con cronjob para que pueda generar automaticamente alertas de finalizacion para procesos en flujos
   public function creaalertasfin() {
@@ -409,17 +415,17 @@ class ProcesosController extends AppController {
     $procesos = $this->ProcesosEstado->find('all', array(
       'recursive' => 0,
       'conditions' => array(
-        'Proceso.auto_fin' => 1,
-        "IF(ISNULL($sql1),FALSE,IF($sql1 = 'Activo',TRUE,FALSE))",
+        //'Proceso.auto_fin' => 1,
         'FlujosUser.estado LIKE' => 'Activo',
         'Proceso.tiempo !=' => NULL,
+        "IF(ISNULL($sql1),FALSE,IF($sql1 = 'Activo',TRUE,FALSE))",
         "IF(ISNULL($sql3),TRUE,IF($sql3 = $sql2,FALSE,TRUE))"
       ),
       'group' => array('ProcesosEstado.flujos_user_id', 'ProcesosEstado.proceso_id'),
       'fields' => array('Proceso.*', 'ProcesosEstado.*', 'FlujosUser.descripcion')
     ));
-    /*debug($procesos);
-    exit;*/
+    /* debug($procesos);
+      exit; */
     foreach ($procesos as $pro) {
       if ($pro['Proceso']['tipo_dias'] === 'Dias habiles y feriados') {
         $feriados = $this->Feriado->find('list', array(
@@ -431,34 +437,80 @@ class ProcesosController extends AppController {
           'fields' => array('Feriado.id', 'Feriado.fecha')
         ));
         $g_dias = $this->getWorkingDays($pro['ProcesosEstado']['fecha_activado'], date('Y-m-d'), $feriados);
-        if ($g_dias >= ($pro['Proceso']['tiempo'])) {
-          $this->Alerta->create();
-          $d_alerta['user_id'] = 0;
-          $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
-          $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
-          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias!!';
-          $d_alerta['tipo'] = 'Alerta Fin Proceso';
-          $d_alerta['estado'] = 'Activo';
-          $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
-          $this->Alerta->save($d_alerta);
-        }
       } else {
         $fecha1 = new DateTime($pro['ProcesosEstado']['fecha_activado']);
         $fecha2 = new DateTime(date('Y-m-d'));
         // desde el dia siguiente
         $fecha = $fecha1->diff($fecha2);
         $g_dias = ($fecha->days + 1);
-        if ($g_dias >= ($pro['Proceso']['tiempo'])) {
-          $this->Alerta->create();
-          $d_alerta['user_id'] = 0;
-          $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
-          $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
-          $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' ha vencido en '.date('d/mm/Y');
-          $d_alerta['tipo'] = 'Alerta Fin Proceso';
-          $d_alerta['estado'] = 'Activo';
-          $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
-          $this->Alerta->save($d_alerta);
+      }
+      //Crea la alerta 
+      if ($g_dias == ($pro['Proceso']['tiempo'])) {
+        $fecha_un = date('Y-m-d');
+
+        $time_stamp = strtotime($fecha_un);
+        if (date("N", $time_stamp) == 6) {
+          $fecha_un = date('Y-m-d', strtotime($fecha_un . " +2 day"));
+        } elseif (date("N", $time_stamp) == 7) {
+          $fecha_un = date('Y-m-d', strtotime($fecha_un . " +1 day"));
         }
+        $mensaje_ad = "";
+        if ($pro['Proceso']['auto_fin'] == 1) {
+          $d_estado['user_id'] = 0;
+          $d_estado['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
+          $d_estado['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
+          $d_estado['estado'] = 'Finalizado';
+          $d_estado['created'] = $fecha_un;
+          $this->ProcesosEstado->create();
+          $this->ProcesosEstado->save($d_estado);
+          $mensaje_ad = " y se ha finalizado el proceso ";
+        }
+
+        $this->Alerta->create();
+        $d_alerta['user_id'] = 0;
+        $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
+        $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
+        $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' termino su tiempo (' . $fecha_un . ") $mensaje_ad";
+        $d_alerta['tipo'] = 'Alerta Fin Proceso';
+        $d_alerta['estado'] = 'Activo';
+        $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
+        $d_alerta['created'] = $fecha_un;
+        $this->Alerta->save($d_alerta);
+      } elseif ($g_dias > ($pro['Proceso']['tiempo'])) {
+
+        $a_dias = ($g_dias - $pro['Proceso']['tiempo']);
+        $fecha_un = date('Y-m-d', strtotime(date('Y-m-d') . " -$a_dias day"));
+
+        $time_stamp = strtotime($fecha_un);
+        if (date("N", $time_stamp) == 6) {
+          $fecha_un = date('Y-m-d', strtotime($fecha_un . " +2 day"));
+        } elseif (date("N", $time_stamp) == 7) {
+          $fecha_un = date('Y-m-d', strtotime($fecha_un . " +1 day"));
+        }
+
+        $mensaje_ad = "";
+        if ($pro['Proceso']['auto_fin'] == 1) {
+          $d_estado['user_id'] = 0;
+          $d_estado['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
+          $d_estado['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
+          $d_estado['estado'] = 'Finalizado';
+          $d_estado['created'] = $fecha_un;
+          $this->ProcesosEstado->create();
+          $this->ProcesosEstado->save($d_estado);
+          $mensaje_ad = " y se ha finalizado el proceso ";
+        }
+
+        $this->Alerta->create();
+        $d_alerta['user_id'] = 0;
+        $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
+        $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
+        $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' termino su tiempo (' . $fecha_un . ") $mensaje_ad";
+        $d_alerta['tipo'] = 'Alerta Fin Proceso';
+        $d_alerta['estado'] = 'Activo';
+        $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
+        $d_alerta['created'] = $fecha_un;
+        $this->Alerta->save($d_alerta);
+        
       }
     }
 
