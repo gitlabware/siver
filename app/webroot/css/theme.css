@@ -20854,7 +20854,7 @@ body.invoice-page #invoice-info {
   margin-bottom: 15px;
 }
 body.invoice-page .table-condensed tbody tr td:last-child {
-  text-align: right;
+  text-align: center;
   padding-right: 15px;
 }
 body.invoice-page #invoice-summary {

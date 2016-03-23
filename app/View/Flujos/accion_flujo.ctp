@@ -75,6 +75,7 @@
                                             <tr class="bg-light">
                                                 <th></th>
                                                 <th class="text-center" style="font-size: 16px;">Proceso</th>
+                                                <th class="text-center">Orden</th>
                                                 <th class="text-center" style="font-size: 16px;">Requisitos</th>
                                                 <th>Accion </th>
                                             </tr>
@@ -84,6 +85,7 @@
                                               <tr class="blockquote-info">
                                                   <td><?php echo ($key + 1) ?></td>
                                                   <td><?php echo $pro['Proceso']['nombre'] ?></td>
+                                                  <td><?php echo $pro['Proceso']['orden'] ?></td>
                                                   <td><?php echo $pro['Proceso']['requisitos'] ?></td>
                                                   <td>
                                                       <div class="btn-group" style="width: 120px;;">

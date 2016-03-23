@@ -1,10 +1,7 @@
-
 <div class="panel-heading">
     <span class="panel-title">
         <i class="fa fa-tasks"></i>Proceso</span>
 </div>
-<!-- end .panel-heading section -->
-
 <?= $this->Form->create('Proceso', ['class' => 'form-validacion', 'id' => 'f-add']); ?>
 <div class="panel-body p25 theme-primary">
     <div class="section row">
@@ -53,21 +50,21 @@
     </div>
     <?php
     if (empty($this->request->data['Proceso']['id'])) {
-      $checked = 'Dias habiles y feriados';
+        $checked = 'Dias habiles y feriados';
     } else {
-      $checked = $this->request->data['Proceso']['tipo_dias'];
+        $checked = $this->request->data['Proceso']['tipo_dias'];
     }
     ?>
     <div class="section">
-        
+
         <div class="option-group field">
             <label class="option">
                 <?php
                 echo $this->Form->radio('Proceso.tipo_dias', array('Dias habiles y feriados' => 'Dias habiles y feriados &nbsp;&nbsp;', 'Todos los dias' => 'Todos los dias &nbsp;&nbsp;'), array(
-                  'separator' => '<span class="radio"></span></label><label class="option">',
-                  'label' => false,
-                  'legend' => false,
-                  'value' => $checked
+                    'separator' => '<span class="radio"></span></label><label class="option">',
+                    'label' => false,
+                    'legend' => false,
+                    'value' => $checked
                 ));
                 ?>
                 <span class="radio"></span>
@@ -75,13 +72,30 @@
         </div>
         <!-- end .option-group section -->
     </div>
+    <?php 
+    
+    if(empty($this->request->data['Proceso']['id'])){
+        $orden = end($ordens);
+    }else{
+       $orden = $this->request->data['Proceso']['orden']; 
+    }
+    ?>
+    
+    <div class="section row">
+        <div class="col-md-12">
+            <label class="field select">
+                <?php echo $this->Form->select('orden',$ordens, array('empty' => 'Seleccione el orden','value' => $orden)) ?>
+                <i class="arrow double"></i>
+            </label>
+        </div>
+    </div>
 </div>
 <!-- end .form-body section -->
 
 <div class="panel-footer">
     <button type="submit" class="button btn-primary">Registrar</button>
     <?php if (!empty($this->request->data['Proceso']['id'])): ?>
-      <?php echo $this->Html->link('Eliminar', array('action' => 'eliminar', $this->request->data['Proceso']['id']), array('class' => 'button btn-danger', 'confirm' => 'Esta seguro de eliminar el proceso??')) ?>
+        <?php echo $this->Html->link('Eliminar', array('action' => 'eliminar', $this->request->data['Proceso']['id']), array('class' => 'button btn-danger', 'confirm' => 'Esta seguro de eliminar el proceso??')) ?>
     <?php endif; ?>
 </div>
 <!-- end .form-footer section -->
@@ -92,7 +106,7 @@
 
 <?php
 echo $this->Html->script([
-  'jquery.validate.min',
-  'inivalidacion_reg'
+    'jquery.validate.min',
+    'inivalidacion_reg'
 ]);
 ?>
