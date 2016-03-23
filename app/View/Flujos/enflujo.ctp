@@ -6,7 +6,7 @@
     <div class="topbar-menu row">
         <div class="col-xs-6 col-sm-3">
             <a onclick="cierra_elmenu();
-                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'iniciar_flujo', $flujo['FlujosUser']['flujo_id'], $flujo['FlujosUser']['id'])); ?>');"  href="javascript:" class="metro-tile">
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'iniciar_flujo', $flujo['FlujosUser']['flujo_id'], $flujo['FlujosUser']['id'])); ?>',true);"  href="javascript:" class="metro-tile">
                 <span class="metro-icon glyphicon glyphicon-edit"></span>
                 <p class="metro-title">Editar Flujo</p>
             </a>

@@ -25,7 +25,7 @@
         </div>
         <div class="col-xs-6 col-sm-3">
             <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
-                  cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flujo['Flujo']['id'])); ?>');">
+                  cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flujo['Flujo']['id'])); ?>',true);">
                 <span class="metro-icon glyphicon glyphicon-play"></span>
                 <p class="metro-title">Iniciar Flujo</p>
             </a>

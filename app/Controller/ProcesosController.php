@@ -160,6 +160,7 @@ class ProcesosController extends AppController {
           'conditions' => array('ProcesosCondicione.proceso_id' => $pro['Proceso']['id'], 'ProcesosCondicione.tipo LIKE' => 'Opcional')
         ));
         $habilitar = TRUE;
+        
         if (!empty($condiciones_nec)) {
           foreach ($condiciones_nec as $con) {
             $verifica = $this->ProcesosEstado->find('first', array(

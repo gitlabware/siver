@@ -14,6 +14,30 @@ class TareasController extends AppController {
     //$this->Auth->allow();
   }
 
+  public function index() {
+    $idUser = $this->Session->read('Auth.User.id');
+    $sql_1 = "(SELECT tareas_estados.estado FROM tareas_estados WHERE Tarea.id = tareas_estados.tarea_id ORDER BY tareas_estados.created DESC LIMIT 1)";
+
+    $this->Tarea->virtualFields = array(
+      'estado' => "$sql_1"
+    );
+
+    $tareas = $this->Tarea->find('all', array(
+      'recursive' => 0,
+      'order' => array('Tarea.created DESC'),
+      //'limit' => 10
+    ));
+
+    $mis_tareas = $this->Tarea->find('all', array(
+      'recursive' => 0,
+      'conditions' => array(
+        'Tarea.asignado_id' => $idUser
+      ),
+      'order' => array('Tarea.created DESC')
+    ));
+    $this->set(compact('tareas','mis_tareas'));
+  }
+
   function respond($message = null, $json = false) {
     if ($message != null) {
       if ($json == true) {
@@ -70,7 +94,8 @@ class TareasController extends AppController {
       'conditions' => array(
         'Tarea.asignado_id' => $idUser
       ),
-      'order' => array('Tarea.created DESC')
+      'order' => array('Tarea.created DESC'),
+      'limit' => 10
     ));
 
     $flujos = $this->FlujosUser->find('all', array(
