@@ -54,6 +54,12 @@
                     <span class="sidebar-title">TAREAS</span>
                 </a>
             </li>
+            <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Reportes', 'action' => 'reporte_general')); ?>">
+                    <span class="fa fa-tasks"></span>
+                    <span class="sidebar-title">Reporte</span>
+                </a>
+            </li>
         </ul>
         <!-- End: Sidebar Menu -->
 

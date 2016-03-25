@@ -4,7 +4,7 @@ class ProcesosController extends AppController {
 
     public $layout = 'svergara';
     public $uses = array('Proceso', 'ProcesosCondicione', 'ProcesosEstado', 'FlujosUser', 'Tarea', 'Feriado', 'Alerta');
-
+    
     public function proceso($idFlujo = null, $idProceso = null) {
         $this->layout = 'ajax';
         if (!empty($this->request->data['Proceso'])) {
@@ -27,7 +27,7 @@ class ProcesosController extends AppController {
             $n_procesos++;
         }
         $ordens = array();
-        for($i=1;$i<=$n_procesos;$i++){
+        for ($i = 1; $i <= $n_procesos; $i++) {
             $ordens[$i] = $i;
         }
         $this->set(compact('ordens'));
@@ -122,20 +122,25 @@ class ProcesosController extends AppController {
             'fields' => array('Tarea.*', 'Asignado.nombre_completo', 'User.nombre_completo'),
             'order' => array('Tarea.created DESC')
         ));
+
+
         $estados = $this->ProcesosEstado->find('all', array(
-            'recursive' => -1,
+            'recursive' => 0,
             'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $idProceso),
-            'order' => array('ProcesosEstado.created DESC')
+            'order' => array('ProcesosEstado.created DESC'),
+            'fields' => array('ProcesosEstado.*','Proceso.tiempo','Proceso.tipo_dias', 'DATE(ProcesosEstado.created) AS creado')
         ));
         $this->set(compact('flujo', 'proceso', 'linea_tiempo', 'idFlujoUser', 'idProceso', 'tareas', 'estados'));
     }
 
     public function get_estados($idFlujoUser = null, $idProceso = null) {
         $estados = $this->ProcesosEstado->find('all', array(
-            'recursive' => -1,
+            'recursive' => 0,
             'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $idProceso),
-            'order' => array('ProcesosEstado.created DESC')
+            'order' => array('ProcesosEstado.created DESC'),
+            'fields' => array('ProcesosEstado.*','Proceso.tiempo','Proceso.tipo_dias', 'DATE(ProcesosEstado.created) AS creado')
         ));
+        
         return $estados;
     }
 
@@ -319,8 +324,45 @@ class ProcesosController extends AppController {
         return $workingDays;
     }
 
+    public function get_fecha_xdias($fecha_ini = null, $dias_l = null, $feriados = NULL) {
+        $i = 0;
+        $fecha_un = $fecha_ini;
+        while ($i < $dias_l) {
+            $fecha_un = date('Y-m-d', strtotime($fecha_un . ' +1 day'));
+            $time_stamp = strtotime($fecha_un);
+            $c_dia_e = date("N", $time_stamp);
+            if ($c_dia_e != 6 && $c_dia_e != 7 && !in_array($fecha_un, $feriados)) {
+                $i++;
+            }
+        }
+        return $fecha_un;
+    }
+
+    public function get_fecha_final($fecha_ini = null, $dias_l = null, $tipo = null) {
+        //debug($dias_l);exit;
+        $dias_l--;
+        
+        if ($tipo == 'Dias habiles y feriados') {
+            $feriados = $this->Feriado->find('list', array(
+                'recursive' => -1,
+                'conditions' => array(
+                    'Feriado.fecha >=' => $fecha_ini
+                ),
+                'fields' => array('Feriado.id', 'Feriado.fecha')
+            ));
+            return $this->get_fecha_xdias($fecha_ini, $dias_l, $feriados);
+        } else {
+            return date('Y-m-d', strtotime($fecha_ini . " +$dias_l day"));
+        }
+    }
+
 //Example:
     public function prueba() {
+        debug(date('Y-m-d', strtotime("2016-03-24" . " +2 day")));
+        exit;
+        $feeee = $this->get_fecha_xdias("2016-03-24", 5, array(0 => "2016-03-28"));
+        debug($feeee);
+        exit;
         $fecha_un = date('Y-m-d', strtotime(date('Y-m-d') . ' -1 day'));
 
         debug($fecha_un);
