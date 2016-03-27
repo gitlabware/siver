@@ -39,6 +39,20 @@ class FlujosUser extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
+		),
+		'Cliente' => array(
+			'className' => 'Cliente',
+			'foreignKey' => 'cliente_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'Regione' => array(
+			'className' => 'Regione',
+			'foreignKey' => 'regione_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
 		)
 	);
   

@@ -1,4 +1,88 @@
+<style>
 
+    .CSSTableGenerator {
+        margin:0px;padding:0px;
+        width:100%;
+        border:1px solid #000000;
+
+        -moz-border-radius-bottomleft:0px;
+        -webkit-border-bottom-left-radius:0px;
+        border-bottom-left-radius:0px;
+
+        -moz-border-radius-bottomright:0px;
+        -webkit-border-bottom-right-radius:0px;
+        border-bottom-right-radius:0px;
+
+        -moz-border-radius-topright:0px;
+        -webkit-border-top-right-radius:0px;
+        border-top-right-radius:0px;
+
+        -moz-border-radius-topleft:0px;
+        -webkit-border-top-left-radius:0px;
+        border-top-left-radius:0px;
+    }.CSSTableGenerator table{
+        border-collapse: collapse;
+        border-spacing: 0;
+        width:100%;
+        height:100%;
+        margin:0px;padding:0px;
+    }.CSSTableGenerator tr:last-child td:last-child {
+        -moz-border-radius-bottomright:0px;
+        -webkit-border-bottom-right-radius:0px;
+        border-bottom-right-radius:0px;
+    }
+    .CSSTableGenerator table tr:first-child td:first-child {
+        -moz-border-radius-topleft:0px;
+        -webkit-border-top-left-radius:0px;
+        border-top-left-radius:0px;
+    }
+    .CSSTableGenerator table tr:first-child td:last-child {
+        -moz-border-radius-topright:0px;
+        -webkit-border-top-right-radius:0px;
+        border-top-right-radius:0px;
+    }.CSSTableGenerator tr:last-child td:first-child{
+        -moz-border-radius-bottomleft:0px;
+        -webkit-border-bottom-left-radius:0px;
+        border-bottom-left-radius:0px;
+    }.CSSTableGenerator tr:hover td{
+        background-color:#ffffff;
+
+
+    }
+    .CSSTableGenerator td{
+        vertical-align:middle;
+
+        background-color:#ffffff;
+
+        border:1px solid #000000;
+        border-width:0px 1px 1px 0px;
+        padding:4px;
+        font-size:10px;
+        font-family:Arial;
+        color:#000000;
+    }.CSSTableGenerator tr:last-child td{
+        border-width:0px 1px 0px 0px;
+    }.CSSTableGenerator tr td:last-child{
+        border-width:0px 0px 1px 0px;
+    }.CSSTableGenerator tr:last-child td:last-child{
+        border-width:0px 0px 0px 0px;
+    }
+    .CSSTableGenerator th{
+        vertical-align:middle;
+        background-color:#ffffff;
+        border:1px solid #000000;
+        border-width:0px 1px 1px 0px;
+        padding:5px;
+        font-size:12px;
+        font-family:Arial;
+        font-weight:bold;
+        color:#000000;
+    }
+
+    .boton-p{
+        margin-left: 10px;
+    }
+</style>
 <section id="content" class="table-layout animated fadeIn">
     <!-- begin: .tray-center -->
     <div class="tray tray-center">
@@ -13,528 +97,76 @@
                         </label>
                     </div>
                     <div class="col-md-4">
-                        <label class="field select">
-                            <?php echo $this->Form->select('Dato.dias', $dias_v, array('empty' => 'Seleccione el vencimiento')) ?>
-                            <i class="arrow"></i>
+                        <label for="useremail" class="field prepend-icon">
+                            <?php echo $this->Form->text('Dato.cliente_id', array('class' => 'gui-input', 'placeholder' => 'Cliente')); ?>
+                            <label for="useremail" class="field-icon">
+                                <i class="fa fa-user"></i>
+                            </label>
                         </label>
                     </div>
                     <div class="col-md-4">
-                        <label class="field select">
-                            <select id="bulk-action" name="bulk-action">
-                                <option value="0">Actions</option>
-                                <option value="1">Edit</option>
-                                <option value="2">Delete</option>
-                                <option value="3">Active</option>
-                                <option value="4">Inactive</option>
-                            </select>
-                            <i class="arrow double"></i>
-                        </label>
+                        <button class="btn btn-dark btn-block">IMPRIMIR</button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="field select">
+                                <?php echo $this->Form->select('Dato.regione_id', $regiones, array('empty' => 'Seleccione la Region')) ?>
+                                <i class="arrow"></i>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="field select">
+                                <?php echo $this->Form->select('Dato.flujo_id', $flujos, array('empty' => 'Seleccione el flujo')) ?>
+                                <i class="arrow"></i>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-success btn-block">GENERAR</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body pn">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="tabla-imp">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th class="text-center">Expediente</th>
+                                    <th class="">Cliente</th>
+                                    <th class="">Departamento</th>
+                                    <th class="">Titulo</th>
+                                    <th class="">Proceso Estado</th>
+                                    <th class="">Fecha de Proceso</th>
+                                    <th class="">Vencimiento</th>
+                                    <th class="">Flujo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <?php foreach ($flujos_user as $fl): ?>
+                                    <tr>
+                                        <td><?php echo $fl['FlujosUser']['expediente']?></td>
+                                        <td><?php echo $fl['Cliente']['nombre']?></td>
+                                        <td><?php echo $fl['Regione']['nombre']?></td>
+                                        <td><?php echo $fl['FlujosUser']['descripcion']?></td>
+                                        <?php 
+                                        $p_estado = $this->requestAction(array('action' => 'get_dat_proceso',$fl['FlujosUser']['proceso']))
+                                        ?>
+                                        <td><?php echo $p_estado['Proceso']['nombre'].' ('.$p_estado['ProcesosEstado']['estado'].')'?></td>
+                                        <td><?php echo $p_estado['ProcesosEstado']['created']?></td>
+                                        <td><?php echo $p_estado['ProcesosEstado']['dias_v']?></td>
+                                        <td><?php echo $fl['Flujo']['nombre']?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-            <div class="panel-body pn">
-                <div class="table-responsive">
-                    <table class="table admin-form theme-warning tc-checkbox-1 fs13">
-                        <thead>
-                            <tr class="bg-light">
-                                <th class="text-center">Select</th>
-                                <th class="">Image</th>
-                                <th class="">Product Title</th>
-                                <th class="">SKU</th>
-                                <th class="">Price</th>
-                                <th class="">Stock</th>
-                                <th class="text-right">Status</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_1.jpg">
-                                </td>
-                                <td class="">Apple Ipod 4G - Silver</td>
-                                <td class="">#21362</td>
-                                <td class="">$215</td>
-                                <td class="">1,400</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_2.jpg">
-                                </td>
-                                <td class="">Apple Smart Watch - 1G</td>
-                                <td class="">#15262</td>
-                                <td class="">$455</td>
-                                <td class="">2,100</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_6.jpg">
-                                </td>
-                                <td class="">Apple Macbook 4th Gen - Silver</td>
-                                <td class="">#66362</td>
-                                <td class="">$1699</td>
-                                <td class="">6,100</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_7.jpg">
-                                </td>
-                                <td class="">Apple Iphone 16GB - Silver</td>
-                                <td class="">#51362</td>
-                                <td class="">$1299</td>
-                                <td class="">5,200</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_3.jpg">
-                                </td>
-                                <td class="">Apple Ipod Nano 2G - Silver</td>
-                                <td class="">#4132</td>
-                                <td class="">$995</td>
-                                <td class="">11,000</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_4.jpg">
-                                </td>
-                                <td class="">Apple Macbook 3rd Gen - Silver</td>
-                                <td class="">#21362</td>
-                                <td class="">$1,150</td>
-                                <td class="">4,300</td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Active
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_2.jpg">
-                                </td>
-                                <td class="">Apple Smart Watch - 1G</td>
-                                <td class="">#15262</td>
-                                <td class="">$455</td>
-                                <td class="text-warning">
-                                    <b>145</b>
-                                </td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-warning br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Disabled
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_5.jpg">
-                                </td>
-                                <td class="">Apple iMac 32" - Silver</td>
-                                <td class="">#21362</td>
-                                <td class="">$1299</td>
-                                <td class="text-warning">
-                                    <b>180</b>
-                                </td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-warning br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Disabled
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_3.jpg">
-                                </td>
-                                <td class="">Apple Ipod Nano 2G - Silver</td>
-                                <td class="">#4132</td>
-                                <td class="">$995</td>
-                                <td class="text-danger">
-                                    <b>0 - Sold Out</b>
-                                </td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-danger br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Sold Out
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_6.jpg">
-                                </td>
-                                <td class="">Apple Macbook 4th Gen - Silver</td>
-                                <td class="">#66362</td>
-                                <td class="">$1699</td>
-                                <td class="text-danger">
-                                    <b>0 - Sold Out</b>
-                                </td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-danger br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Sold Out
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">
-                                    <label class="option block mn">
-                                        <input type="checkbox" name="mobileos" value="FR">
-                                        <span class="checkbox mn"></span>
-                                    </label>
-                                </td>
-                                <td class="w100">
-                                    <img class="img-responsive mw40 ib mr10" title="user" src="assets/img/stock/products/thumb_7.jpg">
-                                </td>
-                                <td class="">Apple Iphone 16GB - Silver</td>
-                                <td class="">#51362</td>
-                                <td class="">$1299</td>
-                                <td class="text-danger">
-                                    <b>0 - Sold Out</b>
-                                </td>
-                                <td class="text-right">
-                                    <div class="btn-group text-right">
-                                        <button type="button" class="btn btn-danger br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Sold Out
-                                            <span class="caret ml5"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li>
-                                                <a href="#">Edit</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Delete</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Archive</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li>
-                                                <a href="#">Complete</a>
-                                            </li>
-                                            <li class="active">
-                                                <a href="#">Pending</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Canceled</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
-    </div>
 </section>
+<?php
+echo $this->Html->script(array(
+    'datableini1'
+        ), array('block' => 'scriptjs'))
+?>

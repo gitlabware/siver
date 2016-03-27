@@ -130,7 +130,7 @@
         <script src="<?php echo $this->request->webroot; ?>js/jquery_ui/jquery-ui.min.js"></script>
 
         <script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/pnotify/pnotify.js"></script>
-
+<script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
         <!-- Datatables -->
         <script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/datatables/media/js/jquery.dataTables.js"></script>
 
@@ -151,9 +151,11 @@
         <script src="<?php echo $this->request->webroot; ?>js/demo/demo.js"></script>
         <script src="<?php echo $this->request->webroot; ?>js/main.js"></script>
 
-        <script>
 
-        </script>
+
+        <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
+        
 
         <script type="text/javascript">
           jQuery(document).ready(function () {
