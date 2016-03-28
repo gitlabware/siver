@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('#tabla-imp').DataTable({
+    $('#tabla-imp').dataTable({
         "aoColumnDefs": [{
                 'bSortable': false,
                 'aTargets': [-1]
@@ -18,7 +18,7 @@ $(document).ready(function () {
             [5, 10, 25, 50, "Todos"]
         ],
         'order': [],
-        "sDom": '<"dt-panelmenu clearfix" lBfr>t<"dt-panelfooter clearfix"ip>',
+        "sDom": '<"dt-panelmenu clearfix" lfrB>t<"dt-panelfooter clearfix"ip>',
         //dom: 'Bfrtip',
         buttons: [
             {
@@ -38,5 +38,13 @@ $(document).ready(function () {
                 text: '<i class="fa fa-print"></i> Imprimir'
             }
         ]
+    }).columnFilter({
+        sPlaceHolder: "head:before",
+        aoColumns: filtro_c
     });
 });
+
+/*$('#tabla-imp').dataTable().columnFilter({
+ sPlaceHolder: "head:before",
+ aoColumns: filtro_c
+ });*/

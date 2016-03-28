@@ -89,75 +89,48 @@
         <!-- recent orders table -->
         <div class="panel">
             <div class="panel-menu p12 admin-form theme-primary">
-                <div class="row">
-                    <div class="col-md-4">
-                        <label class="field select">
-                            <?php echo $this->Form->select('Dato.regione_id', $regiones, array('empty' => 'Seleccione la Region')) ?>
-                            <i class="arrow"></i>
-                        </label>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="useremail" class="field prepend-icon">
-                            <?php echo $this->Form->text('Dato.cliente_id', array('class' => 'gui-input', 'placeholder' => 'Cliente')); ?>
-                            <label for="useremail" class="field-icon">
-                                <i class="fa fa-user"></i>
-                            </label>
-                        </label>
-                    </div>
-                    <div class="col-md-4">
-                        <button class="btn btn-dark btn-block">IMPRIMIR</button>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label class="field select">
-                                <?php echo $this->Form->select('Dato.regione_id', $regiones, array('empty' => 'Seleccione la Region')) ?>
-                                <i class="arrow"></i>
-                            </label>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="field select">
-                                <?php echo $this->Form->select('Dato.flujo_id', $flujos, array('empty' => 'Seleccione el flujo')) ?>
-                                <i class="arrow"></i>
-                            </label>
-                        </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-success btn-block">GENERAR</button>
-                        </div>
-                    </div>
-                </div>
+                
                 <div class="panel-body pn">
                     <div class="table-responsive">
                         <table class="table table-bordered" id="tabla-imp">
                             <thead>
+                                <tr>
+                                    <th class="text-center">Expediente</th>
+                                    <th class="">Cliente</th>
+                                    <th class="">Region</th>
+                                    <th class="">Titulo</th>
+                                    <th class="">Proceso Estado</th>
+                                    <th class=""></th>
+                                    <th class=""></th>
+                                    <th class="">Flujo</th>
+                                </tr>
                                 <tr class="bg-light">
                                     <th class="text-center">Expediente</th>
                                     <th class="">Cliente</th>
-                                    <th class="">Departamento</th>
+                                    <th class="">Region</th>
                                     <th class="">Titulo</th>
                                     <th class="">Proceso Estado</th>
-                                    <th class="">Fecha de Proceso</th>
-                                    <th class="">Vencimiento</th>
+                                    <th class="">F. Proceso</th>
+                                    <th class="">Venc</th>
                                     <th class="">Flujo</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <?php foreach ($flujos_user as $fl): ?>
+                                <?php foreach ($flujos_user as $fl): ?>
                                     <tr>
-                                        <td><?php echo $fl['FlujosUser']['expediente']?></td>
-                                        <td><?php echo $fl['Cliente']['nombre']?></td>
-                                        <td><?php echo $fl['Regione']['nombre']?></td>
-                                        <td><?php echo $fl['FlujosUser']['descripcion']?></td>
-                                        <?php 
-                                        $p_estado = $this->requestAction(array('action' => 'get_dat_proceso',$fl['FlujosUser']['proceso']))
+                                        <td><?php echo $fl['FlujosUser']['expediente'] ?></td>
+                                        <td><?php echo $fl['Cliente']['nombre'] ?></td>
+                                        <td><?php echo $fl['Regione']['nombre'] ?></td>
+                                        <td><?php echo $fl['FlujosUser']['descripcion'] ?></td>
+                                        <?php
+                                        $p_estado = $this->requestAction(array('action' => 'get_dat_proceso', $fl['FlujosUser']['proceso']))
                                         ?>
-                                        <td><?php echo $p_estado['Proceso']['nombre'].' ('.$p_estado['ProcesosEstado']['estado'].')'?></td>
-                                        <td><?php echo $p_estado['ProcesosEstado']['created']?></td>
-                                        <td><?php echo $p_estado['ProcesosEstado']['dias_v']?></td>
-                                        <td><?php echo $fl['Flujo']['nombre']?></td>
+                                        <td><?php echo $p_estado['Proceso']['nombre'] . ' (' . $p_estado['ProcesosEstado']['estado'] . ')' ?></td>
+                                        <td><?php echo $p_estado[0]['creado'] ?></td>
+                                        <td><?php echo $p_estado['ProcesosEstado']['dias_v'] ?></td>
+                                        <td><?php echo $fl['Flujo']['nombre'] ?></td>
                                     </tr>
                                 <?php endforeach; ?>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -165,8 +138,42 @@
             </div>
         </div>
 </section>
+<script>
+    var filtro_c = [
+    {type: "text"},
+    {type: "text"},
+    {type: "select", values: [
+<?php foreach ($regiones as $de): ?>
+        '<?php echo $de; ?>',
+<?php endforeach; ?>
+    ]},
+    {type: "text"},
+    {
+    type: "text"
+    }
+    ,
+            null
+            ,
+            null
+            ,
+    {type: "select", values: [
+<?php foreach ($flujos as $fl): ?>
+        '<?php echo $fl; ?>',
+<?php endforeach; ?>
+    ]}
+    ,
+    ];
+</script>
 <?php
 echo $this->Html->script(array(
+    'jquery.dataTables.min'
+        ), array('block' => 'scriptjs_a'))
+?>
+<?php
+echo $this->Html->script(array(
+    'dataTables.buttons.min',
+    'buttons.print.min',
+    'jquery.dataTables.columnFilter',
     'datableini1'
         ), array('block' => 'scriptjs'))
 ?>

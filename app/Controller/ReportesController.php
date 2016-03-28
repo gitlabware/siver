@@ -51,14 +51,15 @@ class ReportesController extends AppController {
                     ),
                     'fields' => array('Feriado.id', 'Feriado.fecha')
                 ));
-                $p_estado['ProcesosEstado']['dias_v'] = $this->getWorkingDays($p_estado[0]['creado'], date('Y-m-d'), $feriados);
+                $p_estado['ProcesosEstado']['dias_v'] = $p_estado['Proceso']['tiempo']-$this->getWorkingDays($p_estado[0]['creado'], date('Y-m-d'), $feriados);
                 //$p_estado['ProcesosEstado']['dias_v'] = $this->requestAction(array('controller' => 'Procesos', 'action' => 'getWorkingDays', $p_estado[0]['creado'], date('Y-m-d'), $feriados));
             } else {
 
                 $datetime1 = date_create($p_estado[0]['creado']);
                 $datetime2 = date_create(date('Y-m-d'));
                 $interval = date_diff($datetime1, $datetime2);
-                $p_estado['ProcesosEstado']['dias_v'] =  $interval->format('%R%a días');
+                $p_estado['ProcesosEstado']['dias_v'] =  $p_estado['Proceso']['tiempo']-$interval;
+                //$interval->format('%R%a días');
             }
         }
         return $p_estado;
