@@ -57,6 +57,8 @@ class UsersController extends AppController {
         switch ($role) {
           case 'Usuario':
             $this->redirect(array('controller' => 'Tareas', 'action' => 'tablero'));
+          case 'Administrador':
+            $this->redirect(array('controller' => 'Tareas', 'action' => 'tablero'));
           default:
             break;
         }

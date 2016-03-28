@@ -65,25 +65,14 @@
 
             <!-- Start: Sidebar -->
             <?php
-            /* if ($this->request->session()->read('Auth.User.role') == 'Megadealer') {
-              echo $this->element('sidebar/mega');
-              } elseif ($this->request->session()->read('Auth.User.role') == 'Dealer') {
-              echo $this->element('sidebar/dealer');
-              } else {
+             if ($this->Session->read('Auth.User.role') == 'Administrador') {
               echo $this->element('sidebar/admin');
-              } */
-            echo $this->element('sidebar/admin');
+              } elseif ($this->Session->read('Auth.User.role') == 'Usuario') {
+              echo $this->element('sidebar/usuario');
+              }
             ?>
-
-            <!-- Start: Content-Wrapper -->
             <section id="content_wrapper">
 
-
-                <!-- Start: Topbar -->
-                <!--<header id="topbar">
-
-                </header>
-                <!-- End: Topbar -->
                 <script>
                   var tipo_notif = null;
                   var texto_noyif = null;

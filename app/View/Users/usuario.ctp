@@ -36,7 +36,7 @@
         </div>
         <div class="col-md-6">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->password('password2', ['class' => 'gui-input', 'placeholder' => 'Contraseña', 'required']); ?>
+                <?php echo $this->Form->password('password2', ['class' => 'gui-input', 'placeholder' => 'Contraseña']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-lock"></i>
                 </label>
