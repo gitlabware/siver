@@ -89,7 +89,7 @@
         <!-- recent orders table -->
         <div class="panel">
             <div class="panel-menu p12 admin-form theme-primary">
-                
+
                 <div class="panel-body pn">
                     <div class="table-responsive">
                         <table class="table table-bordered" id="tabla-imp">
@@ -98,21 +98,21 @@
                                     <th class="text-center">Expediente</th>
                                     <th class="">Cliente</th>
                                     <th class="">Region</th>
-                                    <th class="">Titulo</th>
                                     <th class="">Proceso Estado</th>
                                     <th class=""></th>
                                     <th class=""></th>
                                     <th class="">Flujo</th>
+                                    <th></th>
                                 </tr>
                                 <tr class="bg-light">
                                     <th class="text-center">Expediente</th>
                                     <th class="">Cliente</th>
                                     <th class="">Region</th>
-                                    <th class="">Titulo</th>
                                     <th class="">Proceso Estado</th>
                                     <th class="">F. Proceso</th>
                                     <th class="">Venc</th>
                                     <th class="">Flujo</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,7 +121,6 @@
                                         <td><?php echo $fl['FlujosUser']['expediente'] ?></td>
                                         <td><?php echo $fl['Cliente']['nombre'] ?></td>
                                         <td><?php echo $fl['Regione']['nombre'] ?></td>
-                                        <td><?php echo $fl['FlujosUser']['descripcion'] ?></td>
                                         <?php
                                         $p_estado = $this->requestAction(array('action' => 'get_dat_proceso', $fl['FlujosUser']['proceso']))
                                         ?>
@@ -129,6 +128,9 @@
                                         <td><?php echo $p_estado[0]['creado'] ?></td>
                                         <td><?php echo $p_estado['ProcesosEstado']['dias_v'] ?></td>
                                         <td><?php echo $fl['Flujo']['nombre'] ?></td>
+                                        <td>
+                                            <a href="javascript:">Detalle</a>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -147,7 +149,6 @@
         '<?php echo $de; ?>',
 <?php endforeach; ?>
     ]},
-    {type: "text"},
     {
     type: "text"
     }
@@ -161,7 +162,7 @@
         '<?php echo $fl; ?>',
 <?php endforeach; ?>
     ]}
-    ,
+    , null
     ];
 </script>
 <?php

@@ -95,7 +95,8 @@
                             <table class="table dataTable tabla-dato table-bordered">
                                 <thead>
                                     <tr class="bg-light">
-                                        <th>Descripcion</th>
+                                        <th>Exp.</th>
+                                        <th>Cliente</th>
                                         <th>Usuario</th>
                                         <th>Creado</th>
                                         <th>Flujo</th>
@@ -105,13 +106,14 @@
                                 <tbody>
                                     <?php foreach ($flujos_c as $flu): ?>
                                         <tr class="<?php echo $flu['FlujosUser']['estado_color']; ?>">
-                                            <td><?php echo $flu['FlujosUser']['descripcion']; ?></td>
+                                            <td><?php echo $flu['FlujosUser']['expediente'] ?></td>
+                                            <td><?php echo $flu['Cliente']['nombre']; ?></td>
                                             <td><?php echo $flu['User']['nombre_completo']; ?></td>
                                             <td><?php echo $flu['FlujosUser']['created']; ?></td>
                                             <td><?php echo $flu['Flujo']['nombre']; ?></td>
                                             <td class="text-center" style="font-size: 16px;">
                                                 <div class="btn-group" style="width: 120px;">
-                                                    
+
                                                     <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
                                                     <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>');" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
                                                     <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>

@@ -406,7 +406,7 @@ class ProcesosController extends AppController {
                 "IF(ISNULL($sql3),TRUE,IF($sql3 = $sql2,FALSE,TRUE))"
             ),
             'group' => array('ProcesosEstado.flujos_user_id', 'ProcesosEstado.proceso_id'),
-            'fields' => array('Proceso.*', 'ProcesosEstado.*', 'FlujosUser.descripcion')
+            'fields' => array('Proceso.*', 'ProcesosEstado.*', 'FlujosUser.descripcion', 'FlujosUser.expediente', 'FlujosUser.expediente')
         ));
         /* debug($procesos);
           exit; */
@@ -426,7 +426,7 @@ class ProcesosController extends AppController {
                     $d_alerta['user_id'] = 0;
                     $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
                     $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
-                    $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias (' . date('Y-m-d') . ')';
+                    $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['expediente'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias (' . date('Y-m-d') . ')';
                     $d_alerta['tipo'] = 'Alerta Proceso';
                     $d_alerta['estado'] = 'Activo';
                     $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
@@ -443,7 +443,7 @@ class ProcesosController extends AppController {
                     $d_alerta['user_id'] = 0;
                     $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
                     $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
-                    $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias (' . date('Y-m-d') . ')';
+                    $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['expediente'] . ' va a terminar su periodo en ' . $pro['Proceso']['tiempo_alertas'] . ' dias (' . date('Y-m-d') . ')';
                     $d_alerta['tipo'] = 'Alerta Proceso';
                     $d_alerta['estado'] = 'Activo';
                     $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
@@ -477,7 +477,7 @@ class ProcesosController extends AppController {
                 "IF(ISNULL($sql3),TRUE,IF($sql3 = $sql2,FALSE,TRUE))"
             ),
             'group' => array('ProcesosEstado.flujos_user_id', 'ProcesosEstado.proceso_id'),
-            'fields' => array('Proceso.*', 'ProcesosEstado.*', 'FlujosUser.descripcion')
+            'fields' => array('Proceso.*', 'ProcesosEstado.*', 'FlujosUser.descripcion', 'FlujosUser.expediente')
         ));
         /* debug($procesos);
           exit; */
@@ -525,7 +525,7 @@ class ProcesosController extends AppController {
                 $d_alerta['user_id'] = 0;
                 $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
                 $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
-                $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' termino su tiempo (' . $fecha_un . ") $mensaje_ad";
+                $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['expediente'] . ' termino su tiempo (' . $fecha_un . ") $mensaje_ad";
                 $d_alerta['tipo'] = 'Alerta Fin Proceso';
                 $d_alerta['estado'] = 'Activo';
                 $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];
@@ -559,7 +559,7 @@ class ProcesosController extends AppController {
                 $d_alerta['user_id'] = 0;
                 $d_alerta['flujos_user_id'] = $pro['ProcesosEstado']['flujos_user_id'];
                 $d_alerta['proceso_id'] = $pro['ProcesosEstado']['proceso_id'];
-                $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['descripcion'] . ' termino su tiempo (' . $fecha_un . ") $mensaje_ad";
+                $d_alerta['mensaje'] = 'El proceso de ' . $pro['Proceso']['nombre'] . ' en el flujo ' . $pro['FlujosUser']['expediente'] . ' termino su tiempo (' . $fecha_un . ") $mensaje_ad";
                 $d_alerta['tipo'] = 'Alerta Fin Proceso';
                 $d_alerta['estado'] = 'Activo';
                 $d_alerta['fecha_activacion'] = $pro['ProcesosEstado']['fecha_activado'];

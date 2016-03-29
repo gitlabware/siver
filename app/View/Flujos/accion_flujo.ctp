@@ -120,7 +120,8 @@
                         <table class="table dataTable tabla-dato table-bordered">
                             <thead>
                                 <tr class="bg-light">
-                                    <th>Descripcion</th>
+                                    <th>Exp.</th>
+                                    <th>Cliente</th>
                                     <th>Usuario</th>
                                     <th>Creado</th>
                                     <th></th>
@@ -129,7 +130,8 @@
                             <tbody>
                                 <?php foreach ($flujos_c as $flu): ?>
                                     <tr class="<?php echo $flu['FlujosUser']['estado_color']; ?>">
-                                        <td><?php echo $flu['FlujosUser']['descripcion']; ?></td>
+                                        <td><?php echo $flu['FlujosUser']['expediente']; ?></td>
+                                        <td><?php echo $flu['Cliente']['nombre']; ?></td>
                                         <td><?php echo $flu['User']['nombre_completo']; ?></td>
                                         <td><?php echo $flu['FlujosUser']['created']; ?></td>
                                         <td class="text-center" style="font-size: 16px;">

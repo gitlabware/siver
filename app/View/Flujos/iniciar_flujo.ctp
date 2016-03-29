@@ -1,22 +1,22 @@
 <link rel="stylesheet" type="text/css" href="<?php echo $this->request->webroot; ?>js/vendor/plugins/datepicker/css/bootstrap-datetimepicker.css">
+
 <div class="panel-heading">
     <span class="panel-title">
         <i class="fa fa-square"></i>Flujo</span>
 </div>
-<!-- end .panel-heading section -->
 
 <?= $this->Form->create('Flujo', ['class' => 'form-validacion', 'id' => 'f-add']); ?>
 <div class="panel-body p25">
-    <div class="section row">
+    <!--<div class="section row">
         <div class="col-md-12">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->text('FlujosUser.descripcion', ['class' => 'gui-input', 'required', 'placeholder' => 'Nombre']); ?>
+    <?php //echo $this->Form->text('FlujosUser.descripcion', ['class' => 'gui-input', 'required', 'placeholder' => 'Nombre']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-edit"></i>
                 </label>
             </label>
         </div>
-    </div>
+    </div>-->
     <div class="section row" id="cliente-select">
         <div class="col-md-11">
             <label class="field select">
@@ -78,7 +78,7 @@
         </div>
         <div class="col-md-4">
             <label for="datepicker1" class="field prepend-icon">
-                <?php echo $this->Form->text('FlujosUser.fecha_inicio', array('class' => 'form-control', 'placeholder' => 'Fecha Inicio', 'id' => 'ddatepicker1')); ?>
+                <?php echo $this->Form->text('FlujosUser.fecha_inicio', array('class' => 'form-control', 'placeholder' => 'Fecha Inicio', 'id' => 'ddatepicker1','required')); ?>
                 <label class="field-icon">
                     <i class="fa fa-calendar-o"></i>
                 </label>
@@ -99,10 +99,19 @@
 
         <?php echo $this->Form->hidden('FlujosUser.estado', array('value' => 'Activo')) ?> 
     <?php endif; ?>
+
+    <div class="section row">
+        <div class="col-md-12">
+            <label class="field select">
+                <?php echo $this->Form->select('FlujosUser.proceso_id', $procesos, array('empty' => 'Seleccione Proceso Inicial', 'required')) ?>
+                <i class="arrow double"></i>
+            </label>
+        </div>
+    </div>
     <div class="section row">
         <div class="col-md-12">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->textarea('FlujosUser.descripcion_2', ['class' => 'gui-textarea', 'required', 'placeholder' => 'Descripcion']); ?>
+                <?php echo $this->Form->textarea('FlujosUser.descripcion_2', ['class' => 'gui-textarea', 'placeholder' => 'Descripcion']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-edit"></i>
                 </label>

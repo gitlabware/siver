@@ -55,7 +55,7 @@ class AdjuntosController extends AppController {
         'FlujosUser.estado LIKE' => 'Activo'
       ),
       'order' => array('FlujosUser.created DESC'),
-      'fields' => array('FlujosUser.id', 'FlujosUser.descripcion')
+      'fields' => array('FlujosUser.id', 'FlujosUser.expediente')
     ));
     $users = $this->User->find('all', array(
       'recursive' => -1,
@@ -476,7 +476,7 @@ class AdjuntosController extends AppController {
         'FlujosUser.estado LIKE' => 'Activo'
       ),
       'order' => array('FlujosUser.created DESC'),
-      'fields' => array('FlujosUser.id', 'FlujosUser.descripcion')
+      'fields' => array('FlujosUser.id', 'FlujosUser.expediente')
     ));
 
 
