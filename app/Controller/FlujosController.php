@@ -12,7 +12,7 @@ class FlujosController extends AppController {
 
         $flujos = $this->Flujo->find('all', array(
             'recursive' => -1,
-            'order' => 'modified DESC'
+            'order' => 'modified ASC'
         ));
         $this->FlujosUser->virtualFields = array(
             'estado_color' => "(IF(FlujosUser.estado = 'Finalizado','success',''))"

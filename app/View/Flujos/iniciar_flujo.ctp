@@ -2,7 +2,7 @@
 
 <div class="panel-heading">
     <span class="panel-title">
-        <i class="fa fa-square"></i>Flujo</span>
+        <i class="fa fa-square"></i>Nuevo Caso</span>
 </div>
 
 <?= $this->Form->create('Flujo', ['class' => 'form-validacion', 'id' => 'f-add']); ?>

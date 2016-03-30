@@ -63,7 +63,7 @@
         <ol class="breadcrumb">
             <li class="crumb-active">
                 <a href="javascript:">
-                    Flujos
+                    Recursos
                 </a>
             </li>
         </ol>
@@ -88,7 +88,7 @@
             <?php if (!empty($flujos)): ?>
                 <div class="panel panel-success">
                     <div class="panel-heading">
-                        <span class="fa fa-star-o mr5"></span> Flujos Creados
+                        <span class="fa fa-star-o mr5"></span> Recursos Creados
                     </div>
                     <div class="panel-body pn">
                         <div class="table-responsive">
@@ -99,7 +99,7 @@
                                         <th>Cliente</th>
                                         <th>Usuario</th>
                                         <th>Creado</th>
-                                        <th>Flujo</th>
+                                        <th>Recurso</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -141,7 +141,7 @@
                         <table class="table admin-form theme-warning tc-checkbox-1 fs13">
                             <thead>
                                 <tr class="bg-light">
-                                    <th class="text-center" style="font-size: 16px;">FLUJOS</th>
+                                    <th class="text-center" style="font-size: 16px;">RECURSOS</th>
                                 </tr>
                             </thead>
                             <tbody>
