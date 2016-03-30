@@ -131,8 +131,6 @@ class AdjuntosController extends AppController {
       $this->request->data['Adjunto']['extension'] = '';
     }
 
-
-
     if (empty($this->request->data['Adjunto']['flujos_user_id'])) {
       $this->request->data['Adjunto']['flujos_user_id'] = 0;
     }

@@ -37,7 +37,7 @@
         <ol class="breadcrumb">
             <li class="crumb-active">
                 <a href="javascript:">
-                    <?php echo $flujo['FlujosUser']['descripcion'] ?> <b> <?php echo $flujo['Flujo']['nombre'] ?></b>
+                    <?php echo $flujo['FlujosUser']['expediente'] ?> <b> <?php echo $flujo['Flujo']['nombre'] ?></b>
                 </a>
             </li>
         </ol>
