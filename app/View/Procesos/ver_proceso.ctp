@@ -12,9 +12,17 @@
             </a>
         </div>
         <?php if (!empty(current($estados)) && current($estados)['ProcesosEstado']['estado'] !== 'Finalizado'): ?>
+
             <div class="col-xs-6 col-sm-3">
-                <?php echo $this->Html->link('<span class="metro-icon fa fa-stop"></span> <p class="metro-title">Finalizar Proceso</p>', array('action' => 'finaliza_proceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de finalizar el Proceso???')) ?>
-            </div>
+                <a  href="javascript:" class="metro-tile" onclick="cierra_elmenu();
+                        cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'finaliza_proceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'], 0)); ?>');">
+                    <span class="metro-icon fa fa-stop"></span>
+                    <p class="metro-title">Finalizar Proceso</p>
+                </a>
+            </div>    
+            <!--<div class="col-xs-6 col-sm-3">
+            <?php //echo $this->Html->link('<span class="metro-icon fa fa-stop"></span> <p class="metro-title">Finalizar Proceso</p>', array('action' => 'finaliza_proceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de finalizar el Proceso???')) ?>
+                </div>-->
         <?php endif; ?>
         <div class="col-xs-6 col-sm-3">
             <a  href="javascript:" class="metro-tile" onclick="cierra_elmenu();
@@ -39,6 +47,7 @@
         </div>
     </div>
 </div>
+
 <script>
 
     function cierra_elmenu() {
@@ -55,7 +64,7 @@
         <ol class="breadcrumb">
             <li class="crumb-active">
                 <a href="<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'enflujo', $flujo['FlujosUser']['id'])); ?>">
-                    <?php echo $proceso['Proceso']['nombre'] ?> <b> <?php echo '(' . $flujo['FlujosUser']['descripcion'] . ')' ?></b>
+                    <?php echo $proceso['Proceso']['nombre'] ?> <b> <?php echo '(' . $flujo['FlujosUser']['expediente'] . ')' ?></b>
                 </a>
             </li>
         </ol>
@@ -103,7 +112,7 @@
                                         <td>
                                             <div class="btn-group" style="width: 120px;;">
                                                 <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', $idFlujoUser, $idProceso, $ta['Tarea']['id']), array('class' => 'btn btn-info', 'title' => 'Ver tarea', 'escape' => FALSE)) ?>
-                                                <?php echo $this->Html->link('<i class="fa fa-edit"></i>', array('controller' => 'Tareas', 'action' => 'tarea', $idFlujoUser, $idProceso, $ta['Tarea']['id']), array('class' => 'btn btn-warning', 'title' => 'Editar tarea', 'escape' => FALSE)) ?>
+                                                <?php //echo $this->Html->link('<i class="fa fa-edit"></i>', array('controller' => 'Tareas', 'action' => 'tarea', $idFlujoUser, $idProceso, $ta['Tarea']['id']), array('class' => 'btn btn-warning', 'title' => 'Editar tarea', 'escape' => FALSE)) ?>
                                                 <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Tareas', 'action' => 'eliminar', $ta['Tarea']['id']), array('class' => 'btn btn-danger', 'title' => 'Eliminar tarea', 'escape' => FALSE, 'confirm' => 'Esta seguro de eliminar la tarea??')) ?>
 
                                             </div>
@@ -227,6 +236,7 @@
 
 
 </section>
+
 <?php $this->start('fueracontent'); ?>
 <aside id="sidebar_right" class="nano affix">
     <div class="sidebar-right-content nano-content p15">
@@ -254,13 +264,13 @@
 
 
                         <td>
-                            <?php 
+                            <?php
                             $fecha_fin = '';
-                            if($es['ProcesosEstado']['estado'] === 'Activo' && !empty($es['Proceso']['tiempo']) && !empty($es['Proceso']['tipo_dias'])){
-                                $fecha_fin = ' y termina '.$this->requestAction(array('controller' => 'Procesos','action' => 'get_fecha_final',$es[0]['creado'],$es['Proceso']['tiempo'],$es['Proceso']['tipo_dias']));
+                            if ($es['ProcesosEstado']['estado'] === 'Activo' && !empty($es['Proceso']['tiempo']) && !empty($es['Proceso']['tipo_dias'])) {
+                                $fecha_fin = ' y termina ' . $this->requestAction(array('controller' => 'Procesos', 'action' => 'get_fecha_final', $es[0]['creado'], $es['Proceso']['tiempo'], $es['Proceso']['tipo_dias']));
                             }
                             ?>
-                             <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['estado']; ?> <?php echo $es[0]['creado'].' '.$fecha_fin; ?></span>
+                            <span class="label label-<?php echo $color; ?>"><?php echo $es['ProcesosEstado']['estado']; ?> <?php echo $es[0]['creado'] . ' ' . $fecha_fin; ?></span>
                             <?php if ($this->Session->read('Auth.User.id') == $flujo['FlujosUser']['user_id']): ?>
                                 <div class="widget-menu pull-right mr10">
                                     <div class="btn-group">
@@ -280,7 +290,6 @@
                 $procesos = $this->requestAction(array('controller' => 'Flujos', 'action' => 'get_procesos', $idFlujoUser));
                 ?>
                 <ul class="nav tray-nav" data-smoothscroll="-90">
-
                     <?php foreach ($procesos as $pro): ?>
                         <?php
                         $activo = '';
@@ -301,12 +310,12 @@
                     <?php endforeach; ?>
                 </ul>
             </div>
-
         </div>
     </div>
 
 
 </aside>
+
 <?php $this->end(); ?>
 <script>
     $('#carga-proc').load('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'verproceso', $flujo['FlujosUser']['id'], $proceso['Proceso']['id'])); ?>', function () {

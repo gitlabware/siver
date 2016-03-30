@@ -14,6 +14,13 @@
         <div class="col-xs-6 col-sm-3">
             <?php echo $this->Html->link('<span class="metro-icon fa fa-remove"></span> <p class="metro-title">Eliminar este flujo</p>', array('action' => 'eliminar_e_flujo', $flujo['FlujosUser']['id']), array('class' => 'metro-tile', 'escape' => false, 'confirm' => 'Esta seguro de eliminar este flujo???')) ?>
         </div>
+        <div class="col-xs-6 col-sm-3">
+            <a onclick="cierra_elmenu();
+                  cargarmodal('<?php echo $this->Html->url(array('controller' => 'Documentos', 'action' => 'documentos',$flujo['FlujosUser']['id'])); ?>',true);"  href="javascript:" class="metro-tile">
+                <span class="metro-icon fa fa-folder-open-o"></span>
+                <p class="metro-title">Documentos</p>
+            </a>
+        </div>
     </div>
 </div>
 <script>
@@ -148,3 +155,9 @@
       /**/
   }
 </script>
+
+<?php if($sw_documentos):?>
+<script>
+    //cargarmodal('<?php //echo $this->Html->url(array('controller' => 'Documentos','action' => 'documentos', $flujo['FlujosUser']['id']));?>');
+</script>
+<?php endif; ?>

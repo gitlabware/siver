@@ -134,7 +134,7 @@ class FlujosController extends AppController {
                 $this->redirect($this->referer());
             }
 
-
+            $this->Session->write('swdocumentos', true);
             $this->redirect(array('action' => 'enflujo', $idFlujosUser));
         }
         if (!empty($idFlujosUser)) {
@@ -158,7 +158,6 @@ class FlujosController extends AppController {
     }
 
     public function enflujo($idFlujoUser = null) {
-
         $idUser = $this->Session->read('Auth.User.id');
         $span1 = '<span class="text-primary">';
         $span2 = '</span>';
@@ -176,15 +175,17 @@ class FlujosController extends AppController {
         $sql5 = "(SELECT ('$icono_adjuntos') AS icono, adjuntos.created, CONCAT('Adjuntos') AS tipo, CONCAT('<b>',users.nombre_completo,'</b>',' subio un archivo: ','<a href=$com ../../Adjuntos/index/',IF(ISNULL(adjuntos.parent_id),'',adjuntos.parent_id),' $com>',adjuntos.nombre_original,'</a> ',IF(adjuntos.tarea_id != 0,CONCAT('en tarea <a href=$com ../../Tareas/ver_tarea/0/0/',adjuntos.tarea_id,'$com>',tareas.descripcion,'</a>'),IF(adjuntos.proceso_id != 0,CONCAT('en proceso <a href=$com ../../Procesos/ver_proceso/',adjuntos.flujos_user_id,'/',adjuntos.proceso_id,'$com>',procesos.nombre,'</a>'), IF(adjuntos.flujos_user_id != 0,CONCAT('en flujo <a href=$com ../../Flujos/enflujo/',adjuntos.flujos_user_id,'$com>',flujos_users.expediente,'</a>'),'' ) )  ) ) AS contenido FROM adjuntos LEFT JOIN users ON(users.id = adjuntos.user_id)  LEFT JOIN flujos_users ON(flujos_users.id = adjuntos.flujos_user_id)  LEFT JOIN procesos ON(procesos.id = adjuntos.proceso_id) LEFT JOIN tareas ON(tareas.id = adjuntos.tarea_id) WHERE ( IF(adjuntos.user_id = $idUser,1,IF(adjuntos.visible = 'Todos',1,  IF(adjuntos.visible = 'Seleccion Personalizada',( IF( ISNULL( (SELECT users_visibles.id FROM users_visibles WHERE users_visibles.user_id = $idUser AND users_visibles.adjunto_id = adjuntos.id AND users_visibles.visible = 1) ),0,1 ) ),0)  )) ) = 1 AND adjuntos.flujos_user_id = $idFlujoUser AND adjuntos.tipo LIKE 'Archivo' ORDER BY adjuntos.created DESC LIMIT 20)";
         $sql6 = "(SELECT ('$icono_adjuntos_e') AS icono, adjuntos.modified AS created, CONCAT('Adjuntos') AS tipo, CONCAT('<b>',users.nombre_completo,'</b>',' elimino un archivo: ','<a href=$com ../../Adjuntos/index/',IF(ISNULL(adjuntos.parent_id),'',adjuntos.parent_id),' $com>',adjuntos.nombre_original,'</a> ',IF(adjuntos.tarea_id != 0,CONCAT('en tarea <a href=$com ../../Tareas/ver_tarea/0/0/',adjuntos.tarea_id,'$com>',tareas.descripcion,'</a>'),IF(adjuntos.proceso_id != 0,CONCAT('en proceso <a href=$com ../../Procesos/ver_proceso/',adjuntos.flujos_user_id,'/',adjuntos.proceso_id,'$com>',procesos.nombre,'</a>'), IF(adjuntos.flujos_user_id != 0,CONCAT('en flujo <a href=$com ../../Flujos/enflujo/',adjuntos.flujos_user_id,'$com>',flujos_users.expediente,'</a>'),'' ) )  ) ) AS contenido FROM adjuntos LEFT JOIN users ON(users.id = adjuntos.user_id)  LEFT JOIN flujos_users ON(flujos_users.id = adjuntos.flujos_user_id)  LEFT JOIN procesos ON(procesos.id = adjuntos.proceso_id) LEFT JOIN tareas ON(tareas.id = adjuntos.tarea_id) WHERE adjuntos.estado = 'Eliminado' AND ( IF(adjuntos.user_id = $idUser,1,IF(adjuntos.visible = 'Todos',1,  IF(adjuntos.visible = 'Seleccion Personalizada',( IF( ISNULL( (SELECT users_visibles.id FROM users_visibles WHERE users_visibles.user_id = $idUser AND users_visibles.adjunto_id = adjuntos.id AND users_visibles.visible = 1) ),0,1 ) ),0)  )) ) = 1 AND adjuntos.flujos_user_id = $idFlujoUser AND adjuntos.tipo LIKE 'Archivo' ORDER BY adjuntos.modified DESC LIMIT 20)";
         $sql_u = "$sql1 UNION $sql2 UNION $sql3 UNION $sql4 UNION $sql5 UNION $sql6 ORDER BY created DESC LIMIT 15";
-
+        
         $actividades = $this->Flujo->query($sql_u);
-
+        
         $flujo = $this->FlujosUser->find('first', array(
             'recursive' => 0,
             'conditions' => array('FlujosUser.id' => $idFlujoUser),
             'fields' => array('Flujo.*', 'FlujosUser.*')
         ));
+        
         $this->update_proceso_est($flujo['Flujo']['id'], $idFlujoUser);
+        
         $sql_1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = $idFlujoUser AND pres.proceso_id = Proceso.id ORDER BY pres.id DESC LIMIT 1)";
         $this->Proceso->virtualFields = array(
             'estado' => "$sql_1"
@@ -196,7 +197,12 @@ class FlujosController extends AppController {
         ));
         /* debug($procesos);
           exit; */
-        $this->set(compact('flujo', 'procesos', 'idFlujoUser', 'actividades'));
+        $sw_documentos = false;
+        if($this->Session->check('swdocumentos')){
+            $sw_documentos = $this->Session->read('swdocumentos');
+            $this->Session->delete('swdocumentos');
+        }
+        $this->set(compact('flujo', 'procesos', 'idFlujoUser', 'actividades','sw_documentos'));
     }
 
     public function get_procesos($idFlujoUser) {
@@ -227,13 +233,21 @@ class FlujosController extends AppController {
 
         //debug($flujo_user);exit;
         if (!empty($flujo_user['FlujosUser']['fecha_inicio']) && $flujo_user['FlujosUser']['estado'] == 'Activo' && !empty($flujo_user['FlujosUser']['proceso_id'])) {
-            $d_proest['user_id'] = 0;
-            $d_proest['flujos_user_id'] = $idFlujoUser;
-            $d_proest['proceso_id'] = $flujo_user['FlujosUser']['proceso_id'];
-            $d_proest['estado'] = 'Activo';
-            $d_proest['created'] = $flujo_user['FlujosUser']['fecha_inicio'];
-            $this->ProcesosEstado->create();
-            $this->ProcesosEstado->save($d_proest);
+            $proceso = $this->ProcesosEstado->find('first', array(
+                'recursive' => -1,
+                'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujoUser, 'ProcesosEstado.proceso_id' => $flujo_user['FlujosUser']['proceso_id'])
+            ));
+            if (empty($proceso)) {
+                $d_proest['user_id'] = 0;
+                $d_proest['flujos_user_id'] = $idFlujoUser;
+                $d_proest['proceso_id'] = $flujo_user['FlujosUser']['proceso_id'];
+                $d_proest['estado'] = 'Activo';
+                $d_proest['created'] = $flujo_user['FlujosUser']['fecha_inicio'];
+                $this->ProcesosEstado->create();
+                $this->ProcesosEstado->save($d_proest);
+            }
+
+
             /* $sql1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = $idFlujoUser AND pres.proceso_id = Proceso.id ORDER BY pres.id LIMIT 1)";
               $this->Proceso->virtualFields = array(
               'estado' => "$sql1"

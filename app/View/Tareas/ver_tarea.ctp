@@ -58,8 +58,8 @@
             <li class="crumb-active">
                 <a href="<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'enflujo', $flujo['FlujosUser']['id'])); ?>">
                     <?php
-                    if (!empty($flujo['FlujosUser']['descripcion'])) {
-                      echo $flujo['FlujosUser']['descripcion'];
+                    if (!empty($flujo['FlujosUser']['expediente'])) {
+                      echo $flujo['FlujosUser']['expediente'];
                     } else {
                       echo 'FLujo Libre';
                     }

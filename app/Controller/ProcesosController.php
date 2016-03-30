@@ -130,6 +130,7 @@ class ProcesosController extends AppController {
             'order' => array('ProcesosEstado.created DESC'),
             'fields' => array('ProcesosEstado.*','Proceso.tiempo','Proceso.tipo_dias', 'DATE(ProcesosEstado.created) AS creado')
         ));
+        //debug($estados);exit;
         $this->set(compact('flujo', 'proceso', 'linea_tiempo', 'idFlujoUser', 'idProceso', 'tareas', 'estados'));
     }
 
@@ -144,18 +145,7 @@ class ProcesosController extends AppController {
         return $estados;
     }
 
-    public function finaliza_proceso($idFlujoUser = null, $idProceso = null) {
-        $d_proest['user_id'] = $this->Session->read('Auth.User.id');
-        $d_proest['flujos_user_id'] = $idFlujoUser;
-        $d_proest['proceso_id'] = $idProceso;
-        $d_proest['estado'] = 'Finalizado';
-        $this->ProcesosEstado->create();
-        $this->ProcesosEstado->save($d_proest);
-        $flujo = $this->FlujosUser->findByid($idFlujoUser, null, null, -1);
-        $this->update_proceso_est($flujo['FlujosUser']['flujo_id'], $idFlujoUser);
-        $this->Session->setFlash('Se ha finalizado correctamente el proceso!!', 'msgbueno');
-        $this->redirect($this->referer());
-    }
+    
 
     public function update_proceso_est($idFlujo = null, $idFlujoUser = null) {
         $sql1 = "(SELECT pres.estado FROM procesos_estados pres WHERE pres.flujos_user_id = $idFlujoUser AND pres.proceso_id = Proceso.id ORDER BY pres.id LIMIT 1)";
@@ -250,7 +240,29 @@ class ProcesosController extends AppController {
 
         $this->set(compact('idFlujosUser', 'idProceso'));
     }
+    public function finaliza_proceso($idFlujosUser = null, $idProceso = null) {
+        $this->layout = 'ajax';
+        if (!empty($this->request->data['ProcesosEstado'])) {
+            $this->ProcesosEstado->create();
+            $this->ProcesosEstado->save($this->request->data['ProcesosEstado']);
+            $this->Session->setFlash("Se ha registrado el proceso finalizado!!", 'msgbueno');
+            $this->redirect($this->referer());
+        }
 
+        $this->set(compact('idFlujosUser', 'idProceso'));
+    }
+    public function finaliza_proceso2($idFlujoUser = null, $idProceso = null) {
+        $d_proest['user_id'] = $this->Session->read('Auth.User.id');
+        $d_proest['flujos_user_id'] = $idFlujoUser;
+        $d_proest['proceso_id'] = $idProceso;
+        $d_proest['estado'] = 'Finalizado';
+        $this->ProcesosEstado->create();
+        $this->ProcesosEstado->save($d_proest);
+        $flujo = $this->FlujosUser->findByid($idFlujoUser, null, null, -1);
+        $this->update_proceso_est($flujo['FlujosUser']['flujo_id'], $idFlujoUser);
+        $this->Session->setFlash('Se ha finalizado correctamente el proceso!!', 'msgbueno');
+        $this->redirect($this->referer());
+    }
     public function eliminar_estado($idProcesosEstado = null) {
         if ($this->ProcesosEstado->delete($idProcesosEstado)) {
             $this->Session->setFlash("Se ha eliminado correctamente el estado del Proceso!!", 'msgbueno');
