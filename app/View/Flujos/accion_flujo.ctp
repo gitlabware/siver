@@ -28,7 +28,7 @@
             <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
                     cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flujo['Flujo']['id'])); ?>', true);">
                 <span class="metro-icon glyphicon glyphicon-play"></span>
-                <p class="metro-title">Iniciar Flujo</p>
+                <p class="metro-title">Nuevo Caso</p>
             </a>
         </div>
     </div>
@@ -113,7 +113,7 @@
         <?php if (!empty($flujos_c)): ?>
             <div class="panel panel-success">
                 <div class="panel-heading">
-                    <span class="fa fa-star-o mr5"></span> Flujos Creados
+                    <span class="fa fa-star-o mr5"></span> Listado de Casos
                 </div>
                 <div class="panel-body pn">
                     <div class="table-responsive">
@@ -162,7 +162,7 @@
                         <table class="table admin-form theme-warning tc-checkbox-1 fs13">
                             <thead>
                                 <tr class="bg-light">
-                                    <th class="text-center" style="font-size: 16px;">FLUJOS</th>
+                                    <th class="text-center" style="font-size: 16px;">RECURSOS</th>
                                 </tr>
                             </thead>
                             <tbody>
