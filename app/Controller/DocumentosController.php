@@ -40,11 +40,11 @@ class DocumentosController extends AppController {
     }
 
     public function guarda_docuementos($idFlujosUser = null, $numero = null) {
-        /*debug($this->request->data['documentos'][$numero]);
-        exit;*/
+        /* debug($this->request->data['documentos'][$numero]);
+          exit; */
         //$this->request->data['documentos'][$numero];
         if (!empty($this->request->data['documentos'][$numero]['archivo']['size'])) {
-            $flujos_user = $this->FlujosUser->find('first',array(
+            $flujos_user = $this->FlujosUser->find('first', array(
                 'recursive' => -1,
                 'conditions' => array('FlujosUser.id' => $idFlujosUser)
             ));
@@ -55,10 +55,10 @@ class DocumentosController extends AppController {
             $this->request->data['Adjunto']['tipo'] = 'Archivo';
             $this->request->data['Adjunto']['visible'] = 'Todos';
             $this->request->data['Adjunto']['user_id'] = $this->Session->read('Auth.User.id');
-            
+
             $idAdjunto = $this->guarda_archivo();
-            if(!empty($idAdjunto)){
-               $d_doc['adjunto_id'] = $idAdjunto;
+            if (!empty($idAdjunto)) {
+                $d_doc['adjunto_id'] = $idAdjunto;
             }
         }
         $d_doc['tipo'] = $this->request->data['documentos'][$numero]['tipo'];
@@ -68,7 +68,7 @@ class DocumentosController extends AppController {
             $d_doc['original'] = 0;
         }
         $d_doc['hojas'] = $this->request->data['documentos'][$numero]['hojas'];
-        
+
         $d_doc['user_id'] = $this->Session->read('Auth.User.id');
         $d_doc['flujos_user_id'] = $idFlujosUser;
         $array['error'] = '';
@@ -78,6 +78,82 @@ class DocumentosController extends AppController {
         }
 
         $this->respond($array, true);
+    }
+
+    public function guarda_docuemento() {
+        /* debug($this->request->data);
+          exit; */
+        //$this->request->data['documentos'][$numero];
+        $array['error'] = '';
+        $documento = $this->Documento->find('first', array(
+            'recurisve' => -1,
+            'conditions' => array('Documento.id' => $this->request->data['Documento']['id'])
+        ));
+        $idFlujosUser = $documento['Documento']['flujos_user_id'];
+        if (!empty($documento['Documento']['adjunto_id'])) {
+            $this->eliminar_archivo($documento['Documento']['adjunto_id']);
+        }
+        if (!empty($this->request->data['Documento']['archivo']['size'])) {
+            $flujos_user = $this->FlujosUser->find('first', array(
+                'recursive' => -1,
+                'conditions' => array('FlujosUser.id' => $idFlujosUser)
+            ));
+            $this->request->data['Adjunto']['parent_id'] = $flujos_user['FlujosUser']['adjunto_id'];
+            $this->request->data['Adjunto']['archivo'] = $this->request->data['Documento']['archivo'];
+            $this->request->data['Adjunto']['flujos_user_id'] = $idFlujosUser;
+            $this->request->data['Adjunto']['estado'] = 'Activo';
+            $this->request->data['Adjunto']['tipo'] = 'Archivo';
+            $this->request->data['Adjunto']['visible'] = 'Todos';
+            $this->request->data['Adjunto']['user_id'] = $this->Session->read('Auth.User.id');
+
+            $idAdjunto = $this->guarda_archivo();
+            if (!empty($idAdjunto)) {
+                $d_doc['adjunto_id'] = $idAdjunto;
+            } else {
+                $array['error'] = 'No se ha podido guardar el archivo seleccionado!!';
+            }
+        }
+        if (empty($array['error'])) {
+            $d_doc['tipo'] = $this->request->data['Documento']['tipo'];
+            $d_doc['original'] = $this->request->data['Documento']['original'];
+            $d_doc['hojas'] = $this->request->data['Documento']['hojas'];
+            $d_doc['id'] = $this->request->data['Documento']['id'];
+            $d_doc['user_id'] = $this->Session->read('Auth.User.id');
+            $d_doc['flujos_user_id'] = $idFlujosUser;
+
+            $this->Documento->create();
+            if (!$this->Documento->save($d_doc)) {
+                $array['error'] = 'No se ha podido registrar el documento!!!';
+            }
+        }
+        $this->respond($array, true);
+    }
+
+    public function eliminar_archivo($idAdjunto = null) {
+        /* debug($this->request->data['Adjunto']['direccion']);
+          exit; */
+        $adjunto = $this->Adjunto->findByid($idAdjunto, null, null, -1);
+        $direcciones = $this->Adjunto->getPath($adjunto['Adjunto']['parent_id']);
+        $directorio = '';
+        foreach ($direcciones as $dir) {
+            $directorio = $directorio . DS . $dir['Adjunto']['nombre_original'];
+        }
+
+        $file = WWW_ROOT . 'files' . $directorio . DS . $adjunto['Adjunto']['nombre_original'];
+
+        if (file_exists($file)) {
+            //debug('Si existe');exit;
+            unlink($file);
+            $adj['estado'] = 'Eliminado';
+            //$adj['created'] = date('Y-m-d');
+            $this->Adjunto->id = $adjunto['Adjunto']['id'];
+            $this->Adjunto->save($adj);
+            return true;
+            //$this->Session->setFlash("Se ha eliminado correctamente el archivo!!", 'msgbueno');
+        } else {
+            return false;
+            //$this->Session->setFlash("No se ha podido eliminar el archivo!!", 'msgerror');
+        }
     }
 
     public function guarda_archivo() {
@@ -124,7 +200,7 @@ class DocumentosController extends AppController {
                 $this->Adjunto->save($this->request->data['Adjunto']);
                 $idAdjunto = $this->Adjunto->getLastInsertID();
 
-               
+
                 //$this->Session->setFlash('Se ha registrado correctamente el archivo!!!', 'msgbueno');
             } else {
 
@@ -150,6 +226,42 @@ class DocumentosController extends AppController {
         } else {
             return false;
         }
+    }
+
+    public function get_documentos($idFlujosUser = NULL) {
+        $this->Documento->virtualFields = array(
+            'original_a' => "(IF(Documento.original = 1,'Original','Copia'))"
+        );
+        $documentos = $this->Documento->find('all', array(
+            'recursive' => 0,
+            'conditions' => array('Documento.flujos_user_id' => $idFlujosUser),
+            'fields' => array('Documento.*', 'Adjunto.*'),
+            'order' => array('Documento.created DESC')
+        ));
+        return $documentos;
+    }
+
+    public function documento($idDocumento = null) {
+        $this->layout = 'ajax';
+        $documentos = $this->Documento->find('list', array(
+            'recursive' => -1,
+            'group' => array('Documento.tipo'),
+            'fields' => array('Documento.tipo', 'Documento.tipo')
+        ));
+        $this->Documento->id = $idDocumento;
+        $this->request->data = $this->Documento->read();
+        $this->set(compact('documentos'));
+    }
+
+    public function eliminar($idDocumento = null) {
+        $documento = $this->Documento->findByid($idDocumento, null, null, -1);
+
+        if (!empty($documento['Documento']['adjunto_id'])) {
+            $this->eliminar_archivo($documento['Documento']['adjunto_id']);
+        }
+        $this->Documento->delete($idDocumento);
+        $this->Session->setFlash("Se ha eliminado correctamente el documento!!", 'msgbueno');
+        $this->redirect($this->referer());
     }
 
 }

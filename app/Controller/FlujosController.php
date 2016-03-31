@@ -116,6 +116,7 @@ class FlujosController extends AppController {
                         $dflujo['adjunto_id'] = $this->Adjunto->getLastInsertID();
                         $this->FlujosUser->id = $idFlujosUser;
                         $this->FlujosUser->save($dflujo);
+                        $this->Session->setFlash('Se ha registrado correctamente!!', 'msgbueno');
                     }
                 } else {
                     $flujo = $this->FlujosUser->findByid($idFlujosUser, NULL, NULL, 0);
@@ -133,8 +134,9 @@ class FlujosController extends AppController {
                 $this->Session->setFlash($error, 'msgerror');
                 $this->redirect($this->referer());
             }
-
+            
             $this->Session->write('swdocumentos', true);
+            //debug($this->Session->read('swdocumentos'));exit;
             $this->redirect(array('action' => 'enflujo', $idFlujosUser));
         }
         if (!empty($idFlujosUser)) {
@@ -198,10 +200,13 @@ class FlujosController extends AppController {
         /* debug($procesos);
           exit; */
         $sw_documentos = false;
+        
         if($this->Session->check('swdocumentos')){
+            
             $sw_documentos = $this->Session->read('swdocumentos');
             $this->Session->delete('swdocumentos');
         }
+        
         $this->set(compact('flujo', 'procesos', 'idFlujoUser', 'actividades','sw_documentos'));
     }
 
