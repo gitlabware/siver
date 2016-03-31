@@ -9,7 +9,7 @@
 /dist
 /tags
 *.mo
-/app/webroot/files
+#/app/webroot/files
 # IDE and editor specific files #
 #################################
 /nbproject
