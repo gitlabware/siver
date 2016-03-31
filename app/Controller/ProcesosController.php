@@ -583,5 +583,11 @@ class ProcesosController extends AppController {
         //debug($procesos);
         exit;
     }
+    
+    public function eliminar($idProceso = null){
+        $this->Proceso->delete($idProceso);
+        $this->Session->setFlash("Se ha eliminado correctamente el proceso!!",'msgbueno');
+        $this->redirect($this->referer());
+    }
 
 }

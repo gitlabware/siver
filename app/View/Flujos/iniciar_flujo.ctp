@@ -37,7 +37,7 @@
     <div class="section row" id="cliente-text" style="display: none;">
         <div class="col-md-6">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->text('Cliente.nombre', ['class' => 'gui-input', 'placeholder' => 'Nombre del Cliente', 'id' => 'idtext-cli']); ?>
+                <?php echo $this->Form->text('Cliente.nombre', ['class' => 'gui-input', 'placeholder' => 'Nombre del Cliente', 'id' => 'idtext-cli','value' => '']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-user"></i>
                 </label>
@@ -45,7 +45,7 @@
         </div>
         <div class="col-md-5">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->text('Cliente.ci_nit', ['class' => 'gui-input', 'placeholder' => 'C.I./NIT']); ?>
+                <?php echo $this->Form->text('Cliente.ci_nit', ['class' => 'gui-input', 'placeholder' => 'C.I./NIT','value' => '']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-credit-card"></i>
                 </label>
