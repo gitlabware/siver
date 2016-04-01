@@ -29,7 +29,8 @@ $(document).ready(function () {
                             .prepend(
                                     '<img src="http://datatables.net/media/images/logo-fade.png" style="position:absolute; top:0; left:0;" />'
                                     );
-
+                    $(win.document.body).find('table').find('th:last-child').remove();
+                    $(win.document.body).find('table').find('td:last-child').remove();
                     $(win.document.body).find('table').removeClass('table-bordered').removeClass('table')
                             .addClass('CSSTableGenerator')
                             .css('font-size', 'inherit');

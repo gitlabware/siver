@@ -124,12 +124,36 @@
                                         <?php
                                         $p_estado = $this->requestAction(array('action' => 'get_dat_proceso', $fl['FlujosUser']['proceso']))
                                         ?>
-                                        <td><?php echo $p_estado['Proceso']['nombre'] . ' (' . $p_estado['ProcesosEstado']['estado'] . ')' ?></td>
-                                        <td><?php echo $p_estado[0]['creado'] ?></td>
-                                        <td><?php echo $p_estado['ProcesosEstado']['dias_v'] ?></td>
-                                        <td><?php echo $fl['Flujo']['nombre'] ?></td>
                                         <td>
-                                            <a href="javascript:">Detalle</a>
+                                            <?php
+                                            if (!empty($p_estado['Proceso']['nombre']) && !empty($p_estado['ProcesosEstado']['estado'])) {
+                                                echo $p_estado['Proceso']['nombre'] . ' (' . $p_estado['ProcesosEstado']['estado'] . ')';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            if (!empty($p_estado[0]['creado'])) {
+                                                echo $p_estado[0]['creado'];
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            if (!empty($p_estado['ProcesosEstado']['dias_v'])) {
+                                                echo $p_estado['ProcesosEstado']['dias_v'];
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            if (!empty($fl['Flujo']['nombre'])) {
+                                                echo $fl['Flujo']['nombre'];
+                                            }
+                                            ?>
+                                        </td>
+                                        <td >
+                                            <a href="javascript:" onclick="imprimir_det(<?php echo $fl['FlujosUser']['id'] ?>);">Detalle</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -163,8 +187,7 @@
 <?php endforeach; ?>
     ]}
     , null
-    ];
-</script>
+    ];</script>
 <?php
 echo $this->Html->script(array(
     'jquery.dataTables.min'
@@ -178,3 +201,12 @@ echo $this->Html->script(array(
     'datableini1'
         ), array('block' => 'scriptjs'))
 ?>
+<script>
+            function imprimir_det(idFU) {
+                var printWindow = window.open("<?php echo $this->Html->url(array('controller' => 'Reportes', 'action' => 'detalle_reporte')); ?>/" + idFU);
+                $(printWindow).on('load', function () {
+                    printWindow.print();
+                    //printWindow.close();
+                });
+            }
+</script>

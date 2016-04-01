@@ -578,5 +578,13 @@ class TareasController extends AppController {
 
         $this->set(compact('alertas'));
     }
+    
+    
+    public function get_estados_tareas($idTarea = NULL){
+        return $this->TareasEstado->find('all',array(
+            'recursive' => -1,
+            'conditions' => array('TareasEstado.tarea_id' => $idTarea)
+        ));
+    }
 
 }
