@@ -152,5 +152,6 @@ class ReportesController extends AppController {
         
         $this->set(compact('flujos_user','procesos_estados','tareas'));
     }
+    
 
 }

@@ -49,9 +49,9 @@
                 </a>
             </li>
             <li>
-                <a href="<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'index')); ?>">
-                    <span class="fa fa-square-o"></span>
-                    <span class="sidebar-title">FLUJOS</span>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Clientes', 'action' => 'index')); ?>">
+                    <span class="fa fa-suitcase"></span>
+                    <span class="sidebar-title">CLIENTES</span>
                 </a>
             </li>
             <li>
