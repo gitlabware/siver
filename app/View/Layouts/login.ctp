@@ -46,7 +46,7 @@
                 <!-- Begin: Content -->
                 <section id="content" class="">
 
-                    <div class="admin-form theme-info mw700" style="margin-top: 3%;" id="login1">
+                    <div class="admin-form theme-info mw500" style="margin-top: 3%;" id="login1">
                         <script>
                           var tipo_notif = null;
                           var texto_noyif = null;

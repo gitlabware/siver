@@ -81,14 +81,14 @@
     }
     ?>
     
-    <div class="section row">
+    <!--<div class="section row">
         <div class="col-md-12">
             <label class="field select">
-                <?php echo $this->Form->select('orden',$ordens, array('empty' => 'Seleccione el orden','value' => $orden)) ?>
+                <?php //echo $this->Form->select('orden',$ordens, array('empty' => 'Seleccione el orden','value' => $orden)) ?>
                 <i class="arrow double"></i>
             </label>
         </div>
-    </div>
+    </div>-->
 </div>
 <!-- end .form-body section -->
 

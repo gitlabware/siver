@@ -2,12 +2,36 @@
     $('body').addClass('sb-r-o');
 </script>
 <!-- Start: Topbar-Dropdown -->
-<div id="topbar-dropmenu">
+<style>
+    .sorted_table tr {
+        //cursor: pointer; 
+    }
+    /* line 96, /Users/jonasvonandrian/jquery-sortable/source/css/application.css.sass */
+    .sorted_table tr.placeholder {
+        display: block;
+        background: #2a74d6;
+        position: relative;
+        margin: 0;
+        padding: 0;
+        border: none; }
+    /* line 103, /Users/jonasvonandrian/jquery-sortable/source/css/application.css.sass */
+    .sorted_table tr.placeholder:before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-left-color: #2a74d6;
+        margin-top: -5px;
+        left: -5px;
+        border-right: none; }
+    </style>
+    <div id="topbar-dropmenu">
     <div class="topbar-menu row">
         <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
             <div class="col-xs-6 col-sm-3">
                 <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
-                        cargarmodal('<?php echo $this->Html->url(array('action' => 'flujo', $flujo['Flujo']['id'])); ?>');">
+                            cargarmodal('<?php echo $this->Html->url(array('action' => 'flujo', $flujo['Flujo']['id'])); ?>');">
                     <span class="metro-icon glyphicon glyphicon-edit"></span>
                     <p class="metro-title">Editar Flujo</p>
                 </a>
@@ -18,7 +42,7 @@
             </div>
             <div class="col-xs-6 col-sm-3">
                 <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
-                        cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'proceso', $flujo['Flujo']['id'])); ?>');">
+                            cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'proceso', $flujo['Flujo']['id'])); ?>');">
                     <span class="metro-icon glyphicon glyphicon-plus"></span>
                     <p class="metro-title">Nuevo Proceso</p>
                 </a>
@@ -47,6 +71,7 @@
 
     <div class="tray tray-center">
         <h2><?php echo $flujo['Flujo']['nombre'] ?></h2>
+
         <div class="panel mb25 mt5 panel-group accordion accordion-lg">
 
             <?php if ($this->Session->read('Auth.User.id') == $flujo['Flujo']['user_id']): ?>
@@ -69,39 +94,39 @@
                         <?php if (!empty($procesos)): ?>
                             <div class="panel-body pn">
                                 <div class="table-responsive">
-                                    <div class="table-responsive">
-                                        <table class="table dataTable table-bordered" style="width: 100%;" cellspacing="0" width="100%">
-                                            <thead>
-                                                <tr class="bg-light">
-                                                    <th></th>
-                                                    <th class="text-center" style="font-size: 16px;">Proceso</th>
-                                                    <th class="text-center">Orden</th>
-                                                    <th class="text-center" style="font-size: 16px;">Requisitos</th>
-                                                    <th>Accion </th>
+                                    <table class="table dataTable table-bordered sorted_table" style="width: 100%;" cellspacing="0" width="100%">
+                                        <thead>
+                                            <tr class="bg-light">
+                                                <th></th>
+                                                <th class="text-center" style="font-size: 16px;">Proceso</th>
+                                                <th class="text-center" style="font-size: 16px;">Requisitos</th>
+                                                <th>Accion </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($procesos as $key => $pro): ?>
+                                                <tr class="blockquote-info" id="item-<?= $key + 1 ?>" data-id="<?php echo $pro['Proceso']['id'] ?>">
+                                                    <td><?php echo ($key + 1) ?></td>
+                                                    <td><?php echo $pro['Proceso']['nombre'] ?></td>
+                                                    <td><?php echo $pro['Proceso']['requisitos'] ?></td>
+                                                    <td>
+                                                        <div class="btn-group" style="width: 150px;;">
+                                                            <button type="button" class="btn btn-warning" title="Editar Proceso" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'proceso', $flujo['Flujo']['id'], $pro['Proceso']['id'])); ?>');">
+                                                                <i class="fa fa-edit"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-success" title="Condiciones Necesarias" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'condiciones', $flujo['Flujo']['id'], $pro['Proceso']['id'])) ?>');">
+                                                                <i class="fa fa-ban"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-primary pmover" title="Mover">
+                                                                <i class="glyphicon glyphicon-move"></i>
+                                                            </button>
+                                                            <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Procesos','action' => 'eliminar', $pro['Proceso']['id']), array('class' => 'btn btn-danger', 'confirm' => 'Esta seguro de eliminar el proceso??','escape' => false)) ?>
+                                                        </div>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($procesos as $key => $pro): ?>
-                                                    <tr class="blockquote-info">
-                                                        <td><?php echo ($key + 1) ?></td>
-                                                        <td><?php echo $pro['Proceso']['nombre'] ?></td>
-                                                        <td><?php echo $pro['Proceso']['orden'] ?></td>
-                                                        <td><?php echo $pro['Proceso']['requisitos'] ?></td>
-                                                        <td>
-                                                            <div class="btn-group" style="width: 120px;;">
-                                                                <button type="button" class="btn btn-warning" title="Editar Proceso" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'proceso', $flujo['Flujo']['id'], $pro['Proceso']['id'])); ?>');">
-                                                                    <i class="fa fa-edit"></i>
-                                                                </button>
-                                                                <button type="button" class="btn btn-success" title="Condiciones Necesarias" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Procesos', 'action' => 'condiciones', $flujo['Flujo']['id'], $pro['Proceso']['id'])) ?>');">
-                                                                    <i class="fa fa-ban"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <?php endforeach; ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -109,7 +134,6 @@
                 </div>
             <?php endif; ?>
         </div>
-
         <?php if (!empty($flujos_c)): ?>
             <div class="panel panel-success">
                 <div class="panel-heading">
@@ -117,6 +141,7 @@
                 </div>
                 <div class="panel-body pn">
                     <div class="table-responsive">
+
                         <table class="table dataTable tabla-dato table-bordered">
                             <thead>
                                 <tr class="bg-light">
@@ -138,7 +163,7 @@
                                             <div class="btn-group" style="width: 120px;">
 
                                                 <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
-                                                <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>',true);" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
+                                                <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>', true);" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
                                                 <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
                                             </div>
                                         </td>
@@ -183,3 +208,54 @@
 
 </aside>
 <?php $this->end(); ?>
+
+<script src="<?php echo $this->request->webroot; ?>js/jquery-sortable.js">
+</script>
+<script>
+    $('.sorted_table').sortable({
+        containerSelector: 'table',
+        itemPath: '> tbody',
+        itemSelector: 'tr',
+        placeholder: '<tr class="placeholder"/>',
+        //group: 'no-drop',
+        handle: 'button.pmover',
+        onDrop: function ($item, container, _super, event) {
+            $item.removeClass(container.group.options.draggedClass).removeAttr("style");
+            //$("body").removeClass(container.group.options.bodyClass);
+            revisa_tabla();
+        }
+    });
+    function revisa_tabla() {
+        var postData = "";
+        var cont = 0;
+        $('.sorted_table tbody tr').each(function (ey, eva) {
+            cont++;
+            postData += " procesos[" + $(eva).attr('data-id') + ']=' + cont + '&';
+        });
+
+        var formURL = '<?php echo $this->Html->url(array('action' => 'accion_flujo')); ?>';
+        $.ajax(
+                {
+                    url: formURL,
+                    type: "POST",
+                    data: postData,
+                    /*beforeSend:function (XMLHttpRequest) {
+                     alert("antes de enviar");
+                     },
+                     complete:function (XMLHttpRequest, textStatus) {
+                     alert('despues de enviar');
+                     },*/
+                    success: function (data, textStatus, jqXHR)
+                    {
+                        //data: return data from server
+                        //$("#parte").html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        //if fails   
+                        alert("error");
+                    }
+                });
+    }
+    revisa_tabla();
+</script>

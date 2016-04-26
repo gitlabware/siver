@@ -11,7 +11,15 @@
                 <p class="metro-title">Nuevo Tarea</p>
             </a>
         </div>
-        <?php if (!empty(current($estados)) && current($estados)['ProcesosEstado']['estado'] !== 'Finalizado'): ?>
+        
+        <?php 
+        $est_proceso = NULL;
+        if(!empty($estados)){
+            $est_proceso = current($estados);
+        }
+        ?>
+        
+        <?php if (!empty($est_proceso) && $est_proceso['ProcesosEstado']['estado'] !== 'Finalizado'): ?>
 
             <div class="col-xs-6 col-sm-3">
                 <a  href="javascript:" class="metro-tile" onclick="cierra_elmenu();

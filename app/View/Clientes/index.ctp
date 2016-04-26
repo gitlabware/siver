@@ -51,12 +51,15 @@
                                             <td><?= h($cli['Cliente']['ciudad']) ?></td>
                                             <td><?= h($cli['Cliente']['telefono'] . ' - ' . $cli['Cliente']['celular']) ?></td>
                                             <td><?= h($cli['Cliente']['razon_social']) ?></td>
-                                            <td class="text-right">
+                                            <td class="text-left">
                                                 <div class="btn-group text-right">
                                                     <button type="button" class="btn btn-success br2 btn-xs fs12 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Opciones
                                                         <span class="caret ml5"></span>
                                                     </button>
                                                     <ul class="dropdown-menu" role="menu">
+                                                        <li>
+                                                            <?= $this->Form->postLink('Empezar Hoja-Ruta', ['controller' => 'HojasRutas','action' => 'hoja_ruta', $cli['Cliente']['id']]) ?>  
+                                                        </li>
                                                         <li>
                                                             <a href="javascript:" onclick="imprimir_boleta(<?php echo $cli['Cliente']['id'] ?>);">Imprimir</a>  
                                                         </li>

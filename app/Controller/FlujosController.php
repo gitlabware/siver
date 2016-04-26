@@ -8,6 +8,18 @@ class FlujosController extends AppController {
     public $layout = 'svergara';
     public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado', 'Adjunto', 'Cliente', 'Regione', 'Tarea', 'Alerta', 'Comentario', 'Documento');
 
+    
+    public function prueba($idFlujo = null){
+        if(!empty($_POST)){
+            debug($_POST);exit;
+        }
+        $procesos = $this->Proceso->find('all', array(
+            'recursive' => -1,
+            'conditions' => array('Proceso.flujo_id' => $idFlujo),
+            'order' => array('Proceso.orden ASC', 'Proceso.id ASC')
+        ));
+        $this->set(compact('procesos'));
+    }
     public function index() {
 
         $flujos = $this->Flujo->find('all', array(
@@ -40,6 +52,14 @@ class FlujosController extends AppController {
     }
 
     public function accion_flujo($idFlujo = null) {
+        
+        if(!empty($_POST)){
+            foreach ($_POST['procesos'] as $key => $pro){
+                $this->Proceso->id = $key;
+                $datos_p['orden'] = $pro;
+                $this->Proceso->save($datos_p);
+            }
+        }
         $flujo = $this->Flujo->find('first', array(
             'recuusive' => -1,
             'conditions' => array('Flujo.id' => $idFlujo)

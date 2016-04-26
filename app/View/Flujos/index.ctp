@@ -92,8 +92,16 @@
                     </div>
                     <div class="panel-body pn">
                         <div class="table-responsive">
-                            <table class="table dataTable tabla-dato table-bordered">
+                            <table class="table dataTable table-bordered" id="tabla-filtros">
                                 <thead>
+                                    <tr class="bg-light">
+                                        <td>Exp.</td>
+                                        <td>Cliente</td>
+                                        <td>Usuario</td>
+                                        <td>Creado</td>
+                                        <td>Recurso</td>
+                                        <td></td>
+                                    </tr>
                                     <tr class="bg-light">
                                         <th>Exp.</th>
                                         <th>Cliente</th>
@@ -115,7 +123,7 @@
                                                 <div class="btn-group" style="width: 120px;">
 
                                                     <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
-                                                    <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>',true);" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
+                                                    <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>', true);" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
                                                     <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
                                                 </div>
                                             </td>
@@ -161,4 +169,55 @@
     </div>
 
 </aside>
+<?php $this->end(); ?>
+
+
+<?php $this->start('scriptjs'); ?>
+
+<?php
+echo $this->Html->script(array(
+    'jquery.dataTables.columnFilter'
+));
+?>
+<script>
+    var filtro_c = [
+    {type: "text"},
+    {type: "text"},
+    {type: "text"},
+    {type: "text"},
+    {type: "text"},
+    null
+    ];
+    $(document).ready(function () {
+        $('#tabla-filtros').dataTable({
+            "aoColumnDefs": [{
+                    'bSortable': false,
+                    'aTargets': [-1]
+                }],
+            "oLanguage": {
+                "oPaginate": {
+                    "sPrevious": "Anterior",
+                    "sNext": "Siguiente"
+                },
+                "sSearch": "Buscar",
+                "sLengthMenu": "Mostrar _MENU_ registros"
+            },
+            "iDisplayLength": 10,
+            "aLengthMenu": [
+                [5, 10, 25, 50, -1],
+                [5, 10, 25, 50, "Todos"]
+            ],
+            'order': [],
+            "sDom": '<"dt-panelmenu clearfix" lfr>t<"dt-panelfooter clearfix"ip>',
+        }).columnFilter({
+            sPlaceHolder: "head:before",
+            aoColumns: filtro_c
+        });
+    });
+
+    /*$('#tabla-imp').dataTable().columnFilter({
+     sPlaceHolder: "head:before",
+     aoColumns: filtro_c
+     });*/
+</script>
 <?php $this->end(); ?>
