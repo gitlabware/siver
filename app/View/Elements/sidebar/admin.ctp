@@ -49,6 +49,12 @@
                 </a>
             </li>
             <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'HojasRutas', 'action' => 'index')); ?>">
+                    <span class="fa fa-copy"></span>
+                    <span class="sidebar-title">HOJAS-RUTAS</span>
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo $this->Html->url(array('controller' => 'Clientes', 'action' => 'index')); ?>">
                     <span class="fa fa-suitcase"></span>
                     <span class="sidebar-title">CLIENTES</span>

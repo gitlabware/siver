@@ -36,6 +36,8 @@
     <div class="topbar-left">
         <ol class="breadcrumb">
             <li class="crumb-active">
+                <a href="<?php echo $this->Html->url(array('controller' => 'HojasRutas','action' => 'ver_hoja',$flujo['HojasRuta']['id']));?>" > <span class="text-primary">HR: <?php echo $flujo['HojasRuta']['codigo_caso']?></span></a>
+                 -- 
                 <a href="javascript:">
                     <?php echo $flujo['FlujosUser']['expediente'] ?> <b> <?php echo $flujo['Flujo']['nombre'] ?></b>
                 </a>

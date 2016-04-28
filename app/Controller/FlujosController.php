@@ -203,7 +203,7 @@ class FlujosController extends AppController {
         $flujo = $this->FlujosUser->find('first', array(
             'recursive' => 0,
             'conditions' => array('FlujosUser.id' => $idFlujoUser),
-            'fields' => array('Flujo.*', 'FlujosUser.*')
+            'fields' => array('Flujo.*', 'FlujosUser.*','HojasRuta.*')
         ));
 
         $this->update_proceso_est($flujo['Flujo']['id'], $idFlujoUser);

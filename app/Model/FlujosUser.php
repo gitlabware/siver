@@ -51,7 +51,14 @@ class FlujosUser extends AppModel {
             'conditions' => '',
             'fields' => '',
             'order' => ''
-        )
+        ),
+		'HojasRuta' => array(
+			'className' => 'HojasRuta',
+			'foreignKey' => 'hojas_ruta_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		)
     );
     public $validate = array(
         'expediente' => array(
