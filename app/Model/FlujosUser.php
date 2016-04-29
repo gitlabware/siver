@@ -17,6 +17,13 @@ class FlujosUser extends AppModel {
      * @var array
      */
     public $belongsTo = array(
+        'Asesor' => array(
+            'className' => 'User',
+            'foreignKey' => 'asesor_id',
+            'conditions' => '',
+            'fields' => '',
+            'order' => ''
+        ),
         'User' => array(
             'className' => 'User',
             'foreignKey' => 'user_id',
@@ -34,13 +41,6 @@ class FlujosUser extends AppModel {
         'Adjunto' => array(
             'className' => 'Adjunto',
             'foreignKey' => 'adjunto_id',
-            'conditions' => '',
-            'fields' => '',
-            'order' => ''
-        ),
-        'Cliente' => array(
-            'className' => 'Cliente',
-            'foreignKey' => 'cliente_id',
             'conditions' => '',
             'fields' => '',
             'order' => ''

@@ -97,9 +97,6 @@
                                     <tr class="bg-light">
                                         <td>Exp.</td>
                                         <td>Cliente</td>
-                                        <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                        <td>Asesor</td>
-                                        <?php endif; ?>
                                         <td>Creado</td>
                                         <td>Recurso</td>
                                         <td></td>
@@ -107,9 +104,6 @@
                                     <tr class="bg-light">
                                         <th>Exp.</th>
                                         <th>Cliente</th>
-                                        <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                            <th>Asesor</th>
-                                        <?php endif; ?>
                                         <th>Creado</th>
                                         <th>Recurso</th>
                                         <th></th>
@@ -120,9 +114,6 @@
                                         <tr class="<?php echo $flu['FlujosUser']['estado_color']; ?>">
                                             <td><?php echo $flu['FlujosUser']['expediente'] ?></td>
                                             <td><?php echo $flu['Cliente']['nombre']; ?></td>
-                                            <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                                <td><?php echo $flu['User']['nombre_completo']; ?></td>
-                                            <?php endif; ?>
                                             <td><?php echo $flu['FlujosUser']['created']; ?></td>
                                             <td><?php echo $flu['Flujo']['nombre']; ?></td>
                                             <td class="text-center" style="font-size: 16px;">
@@ -189,9 +180,6 @@ echo $this->Html->script(array(
     var filtro_c = [
     {type: "text"},
     {type: "text"},
-<?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-        {type: "text"},
-<?php endif; ?>
     {type: "text"},
     {type: "text"},
             null

@@ -72,19 +72,30 @@
         </div>
         <!-- end .option-group section -->
     </div>
-    <?php 
-    
-    if(empty($this->request->data['Proceso']['id'])){
+
+    <div class="section row">
+        <div class="col-md-12">
+            <div class="option-group field">
+                <label class="option">
+                    <?php echo $this->Form->checkbox('hoja_ruta'); ?>
+                    <span class="checkbox"></span> Marcar para Hoja-Ruta
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <?php
+    if (empty($this->request->data['Proceso']['id'])) {
         $orden = end($ordens);
-    }else{
-       $orden = $this->request->data['Proceso']['orden']; 
+    } else {
+        $orden = $this->request->data['Proceso']['orden'];
     }
     ?>
-    
+
     <!--<div class="section row">
         <div class="col-md-12">
             <label class="field select">
-                <?php //echo $this->Form->select('orden',$ordens, array('empty' => 'Seleccione el orden','value' => $orden)) ?>
+    <?php //echo $this->Form->select('orden',$ordens, array('empty' => 'Seleccione el orden','value' => $orden))  ?>
                 <i class="arrow double"></i>
             </label>
         </div>

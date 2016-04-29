@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    
+
     <div class="section row">
         <div class="col-md-12">
             <label class="field select">
@@ -50,7 +50,7 @@
         </div>
     </div>
     <div class="section row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <label for="firstname" class="field prepend-icon">
                 <?php echo $this->Form->textarea('FlujosUser.descripcion_2', ['class' => 'gui-textarea', 'placeholder' => 'Descripcion']); ?>
                 <label for="email" class="field-icon">
@@ -58,7 +58,38 @@
                 </label>
             </label>
         </div>
+        <div class="col-md-6">
+            <label for="firstname" class="field prepend-icon">
+                <?php echo $this->Form->textarea('FlujosUser.observacion', ['class' => 'gui-textarea', 'placeholder' => 'Observacion']); ?>
+                <label for="email" class="field-icon">
+                    <i class="fa fa-edit"></i>
+                </label>
+            </label>
+        </div>
     </div>
+    <?php foreach ($resultados as $key => $re): ?>
+        <div class="section row">
+            <div class="col-md-8">
+                <label class="field text-center">
+                    <b><?php echo $re['Resultado']['pregunta']; ?></b>
+                </label>
+            </div>
+            <div class="col-md-4">
+                <label class="field select">
+                    <?php 
+                    $valor = '';
+                    if(!empty($re['FlujosUsersResultado']['id'])){
+                        echo $this->Form->hidden("Resultados.$key.id",array('value' => $re['FlujosUsersResultado']['id']));
+                        $valor = $re['FlujosUsersResultado']['respuesta'];
+                    }
+                    ?>
+                    <?php echo $this->Form->hidden("Resultados.$key.resultado_id",array('value' => $re['Resultado']['id']))?>
+                    <?php echo $this->Form->select("Resultados.$key.respuesta", array('SI' => 'SI', 'NO' => 'NO', 'N/A' => 'N/A'), array('empty' => 'Resultado', 'required','value' => $valor)) ?>
+                    <i class="arrow double"></i>
+                </label>
+            </div>
+        </div>
+    <?php endforeach; ?>
 </div>
 <!-- end .form-body section -->
 

@@ -6,12 +6,12 @@ App::uses('File', 'Utility');
 class FlujosController extends AppController {
 
     public $layout = 'svergara';
-    public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado', 'Adjunto', 'Cliente', 'Regione', 'Tarea', 'Alerta', 'Comentario', 'Documento');
+    public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado', 'Adjunto', 'Cliente', 'Regione', 'Tarea', 'Alerta', 'Comentario', 'Documento', 'Resultado');
 
-    
-    public function prueba($idFlujo = null){
-        if(!empty($_POST)){
-            debug($_POST);exit;
+    public function prueba($idFlujo = null) {
+        if (!empty($_POST)) {
+            debug($_POST);
+            exit;
         }
         $procesos = $this->Proceso->find('all', array(
             'recursive' => -1,
@@ -20,6 +20,7 @@ class FlujosController extends AppController {
         ));
         $this->set(compact('procesos'));
     }
+
     public function index() {
 
         $flujos = $this->Flujo->find('all', array(
@@ -29,9 +30,41 @@ class FlujosController extends AppController {
         $this->FlujosUser->virtualFields = array(
             'estado_color' => "(IF(FlujosUser.estado = 'Finalizado','success',''))"
         );
+
         $flujos_c = $this->FlujosUser->find('all', array(
             'recursive' => 0,
-            'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*', 'Cliente.nombre'),
+            'fields' => array('Flujo.*', 'Asesor.*', 'FlujosUser.*', 'Cliente.nombre'),
+            'order' => array('FlujosUser.created DESC')
+        ));
+        //debug($flujos_c);exit;
+        $this->set(compact('flujos', 'flujos_c'));
+    }
+
+    public function index2() {
+
+        $idUser = $this->Session->read('Auth.User.id');
+        $flujos = $this->Flujo->find('all', array(
+            'recursive' => -1,
+            'order' => 'modified ASC'
+        ));
+        $this->FlujosUser->virtualFields = array(
+            'estado_color' => "(IF(FlujosUser.estado = 'Finalizado','success',''))"
+        );
+
+        $flujos_c = $this->FlujosUser->find('all', array(
+            'recursive' => 0,
+            'joins' => array(
+                array(
+                    'table' => 'clientes',
+                    'alias' => 'Cliente',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Cliente.id = HojasRuta.cliente_id',
+                    ),
+                )
+            ),
+            'conditions' => array('FlujosUser.asesor_id' => $idUser),
+            'fields' => array('Flujo.*', 'FlujosUser.*', 'Cliente.nombre', 'HojasRuta.codigo_caso'),
             'order' => array('FlujosUser.created DESC')
         ));
         //debug($flujos_c);exit;
@@ -43,18 +76,63 @@ class FlujosController extends AppController {
         if (!empty($this->request->data['Flujo'])) {
             $this->Flujo->create();
             $this->Flujo->save($this->request->data['Flujo']);
+            if (empty($idFlujo)) {
+                $idFlujo = $this->Flujo->getLastInsertID();
+            }
+
+            $a_result = array();
+            foreach ($this->request->data['Resultado'] as $key => $resu) {
+                if (!empty($resu['id'])) {
+                    $a_result[$key] = $resu['id'];
+                }
+                $this->Resultado->create();
+                $this->Resultado->save($resu);
+            }
+            $res_no_en = array();
+            if (count($a_result) > 1) {
+                $res_no_en = $this->Resultado->find('all', array(
+                    'recursive' => -1,
+                    'conditions' => array('Resultado.id NOT IN' => $a_result, 'Resultado.flujo_id' => $idFlujo)
+                ));
+            } elseif (count($a_result) == 1) {
+                $res_no_en = $this->Resultado->find('all', array(
+                    'recursive' => -1,
+                    'conditions' => array('Resultado.id !=' => $a_result, 'Resultado.flujo_id' => $idFlujo)
+                ));
+            } else {
+                $res_no_en = $this->Resultado->find('all', array(
+                    'recursive' => -1,
+                    'conditions' => array('Resultado.flujo_id' => $idFlujo)
+                ));
+            }
+            foreach ($res_no_en as $re) {
+                $this->Resultado->delete($re['Resultado']['id']);
+            }
+            foreach ($this->request->data['Resultado'] as $resu) {
+                $resu['flujo_id'] = $idFlujo;
+                $this->Resultado->create();
+                $this->Resultado->save($resu);
+            }
+
+
             $this->Session->setFlash("Se ha registrado correctamente el flujo!!", 'msgbueno');
             $this->redirect($this->referer());
         }
         $this->Flujo->id = $idFlujo;
         $this->request->data = $this->Flujo->read();
         $this->request->data['Flujo']['user_id'] = $this->Session->read('Auth.User.id');
+
+        $resultados = $this->Resultado->find('all', array(
+            'recursive' => -1,
+            'conditions' => array('Resultado.flujo_id' => $idFlujo)
+        ));
+        $this->set(compact('resultados'));
     }
 
     public function accion_flujo($idFlujo = null) {
-        
-        if(!empty($_POST)){
-            foreach ($_POST['procesos'] as $key => $pro){
+
+        if (!empty($_POST)) {
+            foreach ($_POST['procesos'] as $key => $pro) {
                 $this->Proceso->id = $key;
                 $datos_p['orden'] = $pro;
                 $this->Proceso->save($datos_p);
@@ -203,7 +281,7 @@ class FlujosController extends AppController {
         $flujo = $this->FlujosUser->find('first', array(
             'recursive' => 0,
             'conditions' => array('FlujosUser.id' => $idFlujoUser),
-            'fields' => array('Flujo.*', 'FlujosUser.*','HojasRuta.*')
+            'fields' => array('Flujo.*', 'FlujosUser.*', 'HojasRuta.*')
         ));
 
         $this->update_proceso_est($flujo['Flujo']['id'], $idFlujoUser);
