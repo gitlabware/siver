@@ -121,7 +121,7 @@
                                             <td><?php echo $flu['FlujosUser']['expediente'] ?></td>
                                             <td><?php echo $flu['Cliente']['nombre']; ?></td>
                                             <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                                <td><?php echo $flu['User']['nombre_completo']; ?></td>
+                                                <td><?php echo $flu['Asesor']['nombre_completo']; ?></td>
                                             <?php endif; ?>
                                             <td><?php echo $flu['FlujosUser']['created']; ?></td>
                                             <td><?php echo $flu['Flujo']['nombre']; ?></td>

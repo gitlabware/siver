@@ -33,6 +33,16 @@ class FlujosController extends AppController {
 
         $flujos_c = $this->FlujosUser->find('all', array(
             'recursive' => 0,
+            'joins' => array(
+                array(
+                    'table' => 'clientes',
+                    'alias' => 'Cliente',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Cliente.id = HojasRuta.cliente_id',
+                    ),
+                )
+            ),
             'fields' => array('Flujo.*', 'Asesor.*', 'FlujosUser.*', 'Cliente.nombre'),
             'order' => array('FlujosUser.created DESC')
         ));
@@ -158,6 +168,16 @@ class FlujosController extends AppController {
         );
         $flujos_c = $this->FlujosUser->find('all', array(
             'recursive' => 0,
+            'joins' => array(
+                array(
+                    'table' => 'clientes',
+                    'alias' => 'Cliente',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Cliente.id = HojasRuta.cliente_id',
+                    ),
+                )
+            ),
             'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
             'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*', 'Cliente.nombre'),
             'order' => array('FlujosUser.created DESC')

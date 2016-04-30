@@ -73,6 +73,16 @@ class HojasRutasController extends AppController {
         );
         $flujos_c = $this->FlujosUser->find('all', array(
             'recursive' => 0,
+            'joins' => array(
+                array(
+                    'table' => 'clientes',
+                    'alias' => 'Cliente',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Cliente.id = HojasRuta.cliente_id',
+                    ),
+                )
+            ),
             'conditions' => array('FlujosUser.hojas_ruta_id' => $idHojasRuta),
             'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*', 'Cliente.nombre','Asesor.nombre_completo'),
             'order' => array('FlujosUser.created DESC')
