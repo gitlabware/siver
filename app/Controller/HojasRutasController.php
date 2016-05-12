@@ -235,10 +235,12 @@ class HojasRutasController extends AppController {
     }
 
     public function guarda_resultados($idFlujosUser = null) {
-        foreach ($this->request->data['Resultados'] as $resu) {
-            $resu['flujos_user_id'] = $idFlujosUser;
-            $this->FlujosUsersResultado->create();
-            $this->FlujosUsersResultado->save($resu);
+        if (!empty($this->request->data['Resultados'])) {
+            foreach ($this->request->data['Resultados'] as $resu) {
+                $resu['flujos_user_id'] = $idFlujosUser;
+                $this->FlujosUsersResultado->create();
+                $this->FlujosUsersResultado->save($resu);
+            }
         }
     }
 
