@@ -22,45 +22,95 @@ class HojasRutasController extends AppController {
         $this->set(compact('hojas'));
     }
 
-    public function hoja_ruta($idCliente = null) {
+    public function hoja_ruta($idCliente = null, $idHojaruta = null) {
 
         if (!empty($this->request->data['HojasRuta'])) {
             $idUser = $this->Session->read('Auth.User.id');
 
             $this->HojasRuta->create();
             $this->HojasRuta->save($this->request->data['HojasRuta']);
-            $idHojaruta = $this->HojasRuta->getLastInsertID();
+            if (empty($idHojaruta)) {
+                $idHojaruta = $this->HojasRuta->getLastInsertID();
+            }
+
             if (!empty($this->request->data['requisitos'])) {
                 foreach ($this->request->data['requisitos'] as $re) {
-                    $dato_r['hojas_ruta_id'] = $idHojaruta;
-                    $dato_r['requisito_id'] = $re['requisito_id'];
-                    $dato_r['estado'] = $re['estado'];
-                    $dato_r['user_id'] = $idUser;
+                    $re['hojas_ruta_id'] = $idHojaruta;
+                    $re['user_id'] = $idUser;
                     $this->HojasRequisito->create();
-                    $this->HojasRequisito->save($dato_r);
+                    $this->HojasRequisito->save($re);
                 }
             }
+            $array_oreq = array();
+
             if (!empty($this->request->data['orequisitos'])) {
-                foreach ($this->request->data['orequisitos'] as $re) {
-                    $dato_r2['hojas_ruta_id'] = $idHojaruta;
-                    $dato_r2['estado'] = 1;
-                    $dato_r2['user_id'] = $idUser;
-                    $dato_r2['descripcion'] = $re['requisito'];
-                    $this->HojasRequisito->create();
-                    $this->HojasRequisito->save($dato_r2);
+                foreach ($this->request->data['orequisitos'] as $key => $re) {
+                    if (!empty($re['id'])) {
+                        $array_oreq[$key] = $re['id'];
+                    }
                 }
+                if (count($array_oreq) > 1) {
+                    $this->HojasRequisito->deleteAll(array(
+                        'HojasRequisito.hojas_ruta_id' => $idHojaruta, 'HojasRequisito.id !=' => $array_oreq, 'HojasRequisito.requisito_id' => NULL
+                    ));
+                } elseif (count($array_oreq) == 1) {
+                    $this->HojasRequisito->deleteAll(array(
+                        'HojasRequisito.hojas_ruta_id' => $idHojaruta, 'HojasRequisito.id !=' => current($array_oreq), 'HojasRequisito.requisito_id' => NULL
+                    ));
+                }
+                foreach ($this->request->data['orequisitos'] as $key => $re) {
+
+                    $re['hojas_ruta_id'] = $idHojaruta;
+                    $re['estado'] = 1;
+                    $re['user_id'] = $idUser;
+                    $this->HojasRequisito->create();
+                    $this->HojasRequisito->save($re);
+                }
+            } else {
+                $this->HojasRequisito->deleteAll(array(
+                    'HojasRequisito.hojas_ruta_id' => $idHojaruta, 'HojasRequisito.requisito_id' => NULL
+                ));
             }
+
             $this->Session->setFlash("Se ha registrado correctamente la hoja de ruta!!", 'msgbueno');
             $this->redirect(array('action' => 'index'));
         }
-        $requisitos = $this->Requisito->find('all', array(
-            'recursive' => -1
-        ));
+        $this->HojasRuta->id = $idHojaruta;
+        $this->request->data = $this->HojasRuta->read();
+        if (!empty($idHojaruta)) {
+            $requisitos = $this->HojasRequisito->find('all', array(
+                'recursive' => 0,
+                'conditions' => array('HojasRequisito.hojas_ruta_id' => $idHojaruta, 'HojasRequisito.requisito_id <>' => NULL),
+                'fields' => array('HojasRequisito.*', 'Requisito.*')
+            ));
+            foreach ($requisitos as $key => $re) {
+                $this->request->data['requisitos'][$key] = $re['HojasRequisito'];
+            }
+            $requisitos_ad = $this->HojasRequisito->find('all', array(
+                'recursive' => 0,
+                'conditions' => array('HojasRequisito.hojas_ruta_id' => $idHojaruta, 'HojasRequisito.requisito_id' => NULL),
+                'fields' => array('HojasRequisito.*')
+            ));
+
+            foreach ($requisitos_ad as $key => $re) {
+
+                $this->request->data['orequisitos'][$key] = $re['HojasRequisito'];
+            }
+        } else {
+            $requisitos = $this->Requisito->find('all', array(
+                'recursive' => -1
+            ));
+        }
+
+        /* debug($idHojaRuta);
+          debug($this->request->data['HojasRuta']);
+          exit; */
+
         $cliente = $this->Cliente->find('first', array(
             'recursive' => -1,
             'conditions' => array('Cliente.id' => $idCliente)
         ));
-        $this->set(compact('requisitos', 'cliente'));
+        $this->set(compact('requisitos', 'cliente', 'requisitos_ad'));
     }
 
     public function ver_hoja($idHojasRuta = null) {
@@ -242,6 +292,12 @@ class HojasRutasController extends AppController {
                 $this->FlujosUsersResultado->save($resu);
             }
         }
+    }
+    
+    public function eliminar($idHojaRuta = null){
+        $this->HojasRuta->delete($idHojaRuta, TRUE);
+        $this->Session->setFlash("Se ha eliminado correctamente la hoja-ruta!!",'msgbueno');
+        $this->redirect($this->referer());
     }
 
 }

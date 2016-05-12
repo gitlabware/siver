@@ -2,7 +2,25 @@
 <script>
     $('body').addClass('sb-r-o');
 </script>
+<div id="topbar-dropmenu">
+    <div class="topbar-menu row">
+        <div class="col-xs-6 col-sm-3">
+            <a  href="<?php echo $this->Html->url(array('action' => 'hoja_ruta', $hojasRuta['HojasRuta']['cliente_id'], $hojasRuta['HojasRuta']['id'])); ?>" class="metro-tile">
+                <span class="metro-icon glyphicon glyphicon-edit"></span>
+                <p class="metro-title">Editar Hoja-Ruta</p>
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    function cierra_elmenu() {
+        $('.metro-modal').fadeOut('fast');
+        setTimeout(function () {
+            $('#topbar-dropmenu').slideToggle(150).toggleClass('topbar-menu-open');
+        }, 250);
+    }
 
+</script>
 
 <header id="topbar">
     <div class="topbar-left">
@@ -56,12 +74,20 @@
                             <td>#</td>
                             <td>Requisitos</td>
                             <td></td>
+                            <td>Fojas</td>
+                            <td>Adm. Tributaria</td>
+                            <td>Num</td>
+                            <td>Fecha</td>
                         </tr>
                         <?php foreach ($hojas_requisitos as $key => $hr): ?>
                             <tr>
                                 <td><?php echo $key + 1 ?></td>
                                 <td><?php echo $hr['HojasRequisito']['requisito'] ?></td>
-                                <td><?php echo $hr['HojasRequisito']['estado2'] ?></td>
+                                <td><?php echo $hr['HojasRequisito']['o_s_l'] ?></td>
+                                <td><?php echo $hr['HojasRequisito']['fojas'] ?></td>
+                                <td><?php echo $hr['HojasRequisito']['administracion_tributaria'] ?></td>
+                                <td><?php echo $hr['HojasRequisito']['numero'] ?></td>
+                                <td><?php echo $hr['HojasRequisito']['fecha'] ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </table>
@@ -135,7 +161,7 @@
                         </div>
                     </div>
                 <?php endforeach; ?>
-                
+
             <?php endif; ?>
         </div>
     </div>
