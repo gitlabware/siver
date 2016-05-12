@@ -30,22 +30,25 @@ class HojasRutasController extends AppController {
             $this->HojasRuta->create();
             $this->HojasRuta->save($this->request->data['HojasRuta']);
             $idHojaruta = $this->HojasRuta->getLastInsertID();
-            foreach ($this->request->data['requisitos'] as $re) {
-                $dato_r['hojas_ruta_id'] = $idHojaruta;
-                $dato_r['requisito_id'] = $re['requisito_id'];
-                $dato_r['estado'] = $re['estado'];
-                $dato_r['user_id'] = $idUser;
-                $this->HojasRequisito->create();
-                $this->HojasRequisito->save($dato_r);
+            if (!empty($this->request->data['requisitos'])) {
+                foreach ($this->request->data['requisitos'] as $re) {
+                    $dato_r['hojas_ruta_id'] = $idHojaruta;
+                    $dato_r['requisito_id'] = $re['requisito_id'];
+                    $dato_r['estado'] = $re['estado'];
+                    $dato_r['user_id'] = $idUser;
+                    $this->HojasRequisito->create();
+                    $this->HojasRequisito->save($dato_r);
+                }
             }
-
-            foreach ($this->request->data['orequisitos'] as $re) {
-                $dato_r2['hojas_ruta_id'] = $idHojaruta;
-                $dato_r2['estado'] = 1;
-                $dato_r2['user_id'] = $idUser;
-                $dato_r2['descripcion'] = $re['requisito'];
-                $this->HojasRequisito->create();
-                $this->HojasRequisito->save($dato_r2);
+            if (!empty($this->request->data['orequisitos'])) {
+                foreach ($this->request->data['orequisitos'] as $re) {
+                    $dato_r2['hojas_ruta_id'] = $idHojaruta;
+                    $dato_r2['estado'] = 1;
+                    $dato_r2['user_id'] = $idUser;
+                    $dato_r2['descripcion'] = $re['requisito'];
+                    $this->HojasRequisito->create();
+                    $this->HojasRequisito->save($dato_r2);
+                }
             }
             $this->Session->setFlash("Se ha registrado correctamente la hoja de ruta!!", 'msgbueno');
             $this->redirect(array('action' => 'index'));
@@ -84,56 +87,56 @@ class HojasRutasController extends AppController {
                 )
             ),
             'conditions' => array('FlujosUser.hojas_ruta_id' => $idHojasRuta),
-            'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*', 'Cliente.nombre','Asesor.nombre_completo'),
+            'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*', 'Cliente.nombre', 'Asesor.nombre_completo'),
             'order' => array('FlujosUser.created DESC')
         ));
         $this->HojasRequisito->virtualFields = array(
             'estado2' => "IF(HojasRequisito.estado = 1,'<b>SI</b>','NO')",
             'requisito' => "IF(ISNULL(HojasRequisito.requisito_id),CONCAT('<b>',HojasRequisito.descripcion,'</b>'),Requisito.descripcion)"
         );
-        $hojas_requisitos = $this->HojasRequisito->find('all',array(
+        $hojas_requisitos = $this->HojasRequisito->find('all', array(
             'recursive' => 0,
-            'conditions'=> array('HojasRequisito.hojas_ruta_id' => $idHojasRuta)
+            'conditions' => array('HojasRequisito.hojas_ruta_id' => $idHojasRuta)
         ));
 
-        $this->set(compact('hojasRuta', 'flujos', 'flujos_c','hojas_requisitos'));
+        $this->set(compact('hojasRuta', 'flujos', 'flujos_c', 'hojas_requisitos'));
     }
-    
-    public function get_procesos($idFlujo = null,$idFlujosUser = null){
-        $procesos =  $this->Proceso->find('all',array(
+
+    public function get_procesos($idFlujo = null, $idFlujosUser = null) {
+        $procesos = $this->Proceso->find('all', array(
             'recursive' => -1,
-            'conditions' => array('Proceso.flujo_id' => $idFlujo,'Proceso.hoja_ruta' => 1)
+            'conditions' => array('Proceso.flujo_id' => $idFlujo, 'Proceso.hoja_ruta' => 1)
         ));
-        foreach ($procesos as $key => $pro){
-            $pro_fecha_ini = $this->ProcesosEstado->find('first',array(
+        foreach ($procesos as $key => $pro) {
+            $pro_fecha_ini = $this->ProcesosEstado->find('first', array(
                 'recursive' => -1,
-                'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujosUser,'ProcesosEstado.proceso_id' => $pro['Proceso']['id'],'ProcesosEstado.estado LIKE' => 'Activo'),
+                'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujosUser, 'ProcesosEstado.proceso_id' => $pro['Proceso']['id'], 'ProcesosEstado.estado LIKE' => 'Activo'),
                 'fields' => array('ProcesosEstado.created'),
                 'order' => array('ProcesosEstado.id DESC')
             ));
-            $pro_fecha_fin = $this->ProcesosEstado->find('first',array(
+            $pro_fecha_fin = $this->ProcesosEstado->find('first', array(
                 'recursive' => -1,
-                'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujosUser,'ProcesosEstado.proceso_id' => $pro['Proceso']['id'],'ProcesosEstado.estado LIKE' => 'Finalizado'),
+                'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujosUser, 'ProcesosEstado.proceso_id' => $pro['Proceso']['id'], 'ProcesosEstado.estado LIKE' => 'Finalizado'),
                 'fields' => array('ProcesosEstado.created'),
                 'order' => array('ProcesosEstado.id DESC')
             ));
             $procesos[$key]['Proceso']['fecha_inicio'] = NULL;
-            if(!empty($pro_fecha_ini)){
+            if (!empty($pro_fecha_ini)) {
                 $procesos[$key]['Proceso']['fecha_inicio'] = $pro_fecha_ini['ProcesosEstado']['created'];
             }
             $procesos[$key]['Proceso']['fecha_fin'] = NULL;
-            if(!empty($pro_fecha_fin)){
+            if (!empty($pro_fecha_fin)) {
                 $procesos[$key]['Proceso']['fecha_fin'] = $pro_fecha_ini['ProcesosEstado']['created'];
             }
         }
         return $procesos;
     }
-    
-    public function get_resultados($idFlujosUser = null){
-        return $this->FlujosUsersResultado->find('all',array(
-            'recursive' => 0,
-            'conditions' => array('FlujosUsersResultado.flujos_user_id' => $idFlujosUser),
-            'fields' => array('Resultado.*','FlujosUsersResultado.respuesta')
+
+    public function get_resultados($idFlujosUser = null) {
+        return $this->FlujosUsersResultado->find('all', array(
+                    'recursive' => 0,
+                    'conditions' => array('FlujosUsersResultado.flujos_user_id' => $idFlujosUser),
+                    'fields' => array('Resultado.*', 'FlujosUsersResultado.respuesta')
         ));
     }
 
@@ -154,7 +157,7 @@ class HojasRutasController extends AppController {
                     $idFlujosUser = $this->FlujosUser->getLastInsertID();
                     $this->guarda_resultados($idFlujosUser);
                     $folder = new Folder();
-                    
+
                     if ($folder->create(WWW_ROOT . 'files' . DS . $d_flujo['expediente'])) {
 // Successfully created the nested folders
                         $this->Adjunto->create();
@@ -169,7 +172,7 @@ class HojasRutasController extends AppController {
                         $dflujo['adjunto_id'] = $this->Adjunto->getLastInsertID();
                         $this->FlujosUser->id = $idFlujosUser;
                         $this->FlujosUser->save($dflujo);
-                        
+
                         $this->Session->setFlash('Se ha registrado correctamente!!', 'msgbueno');
                     }
                 } else {
@@ -230,9 +233,9 @@ class HojasRutasController extends AppController {
         }
         $this->set(compact('flujo', 'usuarios', 'regiones', 'procesos', 'idHojasRuta', 'resultados'));
     }
-    
-    public function guarda_resultados($idFlujosUser = null){
-        foreach ($this->request->data['Resultados'] as $resu){
+
+    public function guarda_resultados($idFlujosUser = null) {
+        foreach ($this->request->data['Resultados'] as $resu) {
             $resu['flujos_user_id'] = $idFlujosUser;
             $this->FlujosUsersResultado->create();
             $this->FlujosUsersResultado->save($resu);

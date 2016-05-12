@@ -10,9 +10,6 @@
         <meta name="author" content="AdminDesigns">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- Font CSS (Via CDN) -->
-        <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700'>
-
         <!-- Theme CSS -->
         <link rel="stylesheet" type="text/css" href="<?php echo $this->request->webroot; ?>css/theme.css">
 
