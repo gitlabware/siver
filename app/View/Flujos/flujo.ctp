@@ -17,6 +17,15 @@
             </label>
         </div>
     </div>
+    <div class="section row">
+        <div class="col-md-12">
+            <div class="option-group field">
+                <label class="option">
+                    <?php echo $this->Form->checkbox('tributos_determinados'); ?>
+                    <span class="checkbox"></span>Tributos Determinados.</label>
+            </div>
+        </div>
+    </div>
     <script>
     var n_resp = 0;
     </script>

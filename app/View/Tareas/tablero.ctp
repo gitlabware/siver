@@ -179,7 +179,7 @@
                         <span class="panel-icon">
                             <i class="fa fa-tasks"></i>
                         </span>
-                        <span class="panel-title"> Flujos</span>
+                        <span class="panel-title"> Recursos</span>
                     </div>
                     <div class="panel-body">
                         <div class="table-responsive">
@@ -203,7 +203,7 @@
                                           <td><?php echo $flujo['FlujosUser']['descripcion']; ?></td>
                                           <td class="text-center" style="font-size: 16px;">
                                               <div class="btn-group" style="width: 120px;">
-                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Tareas', 'action' => 'ver_tarea', 0, 0, $ta['Tarea']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
+                                                  <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flujo['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER TAREA')); ?>
                                               </div>
                                           </td>
                                       </tr>

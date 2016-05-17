@@ -89,15 +89,17 @@ class FlujosController extends AppController {
             if (empty($idFlujo)) {
                 $idFlujo = $this->Flujo->getLastInsertID();
             }
-
             $a_result = array();
-            foreach ($this->request->data['Resultado'] as $key => $resu) {
-                if (!empty($resu['id'])) {
-                    $a_result[$key] = $resu['id'];
+            if (!empty($this->request->data['Resultado'])) {
+                foreach ($this->request->data['Resultado'] as $key => $resu) {
+                    if (!empty($resu['id'])) {
+                        $a_result[$key] = $resu['id'];
+                    }
+                    $this->Resultado->create();
+                    $this->Resultado->save($resu);
                 }
-                $this->Resultado->create();
-                $this->Resultado->save($resu);
             }
+
             $res_no_en = array();
             if (count($a_result) > 1) {
                 $res_no_en = $this->Resultado->find('all', array(
@@ -118,10 +120,12 @@ class FlujosController extends AppController {
             foreach ($res_no_en as $re) {
                 $this->Resultado->delete($re['Resultado']['id']);
             }
-            foreach ($this->request->data['Resultado'] as $resu) {
-                $resu['flujo_id'] = $idFlujo;
-                $this->Resultado->create();
-                $this->Resultado->save($resu);
+            if (!empty($this->request->data['Resultado'])) {
+                foreach ($this->request->data['Resultado'] as $resu) {
+                    $resu['flujo_id'] = $idFlujo;
+                    $this->Resultado->create();
+                    $this->Resultado->save($resu);
+                }
             }
 
 
@@ -136,6 +140,7 @@ class FlujosController extends AppController {
             'recursive' => -1,
             'conditions' => array('Resultado.flujo_id' => $idFlujo)
         ));
+
         $this->set(compact('resultados'));
     }
 
