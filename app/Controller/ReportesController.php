@@ -3,7 +3,7 @@
 class ReportesController extends AppController {
 
     public $layout = 'svergara';
-    public $uses = array('Regione', 'Flujo', 'FlujosUser', 'ProcesosEstado','Feriado','Tarea');
+    public $uses = array('Regione', 'Flujo', 'FlujosUser', 'ProcesosEstado', 'Feriado', 'Tarea');
 
     public function reporte_general() {
         $flujos = $this->Flujo->find('list', array(
@@ -27,23 +27,29 @@ class ReportesController extends AppController {
                 'FlujosUser.proceso',
                 'Flujo.nombre',
                 'FlujosUser.descripcion'
+            ),
+            'joins' => array(
+                array(
+                    'table' => 'clientes',
+                    'alias' => 'Cliente',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Cliente.id = HojasRuta.cliente_id',
+                    ),
+                )
             )
         ));
-        $this->set(compact('regiones', 'flujos','flujos_user'));
+        $this->set(compact('regiones', 'flujos', 'flujos_user'));
     }
 
     public function get_dat_proceso($idProceso_es = null) {
-        //debug($idProceso_es);
         $p_estado = $this->ProcesosEstado->find('first', array(
             'recursive' => 0,
             'conditions' => array('ProcesosEstado.id' => $idProceso_es),
             'fields' => array('Proceso.*', 'ProcesosEstado.*', 'DATE(ProcesosEstado.created) AS creado')
         ));
-        
         $p_estado['ProcesosEstado']['dias_v'] = '';
-        //debug($p_estado);exit;
         if (!empty($p_estado['ProcesosEstado']['estado']) && $p_estado['ProcesosEstado']['estado'] == 'Activo' && !empty($p_estado['Proceso']['tiempo']) && !empty($p_estado['Proceso']['tipo_dias'])) {
-
             if ($p_estado['Proceso']['tipo_dias'] == 'Dias habiles y feriados') {
                 $feriados = $this->Feriado->find('list', array(
                     'recursive' => -1,
@@ -52,19 +58,17 @@ class ReportesController extends AppController {
                     ),
                     'fields' => array('Feriado.id', 'Feriado.fecha')
                 ));
-                $p_estado['ProcesosEstado']['dias_v'] = $p_estado['Proceso']['tiempo']-$this->getWorkingDays($p_estado[0]['creado'], date('Y-m-d'), $feriados);
-                //$p_estado['ProcesosEstado']['dias_v'] = $this->requestAction(array('controller' => 'Procesos', 'action' => 'getWorkingDays', $p_estado[0]['creado'], date('Y-m-d'), $feriados));
+                $p_estado['ProcesosEstado']['dias_v'] = $p_estado['Proceso']['tiempo'] - $this->getWorkingDays($p_estado[0]['creado'], date('Y-m-d'), $feriados);
             } else {
-
                 $datetime1 = date_create($p_estado[0]['creado']);
                 $datetime2 = date_create(date('Y-m-d'));
                 $interval = date_diff($datetime1, $datetime2);
-                $p_estado['ProcesosEstado']['dias_v'] =  $p_estado['Proceso']['tiempo']-$interval;
-                //$interval->format('%R%a días');
+                $p_estado['ProcesosEstado']['dias_v'] = $p_estado['Proceso']['tiempo'] - $interval;
             }
         }
         return $p_estado;
     }
+
     public function getWorkingDays($startDate, $endDate, $holidays) {
         // do strtotime calculations just once
         $endDate = strtotime($endDate);
@@ -128,30 +132,40 @@ class ReportesController extends AppController {
 
         return $workingDays;
     }
-    
-    public function detalle_reporte($idFlujosUser = null){
+
+    public function detalle_reporte($idFlujosUser = null) {
         $this->layout = 'ajax';
         $this->FlujosUser->virtualFields = array(
             'proceso' => "(SELECT procesos_estados.id FROM procesos_estados WHERE procesos_estados.flujos_user_id = FlujosUser.id ORDER BY procesos_estados.id DESC LIMIT 1)"
         );
-        $flujos_user = $this->FlujosUser->find('first',array(
+        $flujos_user = $this->FlujosUser->find('first', array(
             'recursive' => 0,
-            'conditions' => array('FlujosUser.id' => $idFlujosUser)
+            'conditions' => array('FlujosUser.id' => $idFlujosUser),
+            'joins' => array(
+                array(
+                    'table' => 'clientes',
+                    'alias' => 'Cliente',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Cliente.id = HojasRuta.cliente_id',
+                    ),
+                )
+            ),
+            'fields' => array('Cliente.nombre','FlujosUser.*','HojasRuta.*','Regione.*','Flujo.*')
         ));
-        
-        $procesos_estados = $this->ProcesosEstado->find('all',array(
+        /*debug($flujos_user);
+        exit;*/
+        $procesos_estados = $this->ProcesosEstado->find('all', array(
             'recurisve' => 0,
             'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujosUser),
-            'fields' => array('ProcesosEstado.*','Proceso.nombre')
+            'fields' => array('ProcesosEstado.*', 'Proceso.nombre')
         ));
-        $tareas = $this->Tarea->find('all',array(
+        $tareas = $this->Tarea->find('all', array(
             'recursive' => 0,
             'conditions' => array('Tarea.flujos_user_id' => $idFlujosUser),
-            'fields' => array('Tarea.*','User.nombre_completo','Asignado.nombre_completo')
+            'fields' => array('Tarea.*', 'User.nombre_completo', 'Asignado.nombre_completo')
         ));
-        
-        $this->set(compact('flujos_user','procesos_estados','tareas'));
+        $this->set(compact('flujos_user', 'procesos_estados', 'tareas'));
     }
-    
 
 }

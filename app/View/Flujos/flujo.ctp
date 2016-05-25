@@ -39,6 +39,7 @@
         <div class="section row"  id="div-resp-<?php echo $key + 1; ?>">
             <div class="col-md-12">
                 <label for="firstname" class="field prepend-icon">
+                    <?php echo $this->Form->hidden("Resultado.".($key + 1).".id",array('value' => $re['Resultado']['id']))?>
                     <?php echo $this->Form->text("Resultado.".($key + 1).".pregunta", ['class' => 'gui-input', 'required', 'placeholder' => ($key + 1) . '. Ingrese la pregunta del resultado','value' => $re['Resultado']['pregunta']]); ?>
                     <label for="email" class="field-icon">
                         <i class="fa fa-edit"></i>
