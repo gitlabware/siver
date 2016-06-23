@@ -13,6 +13,18 @@ class HojasRutasController extends AppController {
         'Adjunto', 'Resultado', 'FlujosUsersResultado',
         'ProcesosEstado', 'Tributo', 'FlujosUsersTributo'
     );
+    public $components = array('RequestHandler');
+
+    function respond($message = null, $json = false) {
+        if ($message != null) {
+            if ($json == true) {
+                $this->RequestHandler->setContent('json', 'application/json');
+                $message = json_encode($message);
+            }
+            $this->set('message', $message);
+        }
+        $this->render('message');
+    }
 
     public function index() {
         $hojas = $this->HojasRuta->find('all', array(
@@ -27,12 +39,45 @@ class HojasRutasController extends AppController {
         if (!empty($this->request->data['HojasRuta'])) {
             $idUser = $this->Session->read('Auth.User.id');
 
-            $this->HojasRuta->create();
-            $this->HojasRuta->save($this->request->data['HojasRuta']);
-            if (empty($idHojaruta)) {
+            //---------------- GUARDA Y CREA LA CARPETA PARA HOJAS-RUTA
+            $folder = new Folder();
+
+            if (!empty($this->request->data['HojasRuta']['id'])) {
+                $idHojaruta = $this->request->data['HojasRuta']['id'];
+                $idAdjunto = $this->request->data['HojasRuta']['adjunto_id'];
+                $this->Adjunto->id = $this->request->data['HojasRuta']['adjunto_id'];
+                $adj['nombre_original'] = $adj['nombre'] = $this->request->data['HojasRuta']['codigo_caso'];
+                $this->Adjunto->save($adj);
+
+                $folder = new Folder(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['codigo_caso']);
+                $folder->move(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['codigo_caso']);
+            } else {
+                if ($folder->create(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['codigo_caso'])) {
+                    $this->HojasRuta->create();
+                    $this->HojasRuta->save($this->request->data['HojasRuta']);
+                    $idHojaruta = $this->HojasRuta->getLastInsertID();
+                    $this->Adjunto->create();
+                    $adj['nombre_original'] = $adj['nombre'] = $this->request->data['HojasRuta']['codigo_caso'];
+                    $adj['user_id'] = $this->Session->read('Auth.User.id');
+                    $adj['tipo'] = 'Carpeta';
+                    $adj['estado'] = 'Activo';
+                    $adj['flujos_user_id'] = 0;
+                    $adj['proceso_id'] = 0;
+                    $adj['hojas_ruta_id'] = $idHojaruta;
+                    $adj['tarea_id'] = 0;
+                    $this->Adjunto->save($adj);
+                    $idAdjunto = $this->Adjunto->getLastInsertID();
+                    $this->HojasRuta->id = $idHojaruta;
+                    $d_hoja['adjunto_id'] = $idAdjunto;
+                    $this->HojasRuta->save($d_hoja);
+                    //$this->Session->setFlash('Se ha registrado correctamente!!', 'msgbueno');
+                }
                 $idHojaruta = $this->HojasRuta->getLastInsertID();
             }
 
+
+            //------------------ TERMINA LA CREACION DE LA CARPETA
+            //------------------ REGISTRA REQUISITOS --------------
             if (!empty($this->request->data['requisitos'])) {
                 foreach ($this->request->data['requisitos'] as $re) {
                     $re['hojas_ruta_id'] = $idHojaruta;
@@ -71,6 +116,39 @@ class HojasRutasController extends AppController {
                     'HojasRequisito.hojas_ruta_id' => $idHojaruta, 'HojasRequisito.requisito_id' => NULL
                 ));
             }
+            //------------------------- TERMINA REGISTRO DE REQUISITOS ----------------
+            //
+            //------------------------- REGISTRO DE FLUJOS/RECURSOS PARA CADA UNO ----------------
+            if (!empty($this->request->data['FlujosUser'])) {
+                foreach ($this->request->data['FlujosUser'] as $flu) {
+                    //---------------- Guarda uno a uno los FlujosuSER --------------
+                    $flu['hojas_ruta_id'] = $idHojaruta;
+                    $this->request->data = array();
+                    $this->request->data = $flu;
+
+                    $this->FlujosUser->create();
+                    //$d_flujo = $this->request->data['FlujosUser'] = $flu;
+                    //$d_flujo['flujo_id'] = $idFlujo;
+                    $flu['adjunto_id'] = $idAdjunto;
+                    $flu['user_id'] = $this->Session->read('Auth.User.id');
+                    //$idFlujo = $d_flujo['flujo_id'] ;
+                    //debug( $this->request->data);exit;
+                    $this->FlujosUser->save($flu);
+                    if (!empty($this->request->data['id'])) {
+                        $idFlujosUser = $this->request->data['id'];
+                        //debug('enytro aki');exit;
+                    } else {
+                        $idFlujosUser = $this->FlujosUser->getLastInsertID();
+                    }
+                    
+                    //debug($idFlujosUser);exit;
+                    //$flujo = $this->FlujosUser->findByid($idFlujosUser, NULL, NULL, 0);
+                    $this->guarda_resultados($idFlujosUser);
+                    $this->guarda_tributos($idFlujosUser);
+                    //-------------- Termina FlujosUser -----------------------
+                }
+            }
+            //-------------------------- TERMINA REGISTRO DE RECURSOS --------------------------
 
             $this->Session->setFlash("Se ha registrado correctamente la hoja de ruta!!", 'msgbueno');
             $this->redirect(array('action' => 'index'));
@@ -91,6 +169,7 @@ class HojasRutasController extends AppController {
                 'conditions' => array('HojasRequisito.hojas_ruta_id' => $idHojaruta, 'HojasRequisito.requisito_id' => NULL),
                 'fields' => array('HojasRequisito.*')
             ));
+            ///debug($requisitos_ad);exit;
 
             foreach ($requisitos_ad as $key => $re) {
 
@@ -102,15 +181,93 @@ class HojasRutasController extends AppController {
             ));
         }
 
-        /* debug($idHojaRuta);
-          debug($this->request->data['HojasRuta']);
+        $flujos = $this->FlujosUser->find('all', array(
+            'recursive' => 0,
+            'conditions' => array('FlujosUser.hojas_ruta_id' => $idHojaruta),
+            'fields' => array('FlujosUser.*', 'Flujo.*')
+        ));
+        if (empty($flujos)) {
+            $flujos = $this->Flujo->find('all', array(
+                'recursive' => -1,
+                'conditions' => array('Flujo.hoja_ruta' => 1)
+            ));
+        }
+
+        foreach ($flujos as $key_f => $flu) {
+
+
+            if (!empty($flu['FlujosUser']['id'])) {
+                $flujos[$key_f]['Flujo']['resultados'] = $this->FlujosUsersResultado->find('all', array(
+                    'recursive' => 0,
+                    'conditions' => array('FlujosUsersResultado.flujos_user_id' => $flu['FlujosUser']['id']),
+                    'fields' => array('FlujosUsersResultado.*', 'Resultado.*')
+                ));
+                $this->request->data['FlujosUser'][$key_f] = $flu['FlujosUser'];
+            }
+            if (empty($flujos[$key_f]['Flujo']['resultados'])) {
+                $flujos[$key_f]['Flujo']['resultados'] = $this->Resultado->find('all', array(
+                    'recursive' => -1,
+                    'conditions' => array('Resultado.flujo_id' => $flu['Flujo']['id'])
+                ));
+            }
+            if (!empty($flu['Flujo']['tributos_determinados'])) {
+                if (!empty($flu['FlujosUser']['id'])) {
+                    $flujos[$key_f]['Flujo']['tributos'] = $this->FlujosUsersTributo->find('all', array(
+                        'recursive' => 0,
+                        'conditions' => array('FlujosUsersTributo.flujos_user_id' => $flu['FlujosUser']['id']),
+                        'fields' => array('Tributo.*', 'FlujosUsersTributo.*')
+                    ));
+                }
+                if (empty($flujos[$key_f]['Flujo']['tributos'])) {
+                    $flujos[$key_f]['Flujo']['tributos'] = $this->Tributo->find('all', array(
+                        'recursive' => -1
+                    ));
+                } else {
+                    foreach ($flujos[$key_f]['Flujo']['tributos'] as $key => $tri) {
+                        $this->request->data['FlujosUser'][$key_f]['tributos'][$key] = $tri['FlujosUsersTributo'];
+                    }
+                }
+            }
+        }
+         /*debug($flujos);
           exit; */
 
         $cliente = $this->Cliente->find('first', array(
             'recursive' => -1,
             'conditions' => array('Cliente.id' => $idCliente)
         ));
-        $this->set(compact('requisitos', 'cliente', 'requisitos_ad'));
+        $usuarios = $this->User->find('list', arraY(
+            'recursive' => -1,
+            'conditions' => array('User.role' => 'Usuario'),
+            'fields' => array('User.id', 'User.nombre_completo')
+        ));
+
+        $regiones = $this->Regione->find('list', array(
+            'fields' => array('Regione.id', 'Regione.nombre'),
+            'order' => array('Regione.nombre ASC')
+        ));
+
+        $this->set(compact('requisitos', 'cliente', 'requisitos_ad', 'flujos', 'usuarios', 'regiones'));
+    }
+
+    public function get_num_reg($idRegion = null) {
+        $this->layout = 'ajax';
+        $numero_sucur = $this->HojasRuta->find('first', array(
+            'recursive' => -1,
+            'conditions' => array('HojasRuta.regione_id' => $idRegion)
+        ));
+        $region = $this->Regione->find('first', array(
+            'recursive' => -1,
+            'conditions' => array('Regione.id' => $idRegion),
+            'fields' => array('Regione.sigla')
+        ));
+        $numero = 1;
+        if (!empty($numero_sucur['HojasRuta']['numero_codigo'])) {
+            $numero = $numero_sucur['HojasRuta']['numero_codigo'] + 1;
+        }
+        //debug($numero);exit;
+        $array['numero'] = $region['Regione']['sigla'] . '-' . $numero;
+        $this->respond($array, true);
     }
 
     public function ver_hoja($idHojasRuta = null) {
@@ -138,7 +295,7 @@ class HojasRutasController extends AppController {
             ),
             'conditions' => array('FlujosUser.hojas_ruta_id' => $idHojasRuta),
             'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*', 'Cliente.nombre', 'Asesor.nombre_completo'),
-            'order' => array('FlujosUser.created DESC')
+            'order' => array('Flujo.id ASC')
         ));
         $this->HojasRequisito->virtualFields = array(
             'estado2' => "IF(HojasRequisito.estado = 1,'<b>SI</b>','NO')",
@@ -146,10 +303,17 @@ class HojasRutasController extends AppController {
         );
         $hojas_requisitos = $this->HojasRequisito->find('all', array(
             'recursive' => 0,
-            'conditions' => array('HojasRequisito.hojas_ruta_id' => $idHojasRuta)
+            'conditions' => array('HojasRequisito.hojas_ruta_id' => $idHojasRuta,'HojasRequisito.requisito_id <>' => NULL)
         ));
+        
+        $hojas_requisitos_otros = $this->HojasRequisito->find('all', array(
+            'recursive' => 0,
+            'conditions' => array('HojasRequisito.hojas_ruta_id' => $idHojasRuta,'HojasRequisito.requisito_id' => NULL),
+            //'fields' => array('HojasRequisito.descripcion')
+        ));
+        //debug($hojas_requisitos_otros);exit;
 
-        $this->set(compact('hojasRuta', 'flujos', 'flujos_c', 'hojas_requisitos'));
+        $this->set(compact('hojasRuta', 'flujos', 'flujos_c', 'hojas_requisitos','hojas_requisitos_otros'));
     }
 
     public function get_procesos($idFlujo = null, $idFlujosUser = null) {
@@ -179,6 +343,7 @@ class HojasRutasController extends AppController {
                 $procesos[$key]['Proceso']['fecha_fin'] = $pro_fecha_ini['ProcesosEstado']['created'];
             }
         }
+
         return $procesos;
     }
 

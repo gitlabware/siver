@@ -60,7 +60,7 @@ class FlujosUser extends AppModel {
             'order' => ''
         )
     );
-    public $validate = array(
+    /*public $validate = array(
         'expediente' => array(
             'limitDuplicates' => array(
                 'rule' => array('limitDuplicates', 1),
@@ -84,6 +84,6 @@ class FlujosUser extends AppModel {
         } else {
             return TRUE;
         }
-    }
+    }*/
 
 }

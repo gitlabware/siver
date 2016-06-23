@@ -133,22 +133,18 @@
 
         <!-- Page Plugins -->
         <script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/magnific/jquery.magnific-popup.js"></script>
-
+        
         <!-- Theme Javascript -->
         <script src="<?php echo $this->request->webroot; ?>js/utility/utility.js"></script>
         <script src="<?php echo $this->request->webroot; ?>js/demo/demo.js"></script>
         <script src="<?php echo $this->request->webroot; ?>js/main.js"></script>
         <script type="text/javascript">
           jQuery(document).ready(function () {
-
               "use strict";
-
               // Init Theme Core    
               Core.init();
-
               // Init Demo JS    
               Demo.init();
-
               $('.admin-panels').adminpanel({
                   grid: '.admin-grid',
                   draggable: true,
@@ -277,18 +273,12 @@
                       jQuery("#divmodal").show();
                   }
               });
-
-
           }
-
         </script>
-
         <!--<script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/highcharts/highcharts.js"></script>-->
 
         <!-- END: PAGE SCRIPTS -->
         <?php echo $this->fetch('scriptjs'); ?>
-        
-
     </body>
 
 </html>

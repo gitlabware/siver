@@ -18,11 +18,18 @@
         </div>
     </div>
     <div class="section row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="option-group field">
                 <label class="option">
                     <?php echo $this->Form->checkbox('tributos_determinados'); ?>
                     <span class="checkbox"></span>Tributos Determinados.</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="option-group field">
+                <label class="option">
+                    <?php echo $this->Form->checkbox('hoja_ruta'); ?>
+                    <span class="checkbox"></span>Hoja Ruta</label>
             </div>
         </div>
     </div>
