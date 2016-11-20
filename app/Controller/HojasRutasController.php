@@ -38,19 +38,28 @@ class HojasRutasController extends AppController {
 
         if (!empty($this->request->data['HojasRuta'])) {
             $idUser = $this->Session->read('Auth.User.id');
-
             //---------------- GUARDA Y CREA LA CARPETA PARA HOJAS-RUTA
             $folder = new Folder();
 
+            $idRegion = $this->request->data['HojasRuta']['regione_id'];
             if (!empty($this->request->data['HojasRuta']['id'])) {
+                $dhoja_ruta = $this->HojasRuta->find('first',array(
+                    'recursive' => -1,
+                    'conditions' => array('HojasRuta.id' => $this->request->data['HojasRuta']['id'])
+                ));
+
                 $idHojaruta = $this->request->data['HojasRuta']['id'];
                 $idAdjunto = $this->request->data['HojasRuta']['adjunto_id'];
                 $this->Adjunto->id = $this->request->data['HojasRuta']['adjunto_id'];
                 $adj['nombre_original'] = $adj['nombre'] = $this->request->data['HojasRuta']['codigo_caso'];
                 $this->Adjunto->save($adj);
 
-                $folder = new Folder(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['codigo_caso']);
+                $folder = new Folder(WWW_ROOT . 'files' . DS . $dhoja_ruta['HojasRuta']['codigo_caso']);
                 $folder->move(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['codigo_caso']);
+
+                $this->HojasRuta->create();
+                $this->HojasRuta->save($this->request->data['HojasRuta']);
+
             } else {
                 if ($folder->create(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['codigo_caso'])) {
                     $this->HojasRuta->create();
@@ -133,6 +142,8 @@ class HojasRutasController extends AppController {
                     $flu['user_id'] = $this->Session->read('Auth.User.id');
                     //$idFlujo = $d_flujo['flujo_id'] ;
                     //debug( $this->request->data);exit;
+                    $flu['cliente_id'] = $idCliente;
+                    $flu['regione_id'] = $idRegion;
                     $this->FlujosUser->save($flu);
                     if (!empty($this->request->data['id'])) {
                         $idFlujosUser = $this->request->data['id'];
@@ -140,6 +151,14 @@ class HojasRutasController extends AppController {
                     } else {
                         $idFlujosUser = $this->FlujosUser->getLastInsertID();
                     }
+
+                    //REGISTRA LOS ASCESORES ----------
+                    if(!empty($flu['asesores'])){
+                        foreach ($flu['asesores'] as $asce){
+                            
+                        }
+                    }
+                    //--------------------------------
                     
                     //debug($idFlujosUser);exit;
                     //$flujo = $this->FlujosUser->findByid($idFlujosUser, NULL, NULL, 0);
@@ -225,6 +244,7 @@ class HojasRutasController extends AppController {
                 } else {
                     foreach ($flujos[$key_f]['Flujo']['tributos'] as $key => $tri) {
                         $this->request->data['FlujosUser'][$key_f]['tributos'][$key] = $tri['FlujosUsersTributo'];
+
                     }
                 }
             }
@@ -254,7 +274,8 @@ class HojasRutasController extends AppController {
         $this->layout = 'ajax';
         $numero_sucur = $this->HojasRuta->find('first', array(
             'recursive' => -1,
-            'conditions' => array('HojasRuta.regione_id' => $idRegion)
+            'conditions' => array('HojasRuta.regione_id' => $idRegion),
+            'order' => array('HojasRuta.id desc')
         ));
         $region = $this->Regione->find('first', array(
             'recursive' => -1,
@@ -267,6 +288,7 @@ class HojasRutasController extends AppController {
         }
         //debug($numero);exit;
         $array['numero'] = $region['Regione']['sigla'] . '-' . $numero;
+        $array['solo_numero'] =  $numero;
         $this->respond($array, true);
     }
 

@@ -1,4 +1,5 @@
-<link rel="stylesheet" type="text/css" href="<?php echo $this->request->webroot; ?>js/vendor/plugins/datepicker/css/bootstrap-datetimepicker.css">
+<link rel="stylesheet" type="text/css"
+      href="<?php echo $this->request->webroot; ?>js/vendor/plugins/datepicker/css/bootstrap-datetimepicker.css">
 <!-- begin: .tray-center -->
 <!-- Start: Topbar-Dropdown -->
 <script>
@@ -15,7 +16,7 @@
             <div class="panel heading-border panel-primary">
                 <?php echo $this->Form->create('HojasRuta', array('class' => 'form-validacion', 'id' => 'f-add')); ?>
                 <div class="panel-body bg-light">
-                    <div class="section-divider mb40 " >
+                    <div class="section-divider mb40 ">
                         <span>Datos del cliente</span>
                     </div>
                     <!-- Basic Inputs -->
@@ -43,21 +44,20 @@
                         $('#idregion').change(function () {
                             var formURL = "<?php echo $this->Html->url(array('action' => 'get_num_reg')); ?>/" + $('#idregion').val();
                             $.ajax(
-                                    {
-                                        url: formURL,
-                                        type: "GET",
-                                        success: function (data, textStatus, jqXHR)
-                                        {
-                                            //data: return data from server
-                                            //$("#parte").html(data);
-                                            $('#idcodigo').val($.parseJSON(data).numero);
-                                        },
-                                        error: function (jqXHR, textStatus, errorThrown)
-                                        {
-                                            //if fails   
-                                            alert("error");
-                                        }
-                                    });
+                                {
+                                    url: formURL,
+                                    type: "GET",
+                                    success: function (data, textStatus, jqXHR) {
+                                        //data: return data from server
+                                        //$("#parte").html(data);
+                                        $('#idcodigo').val($.parseJSON(data).numero);
+                                        $('#idnumero_codigo').val($.parseJSON(data).solo_numero);
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        //if fails
+                                        alert("error");
+                                    }
+                                });
                         });
                     </script>
                     <div class="row">
@@ -65,6 +65,7 @@
                             <div class="section">
                                 <label class="field prepend-icon">
                                     <?php echo $this->Form->text('HojasRuta.codigo_caso', array('class' => 'gui-input', 'placeholder' => 'Codigo del Caso', 'required', 'id' => 'idcodigo', 'required')); ?>
+                                    <?php echo $this->Form->hidden('HojasRuta.numero_codigo', array('id' => 'idnumero_codigo')); ?>
                                     <label for="firstname" class="field-icon">
                                         <i class="fa fa-pencil"></i>
                                     </label>
@@ -203,8 +204,12 @@
                         <div class="col-md-6">
 
                             <div class="section">
-                                <button type="button" class="button btn-success" onclick="add_requisito();"> Add requisito </button> 
-                                <button type="button" class="button btn-danger" onclick="quitar_requisito();"> Quitar requisito </button>
+                                <button type="button" class="button btn-success" onclick="add_requisito();"> Add
+                                    requisito
+                                </button>
+                                <button type="button" class="button btn-danger" onclick="quitar_requisito();"> Quitar
+                                    requisito
+                                </button>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -242,7 +247,7 @@
                                         <label class="field-icon">
                                             <i class="fa fa-calendar-o"></i>
                                         </label>
-                                    </label>  
+                                    </label>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -257,12 +262,22 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="section">
+                            <div class="col-md-4">
+                                <div class="section" id="asesor-<?= $key_f ?>-1">
                                     <label class="field select">
-                                        <?php echo $this->Form->select("FlujosUser.$key_f.asesor_id", $usuarios, array('empty' => 'Seleccione el Asesor Legal')) ?>
+                                        <?php echo $this->Form->select("FlujosUser.$key_f.asesores.1.asesor_id", $usuarios, array('empty' => 'Seleccione el Asesor Legal')) ?>
                                         <i class="arrow double"></i>
                                     </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="btn-group">
+                                    <button type="button" id="but-as-<?= $key_f ?>" data-num="1" class="btn btn-info" title="ADD ASESOR" onclick="add_asesor(<?= $key_f ?>);">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger dark" title="QUITAR ASESOR" onclick="quita_ascesor(<?= $key_f ?>);">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -289,7 +304,9 @@
                                                     <div class="option-group field">
                                                         <label class="option">
                                                             <?php echo $this->Form->checkbox("FlujosUser.$key_f.tributos.$key.estado"); ?>
-                                                            <span class="checkbox"></span><?php echo $tri['Tributo']['nombre']; ?></label>
+                                                            <span
+                                                                class="checkbox"></span><?php echo $tri['Tributo']['nombre']; ?>
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -317,7 +334,8 @@
                                     </tr>
                                     <?php foreach ($procesos as $key => $pro): ?>
                                         <tr>
-                                            <td><b><?php echo $key + 1 ?>.-</b> <?php echo $pro['Proceso']['nombre']; ?></td>
+                                            <td><b><?php echo $key + 1 ?>.-</b> <?php echo $pro['Proceso']['nombre']; ?>
+                                            </td>
                                             <td><?php echo $pro['Proceso']['fecha_inicio']; ?></td>
                                             <td><?php echo $pro['Proceso']['fecha_fin']; ?></td>
                                         </tr>
@@ -374,7 +392,7 @@
                 </div>
                 <!-- end .form-body section -->
                 <div class="panel-footer text-right">
-                    <button type="submit" class="button btn-primary"> Guardar </button>
+                    <button type="submit" class="button btn-primary"> Guardar</button>
                 </div>
                 <!-- end .form-footer section -->
                 <?php echo $this->Form->hidden('cliente_id', array('value' => $cliente['Cliente']['id'])); ?>
@@ -388,7 +406,7 @@
 </div>
 
 
-<div class="row" id="div-cont-req"  style="display: none;">
+<div class="row" id="div-cont-req" style="display: none;">
     <div class="col-md-4">
         <label class="field">
             <?php echo $this->Form->text("requisitos.descripcion", array('class' => 'gui-input descripcion', 'placeholder' => 'Fojas')); ?>
@@ -460,5 +478,20 @@ echo $this->Html->script([
     $('.ddatepicker1').datetimepicker({
         format: 'YYYY-MM-DD'
     });
+
+    function add_asesor(key_f){
+        var contenido_a = $('#asesor-'+key_f+'-1').html();
+        var n_asesores = parseInt($('#but-as-'+key_f).attr('data-num'));
+        $('#asesor-'+key_f+'-'+n_asesores).after('<div class="section" id="asesor-'+key_f+'-'+(n_asesores+1)+'">'+contenido_a+'</div>');
+        $('#asesor-'+key_f+'-'+(n_asesores+1)+' label select').attr('name','data[FlujosUser]['+key_f+'][asesores]['+(n_asesores+1)+'][asesor_id]');
+        $('#but-as-'+key_f).attr('data-num',(n_asesores+1));
+    }
+    function quita_ascesor(key_f){
+        var n_asesores = parseInt($('#but-as-'+key_f).attr('data-num'));
+        if(n_asesores != 1){
+            $('#asesor-'+key_f+'-'+(n_asesores)).remove();
+            $('#but-as-'+key_f).attr('data-num',(n_asesores-1));
+        }
+    }
 </script>
 <?php $this->end(); ?>

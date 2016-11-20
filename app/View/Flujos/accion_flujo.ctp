@@ -48,6 +48,7 @@
                 </a>
             </div>
         <?php endif; ?>
+        <!--
         <div class="col-xs-6 col-sm-3">
             <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
                     cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flujo['Flujo']['id'])); ?>', true);">
@@ -55,6 +56,7 @@
                 <p class="metro-title">Nuevo Caso</p>
             </a>
         </div>
+        -->
     </div>
 </div>
 

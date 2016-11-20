@@ -2,7 +2,17 @@
 
 <div class="panel-heading">
     <span class="panel-title">
-        <i class="fa fa-square"></i>Nuevo Caso</span>
+        <i class="fa fa-square"></i>
+    <?php
+    if(!empty($this->request->data['Flujo']['nombre'])){
+        echo $this->request->data['Flujo']['nombre'];
+    }else{
+        echo "RECURSO";
+    }
+
+        ?>
+
+    </span>
 </div>
 
 <?= $this->Form->create('Flujo', ['class' => 'form-validacion', 'id' => 'f-add']); ?>
@@ -17,10 +27,10 @@
             </label>
         </div>
     </div>-->
-    <div class="section row" id="cliente-select">
+    <!--<div class="section row" id="cliente-select">
         <div class="col-md-11">
             <label class="field select">
-                <?php echo $this->Form->select('FlujosUser.cliente_id', $clientes, array('empty' => 'Seleccione el Cliente', 'required', 'id' => 'idsel-cli')) ?>
+                <?php// echo $this->Form->select('FlujosUser.cliente_id', $clientes, array('empty' => 'Seleccione el Cliente', 'required', 'id' => 'idsel-cli')) ?>
                 <i class="arrow double"></i>
             </label>
         </div>
@@ -37,7 +47,7 @@
     <div class="section row" id="cliente-text" style="display: none;">
         <div class="col-md-6">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->text('Cliente.nombre', ['class' => 'gui-input', 'placeholder' => 'Nombre del Cliente', 'id' => 'idtext-cli','value' => '']); ?>
+                <?php //echo $this->Form->text('Cliente.nombre', ['class' => 'gui-input', 'placeholder' => 'Nombre del Cliente', 'id' => 'idtext-cli','value' => '']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-user"></i>
                 </label>
@@ -45,7 +55,7 @@
         </div>
         <div class="col-md-5">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->text('Cliente.ci_nit', ['class' => 'gui-input', 'placeholder' => 'C.I./NIT','value' => '']); ?>
+                <?php //echo $this->Form->text('Cliente.ci_nit', ['class' => 'gui-input', 'placeholder' => 'C.I./NIT','value' => '']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-credit-card"></i>
                 </label>
@@ -61,6 +71,7 @@
             </button>
         </div>
     </div>
+    -->
     <div class="section row">
         <div class="col-md-4">
             <label for="firstname" class="field prepend-icon">

@@ -48,6 +48,9 @@ class DocumentosController extends AppController {
                 'recursive' => -1,
                 'conditions' => array('FlujosUser.id' => $idFlujosUser)
             ));
+            //debug($flujos_user);exit;
+
+            $this->request->data['Adjunto']['hojas_ruta_id'] = $flujos_user['FlujosUser']['hojas_ruta_id'];
             $this->request->data['Adjunto']['parent_id'] = $flujos_user['FlujosUser']['adjunto_id'];
             $this->request->data['Adjunto']['archivo'] = $this->request->data['documentos'][$numero]['archivo'];
             $this->request->data['Adjunto']['flujos_user_id'] = $idFlujosUser;

@@ -212,19 +212,21 @@ class FlujosController extends AppController {
             $d_flujo['user_id'] = $this->Session->read('Auth.User.id');
             $error = $this->validar('FlujosUser');
             if (empty($error)) {
-                if (!empty($this->request->data['Cliente']['nombre'])) {
+
+                /*if (!empty($this->request->data['Cliente']['nombre'])) {
                     $this->Cliente->create();
                     $this->Cliente->save($this->request->data['Cliente']);
                     $d_flujo['cliente_id'] = $this->Cliente->getLastInsertID();
-                }
+                }*/
 
                 $this->FlujosUser->save($d_flujo);
-                if (empty($idFlujosUser)) {
+                $this->Session->setFlash('Se ha registrado correctamente!!', 'msgbueno');
+                $this->redirect($this->referer());
+                /*if (empty($idFlujosUser)) {
                     $idFlujosUser = $this->FlujosUser->getLastInsertID();
                     $folder = new Folder();
 
                     if ($folder->create(WWW_ROOT . 'files' . DS . $d_flujo['expediente'])) {
-// Successfully created the nested folders
                         $this->Adjunto->create();
                         $adj['nombre_original'] = $adj['nombre'] = $d_flujo['expediente'];
                         $adj['user_id'] = $this->Session->read('Auth.User.id');
@@ -234,7 +236,6 @@ class FlujosController extends AppController {
                         $adj['proceso_id'] = 0;
                         $adj['tarea_id'] = 0;
                         $this->Adjunto->save($adj);
-
 
                         $dflujo['adjunto_id'] = $this->Adjunto->getLastInsertID();
                         $this->FlujosUser->id = $idFlujosUser;
@@ -252,7 +253,7 @@ class FlujosController extends AppController {
                     $folder->move(WWW_ROOT . 'files' . DS . $d_flujo['expediente']);
                     $this->Session->setFlash('Se ha registrado correctamente!!', 'msgbueno');
                     $this->redirect($this->referer());
-                }
+                }*/
             } else {
                 $this->Session->setFlash($error, 'msgerror');
                 $this->redirect($this->referer());
@@ -265,6 +266,7 @@ class FlujosController extends AppController {
         if (!empty($idFlujosUser)) {
             $this->FlujosUser->id = $idFlujosUser;
             $this->request->data = $this->FlujosUser->read();
+            
         }
         $clientes = $this->Cliente->find('list', array(
             'fields' => array('Cliente.id', 'Cliente.nombre'),

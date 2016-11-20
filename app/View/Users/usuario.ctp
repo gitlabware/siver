@@ -20,7 +20,7 @@
     <div class="section row">
         <div class="col-md-12">
             <label class="field select">
-                <?php echo $this->Form->select('role', array('Usuario' => 'Usuario', 'Administrador' => 'Administrador'), array('empty' => 'Tipo de Usuario')) ?>
+                <?php echo $this->Form->select('role', array('Usuario' => 'Usuario', 'Administrador' => 'Administrador','Recepcionista' => 'Recepcionista'), array('empty' => 'Tipo de Usuario')) ?>
                 <i class="arrow double"></i>
             </label>
         </div>
