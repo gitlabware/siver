@@ -111,7 +111,7 @@
                                 </thead>
                                 <tbody>
                                     <?php foreach ($flujos_c as $flu): ?>
-                                        <tr class="<?php echo $flu['FlujosUser']['estado_color']; ?>">
+                                        <tr class="<?php echo $flu['FlujosUsersAsesore']['estado_color']; ?>">
                                             <td><?php echo $flu['FlujosUser']['expediente'] ?></td>
                                             <td><?php echo $flu['Cliente']['nombre']; ?></td>
                                             <td><?php echo $flu['FlujosUser']['created']; ?></td>

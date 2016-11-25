@@ -272,6 +272,10 @@
             },
             midClick: true // allow opening popup on middle mouse click. Always set it to true if you don't provide alternative source.
         });
+
+
+
+
         jQuery("#divmodal").load(urll, function (responseText, textStatus, req) {
             if (textStatus == "error") {
                 alert("error!!!");
@@ -281,6 +285,9 @@
                 jQuery("#divmodal").show();
             }
         });
+    }
+    function cerrarmodal(){
+        $.magnificPopup.close();
     }
 </script>
 <!--<script src="<?php echo $this->request->webroot; ?>js/vendor/plugins/highcharts/highcharts.js"></script>-->

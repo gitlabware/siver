@@ -38,6 +38,9 @@
                                                             <?= $this->Form->postLink('Ver Hoja', ['action' => 'ver_hoja', $ho['HojasRuta']['id']]) ?>  
                                                         </li>
                                                         <li>
+                                                            <?= $this->Form->postLink('Editar Hoja', ['action' => 'hoja_ruta', $ho['HojasRuta']['cliente_id'], $ho['HojasRuta']['id']]) ?>
+                                                        </li>
+                                                        <li>
                                                             <?= $this->Form->postLink('Eliminar', ['action' => 'eliminar', $ho['HojasRuta']['id']], ['confirm' => __('Esta seguro de eliminar la huja-ruta ??')]) ?>
                                                         </li>
                                                     </ul>

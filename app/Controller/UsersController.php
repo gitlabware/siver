@@ -38,6 +38,7 @@ class UsersController extends AppController
             $this->Session->setFlash($valida, 'msgerror');
         }
         $this->redirect(array('action' => 'index'));
+        $this->redirect($this->referer());
     }
 
     public function delete($id = null)

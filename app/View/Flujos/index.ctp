@@ -7,7 +7,7 @@
         <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
             <div class="col-xs-12 col-sm-4">
                 <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
-                            cargarmodal('<?php echo $this->Html->url(array('action' => 'flujo')); ?>');">
+                    cargarmodal('<?php echo $this->Html->url(array('action' => 'flujo')); ?>');">
                     <span class="metro-icon glyphicon glyphicon-plus"></span>
                     <p class="metro-title">Nuevo Flujo</p>
                 </a>
@@ -94,47 +94,62 @@
                         <div class="table-responsive">
                             <table class="table dataTable table-bordered" id="tabla-filtros">
                                 <thead>
-                                    <tr class="bg-light">
-                                        <td>Exp.</td>
-                                        <td>Cliente</td>
-                                        <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
+                                <tr class="bg-light">
+                                    <td>Exp.</td>
+                                    <td>Cliente</td>
+                                    <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
                                         <td>Asesor</td>
-                                        <?php endif; ?>
-                                        <td>Creado</td>
-                                        <td>Recurso</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr class="bg-light">
-                                        <th>Exp.</th>
-                                        <th>Cliente</th>
-                                        <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                            <th>Asesor</th>
-                                        <?php endif; ?>
-                                        <th>Creado</th>
-                                        <th>Recurso</th>
-                                        <th></th>
-                                    </tr>
+                                    <?php endif; ?>
+                                    <td>Creado</td>
+                                    <td>Recurso</td>
+                                    <td></td>
+                                </tr>
+                                <tr class="bg-light">
+                                    <th>Exp.</th>
+                                    <th>Cliente</th>
+                                    <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
+                                        <th>Asesor</th>
+                                    <?php endif; ?>
+                                    <th>Creado</th>
+                                    <th>Recurso</th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($flujos_c as $flu): ?>
-                                        <tr class="<?php echo $flu['FlujosUser']['estado_color']; ?>">
-                                            <td><?php echo $flu['FlujosUser']['expediente'] ?></td>
-                                            <td><?php echo $flu['Cliente']['nombre']; ?></td>
-                                            <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                                <td><?php echo $flu['Asesor']['nombre_completo']; ?></td>
-                                            <?php endif; ?>
-                                            <td><?php echo $flu['FlujosUser']['created']; ?></td>
-                                            <td><?php echo $flu['Flujo']['nombre']; ?></td>
-                                            <td class="text-center" style="font-size: 16px;">
-                                                <div class="btn-group" style="width: 120px;">
+                                <?php foreach ($flujos_c as $flu): ?>
+                                    <?php
+                                    $color_r = '';
+                                    if ($flu['FlujosUser']['estado'] == 'Finalizado') {
+                                        $color_r = 'success';
+                                    } elseif (!empty($flu['FlujosUser']['asesores'])) {
+                                        $color_r = 'info';
+                                    }
+                                    ?>
+                                    <tr class="<?php echo $color_r; ?>">
+                                        <td><?php echo $flu['FlujosUser']['expediente'] ?></td>
+                                        <td><?php echo $flu['Cliente']['nombre']; ?></td>
+                                        <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
+                                            <td>
 
-                                                    <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
-                                                    <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>', true);" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
-                                                    <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
-                                                </div>
+                                                <?php echo $flu['FlujosUser']['asesores']; ?>
                                             </td>
-                                        </tr>
-                                    <?php endforeach; ?>
+                                        <?php endif; ?>
+                                        <td><?php echo $flu['FlujosUser']['created']; ?></td>
+                                        <td><?php echo $flu['Flujo']['nombre']; ?></td>
+                                        <td class="text-center" style="font-size: 16px;">
+                                            <div class="btn-group" style="width: 120px;">
+
+                                                <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
+                                                <a href="javascript:"
+                                                   onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>', true);"
+                                                   class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
+
+                                                <?php //echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -154,18 +169,20 @@
                     <div class="table-responsive">
                         <table class="table admin-form theme-warning tc-checkbox-1 fs13">
                             <thead>
-                                <tr class="bg-light">
-                                    <th class="text-center" style="font-size: 16px;">RECURSOS</th>
-                                </tr>
+                            <tr class="bg-light">
+                                <th class="text-center" style="font-size: 16px;">RECURSOS</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($flujos as $flu): ?>
-                                    <tr>
-                                        <td class="primary text-center" onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'accion_flujo', $flu['Flujo']['id'])); ?>';" style="font-size: 16px; cursor: pointer;">
-                                            <b><?= $flu['Flujo']['nombre'] ?></b>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                            <?php foreach ($flujos as $flu): ?>
+                                <tr>
+                                    <td class="primary text-center"
+                                        onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'accion_flujo', $flu['Flujo']['id'])); ?>';"
+                                        style="font-size: 16px; cursor: pointer;">
+                                        <b><?= $flu['Flujo']['nombre'] ?></b>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
@@ -187,21 +204,21 @@ echo $this->Html->script(array(
 ?>
 <script>
     var filtro_c = [
-    {type: "text"},
-    {type: "text"},
-<?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
         {type: "text"},
-<?php endif; ?>
-    {type: "text"},
-    {type: "text"},
-            null
+        {type: "text"},
+        <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
+        {type: "text"},
+        <?php endif; ?>
+        {type: "text"},
+        {type: "text"},
+        null
     ];
-            $(document).ready(function () {
+    $(document).ready(function () {
         $('#tabla-filtros').dataTable({
             "aoColumnDefs": [{
-                    'bSortable': false,
-                    'aTargets': [-1]
-                }],
+                'bSortable': false,
+                'aTargets': [-1]
+            }],
             "oLanguage": {
                 "oPaginate": {
                     "sPrevious": "Anterior",

@@ -109,16 +109,11 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </div>
-
         <?php endif; ?>
-
         <div class="panel mb25 mt5">
-
             <div class="panel panel-system">
                 <div class="panel-heading">
                     <span class="panel-icon">
@@ -134,8 +129,6 @@
                                     <?php echo $ac[0]['icono'] ?>
                                     <div class="timeline-desc">
                                         <?php echo $ac[0]['contenido'] ?>
-
-
                                     </div>
                                     <div class="timeline-date"><?php echo $ac[0]['created'] ?></div>
                                 </li>

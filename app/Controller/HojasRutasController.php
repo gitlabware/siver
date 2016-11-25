@@ -11,7 +11,8 @@ class HojasRutasController extends AppController {
         'HojasRequisito', 'Flujo', 'User',
         'Proceso', 'Regione', 'FlujosUser',
         'Adjunto', 'Resultado', 'FlujosUsersResultado',
-        'ProcesosEstado', 'Tributo', 'FlujosUsersTributo'
+        'ProcesosEstado', 'Tributo', 'FlujosUsersTributo',
+        'FlujosUsersAsesore'
     );
     public $components = array('RequestHandler');
 
@@ -29,8 +30,10 @@ class HojasRutasController extends AppController {
     public function index() {
         $hojas = $this->HojasRuta->find('all', array(
             'recursive' => 0,
-            'order' => array('HojasRuta.id DESC')
+            'order' => array('HojasRuta.id DESC'),
+            'conditions' => array('ISNULL(HojasRuta.fecha_eliminado)' => true)
         ));
+
         $this->set(compact('hojas'));
     }
 
@@ -41,8 +44,25 @@ class HojasRutasController extends AppController {
             //---------------- GUARDA Y CREA LA CARPETA PARA HOJAS-RUTA
             $folder = new Folder();
 
+            if (strpos($this->request->data['HojasRuta']['numero_expediente'], '/') !== false) {
+                $this->Session->setFlash("No se permite el caracter / en el expediente!!",'msgerror');
+                $this->redirect($this->referer());
+            }
+
             $idRegion = $this->request->data['HojasRuta']['regione_id'];
             if (!empty($this->request->data['HojasRuta']['id'])) {
+                $verifica_hj_nt = $this->HojasRuta->find('first',array(
+                    'recursive' => -1,
+                    'conditions' => array(
+                        'HojasRuta.numero_expediente' => $this->request->data['HojasRuta']['numero_expediente'],
+                        'HojasRuta.id !=' => $this->request->data['HojasRuta']['id']
+                    )
+                ));
+                if(!empty($verifica_hj_nt['HojasRuta']['id'])){
+                    $this->Session->setFlash("El expediente ya existe!!",'msgerror');
+                    $this->redirect($this->referer());
+                }
+
                 $dhoja_ruta = $this->HojasRuta->find('first',array(
                     'recursive' => -1,
                     'conditions' => array('HojasRuta.id' => $this->request->data['HojasRuta']['id'])
@@ -51,22 +71,32 @@ class HojasRutasController extends AppController {
                 $idHojaruta = $this->request->data['HojasRuta']['id'];
                 $idAdjunto = $this->request->data['HojasRuta']['adjunto_id'];
                 $this->Adjunto->id = $this->request->data['HojasRuta']['adjunto_id'];
-                $adj['nombre_original'] = $adj['nombre'] = $this->request->data['HojasRuta']['codigo_caso'];
+                $adj['nombre_original'] = $adj['nombre'] = $this->request->data['HojasRuta']['numero_expediente'];
                 $this->Adjunto->save($adj);
 
-                $folder = new Folder(WWW_ROOT . 'files' . DS . $dhoja_ruta['HojasRuta']['codigo_caso']);
-                $folder->move(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['codigo_caso']);
+                $folder = new Folder(WWW_ROOT . 'files' . DS . $dhoja_ruta['HojasRuta']['numero_expediente']);
+                $folder->move(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['numero_expediente']);
 
                 $this->HojasRuta->create();
                 $this->HojasRuta->save($this->request->data['HojasRuta']);
 
             } else {
-                if ($folder->create(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['codigo_caso'])) {
+                $verifica_hj_nt = $this->HojasRuta->find('first',array(
+                    'recursive' => -1,
+                    'conditions' => array(
+                        'HojasRuta.numero_expediente' => $this->request->data['HojasRuta']['numero_expediente']
+                    )
+                ));
+                if(!empty($verifica_hj_nt['HojasRuta']['id'])){
+                    $this->Session->setFlash("El expediente ya existe!!",'msgerror');
+                    $this->redirect($this->referer());
+                }
+                if ($folder->create(WWW_ROOT . 'files' . DS . $this->request->data['HojasRuta']['numero_expediente'])) {
                     $this->HojasRuta->create();
                     $this->HojasRuta->save($this->request->data['HojasRuta']);
                     $idHojaruta = $this->HojasRuta->getLastInsertID();
                     $this->Adjunto->create();
-                    $adj['nombre_original'] = $adj['nombre'] = $this->request->data['HojasRuta']['codigo_caso'];
+                    $adj['nombre_original'] = $adj['nombre'] = $this->request->data['HojasRuta']['numero_expediente'];
                     $adj['user_id'] = $this->Session->read('Auth.User.id');
                     $adj['tipo'] = 'Carpeta';
                     $adj['estado'] = 'Activo';
@@ -155,7 +185,11 @@ class HojasRutasController extends AppController {
                     //REGISTRA LOS ASCESORES ----------
                     if(!empty($flu['asesores'])){
                         foreach ($flu['asesores'] as $asce){
-                            
+                            $asce['flujos_user_id'] = $idFlujosUser;
+                            if(!empty($asce['asesor_id'])){
+                                $this->FlujosUsersAsesore->create();
+                                $this->FlujosUsersAsesore->save($asce);
+                            }
                         }
                     }
                     //--------------------------------
@@ -170,8 +204,15 @@ class HojasRutasController extends AppController {
             //-------------------------- TERMINA REGISTRO DE RECURSOS --------------------------
 
             $this->Session->setFlash("Se ha registrado correctamente la hoja de ruta!!", 'msgbueno');
-            $this->redirect(array('action' => 'index'));
+            $this->redirect($this->referer());
         }
+
+        $this->set(compact('idCliente','idHojaruta'));
+
+    }
+
+    public function hoja_ruta_ajax($idCliente = null, $idHojaruta = null){
+        $this->layout = 'ajax';
         $this->HojasRuta->id = $idHojaruta;
         $this->request->data = $this->HojasRuta->read();
         if (!empty($idHojaruta)) {
@@ -249,8 +290,8 @@ class HojasRutasController extends AppController {
                 }
             }
         }
-         /*debug($flujos);
-          exit; */
+        /*debug($flujos);
+         exit; */
 
         $cliente = $this->Cliente->find('first', array(
             'recursive' => -1,
@@ -268,6 +309,20 @@ class HojasRutasController extends AppController {
         ));
 
         $this->set(compact('requisitos', 'cliente', 'requisitos_ad', 'flujos', 'usuarios', 'regiones'));
+    }
+
+    public function get_asesores_edit($idFlujoUser = null){
+        return $this->FlujosUsersAsesore->find('all',array(
+            'recusive' => -1,
+            'conditions' => array('FlujosUsersAsesore.flujos_user_id' => $idFlujoUser)
+        ));
+    }
+
+    public function elimina_asesor_fu($idFluAsesor = null){
+        $this->FlujosUsersAsesore->delete($idFluAsesor);
+
+        $this->Session->setFlash("Se ha eliminado correctamente al asesor!!",'msgbueno');
+        $this->redirect($this->referer());
     }
 
     public function get_num_reg($idRegion = null) {
@@ -334,7 +389,6 @@ class HojasRutasController extends AppController {
             //'fields' => array('HojasRequisito.descripcion')
         ));
         //debug($hojas_requisitos_otros);exit;
-
         $this->set(compact('hojasRuta', 'flujos', 'flujos_c', 'hojas_requisitos','hojas_requisitos_otros'));
     }
 
@@ -347,22 +401,24 @@ class HojasRutasController extends AppController {
             $pro_fecha_ini = $this->ProcesosEstado->find('first', array(
                 'recursive' => -1,
                 'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujosUser, 'ProcesosEstado.proceso_id' => $pro['Proceso']['id'], 'ProcesosEstado.estado LIKE' => 'Activo'),
-                'fields' => array('ProcesosEstado.created'),
+                'fields' => array('DATE(ProcesosEstado.created) fecha','ProcesosEstado.id'),
                 'order' => array('ProcesosEstado.id DESC')
             ));
             $pro_fecha_fin = $this->ProcesosEstado->find('first', array(
                 'recursive' => -1,
                 'conditions' => array('ProcesosEstado.flujos_user_id' => $idFlujosUser, 'ProcesosEstado.proceso_id' => $pro['Proceso']['id'], 'ProcesosEstado.estado LIKE' => 'Finalizado'),
-                'fields' => array('ProcesosEstado.created'),
+                'fields' => array('DATE(ProcesosEstado.created) fecha','ProcesosEstado.id'),
                 'order' => array('ProcesosEstado.id DESC')
             ));
             $procesos[$key]['Proceso']['fecha_inicio'] = NULL;
             if (!empty($pro_fecha_ini)) {
-                $procesos[$key]['Proceso']['fecha_inicio'] = $pro_fecha_ini['ProcesosEstado']['created'];
+                $procesos[$key]['Proceso']['idp_ini'] = $pro_fecha_ini['ProcesosEstado']['id'];
+                $procesos[$key]['Proceso']['fecha_inicio'] = $pro_fecha_ini[0]['fecha'];
             }
             $procesos[$key]['Proceso']['fecha_fin'] = NULL;
             if (!empty($pro_fecha_fin)) {
-                $procesos[$key]['Proceso']['fecha_fin'] = $pro_fecha_ini['ProcesosEstado']['created'];
+                $procesos[$key]['Proceso']['idp_fin'] = $pro_fecha_fin['ProcesosEstado']['id'];
+                $procesos[$key]['Proceso']['fecha_fin'] = $pro_fecha_fin[0]['fecha'];
             }
         }
 
@@ -602,7 +658,11 @@ class HojasRutasController extends AppController {
     }
 
     public function eliminar($idHojaRuta = null) {
-        $this->HojasRuta->delete($idHojaRuta, TRUE);
+
+        $this->HojasRuta->id = $idHojaRuta;
+        $d_hojar['fecha_eliminado'] = date('Y-m-d H:i:s');
+        $this->HojasRuta->save($d_hojar);
+        //$this->HojasRuta->delete($idHojaRuta, TRUE);
         $this->Session->setFlash("Se ha eliminado correctamente la hoja-ruta!!", 'msgbueno');
         $this->redirect($this->referer());
     }

@@ -229,7 +229,7 @@ class ProcesosController extends AppController {
         $this->set(compact('procesos', 'modelo', 'idTarea', 'idProceso'));
     }
 
-    public function activacion($idFlujosUser = null, $idProceso = null) {
+    public function activacion($idFlujosUser = null, $idProceso = null,$idProcesoEstado = null) {
         $this->layout = 'ajax';
         if (!empty($this->request->data['ProcesosEstado'])) {
             $this->ProcesosEstado->create();
@@ -237,9 +237,32 @@ class ProcesosController extends AppController {
             $this->Session->setFlash("Se ha registrado el proceso activo!!", 'msgbueno');
             $this->redirect($this->referer());
         }
+        $this->ProcesosEstado->id = $idProcesoEstado;
+        $this->request->data = $this->ProcesosEstado->read();
+
+        if(empty($this->request->data['ProcesosEstado']['created'])){
+            $this->request->data['ProcesosEstado']['created'] = date("Y-m-d H:i:s");
+        }
 
         $this->set(compact('idFlujosUser', 'idProceso'));
     }
+
+    public function activacion_ajax($idFlujosUser = null, $idProceso = null,$idProcesoEstado = null){
+        $this->layout = 'ajax';
+        if (!empty($this->request->data['ProcesosEstado'])) {
+            $this->ProcesosEstado->create();
+            $this->ProcesosEstado->save($this->request->data['ProcesosEstado']);
+        }
+        $this->ProcesosEstado->id = $idProcesoEstado;
+        $this->request->data = $this->ProcesosEstado->read();
+
+        if(empty($this->request->data['ProcesosEstado']['created'])){
+            $this->request->data['ProcesosEstado']['created'] = date("Y-m-d H:i:s");
+        }
+
+        $this->set(compact('idFlujosUser', 'idProceso'));
+    }
+
     public function finaliza_proceso($idFlujosUser = null, $idProceso = null) {
         $this->layout = 'ajax';
         if (!empty($this->request->data['ProcesosEstado'])) {
@@ -248,6 +271,17 @@ class ProcesosController extends AppController {
             $this->Session->setFlash("Se ha registrado el proceso finalizado!!", 'msgbueno');
             $this->redirect($this->referer());
         }
+
+        $this->set(compact('idFlujosUser', 'idProceso'));
+    }
+    public function finaliza_proceso_ajax($idFlujosUser = null, $idProceso = null,$idProcesoEstado = null) {
+        $this->layout = 'ajax';
+        if (!empty($this->request->data['ProcesosEstado'])) {
+            $this->ProcesosEstado->create();
+            $this->ProcesosEstado->save($this->request->data['ProcesosEstado']);
+        }
+        $this->ProcesosEstado->id = $idProcesoEstado;
+        $this->request->data = $this->ProcesosEstado->read();
 
         $this->set(compact('idFlujosUser', 'idProceso'));
     }

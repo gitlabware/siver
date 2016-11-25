@@ -28,7 +28,7 @@
     <div class="section row">
         <div class="col-md-6">
             <label for="firstname" class="field prepend-icon">
-                <?php echo $this->Form->text('username', ['class' => 'gui-input', 'placeholder' => 'Usuario', 'required']); ?>
+                <?php echo $this->Form->text('username', ['class' => 'gui-input', 'placeholder' => 'Usuario']); ?>
                 <label for="email" class="field-icon">
                     <i class="fa fa-user"></i>
                 </label>

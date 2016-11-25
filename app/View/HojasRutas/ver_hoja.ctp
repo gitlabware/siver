@@ -196,16 +196,16 @@
                         </table>
                         <br>
                         <table class="tabla_s">
-                            <tr>
+                            <!--<tr>
                                 <td style=" font-weight: bold; width: 25%;">Número tramite interno:</td>
-                                <td style=" width: 30%; color: #1c94c4;"><?php echo $hojasRuta['HojasRuta']['numero_tramite']; ?></td>
+                                <td style=" width: 30%; color: #1c94c4;"><?php //echo $hojasRuta['HojasRuta']['numero_tramite']; ?></td>
                                 <td style=" font-weight: bold; width: 25%;">Fecha:</td>
-                                <td style=" color: #1c94c4;"><?php echo $hojasRuta['HojasRuta']['fecha']; ?></td>
-                            </tr>
+                                <td style=" color: #1c94c4;"><?php //echo $hojasRuta['HojasRuta']['fecha']; ?></td>
+                            </tr>-->
                             <tr>
-                                <td style=" font-weight: bold;">Código del Caso:</td>
+                                <td style=" font-weight: bold; width: 25%;">Código del Caso:</td>
                                 <td style=" color: #1c94c4;"><?php echo $hojasRuta['HojasRuta']['codigo_caso']; ?></td>
-                                <td style=" font-weight: bold;"></td>
+                                <td style=" font-weight: bold; width: 25%;"></td>
                                 <td style=" color: #1c94c4;"></td>
                             </tr>
                             <tr>
@@ -290,6 +290,7 @@
                                 $procesos = $this->requestAction(array('action' => 'get_procesos', $flu['Flujo']['id'], $flu['FlujosUser']['id']));
                                 $resultados = $this->requestAction(array('action' => 'get_resultados', $flu['FlujosUser']['id']));
                                 $tributos = $this->requestAction(array('action' => 'get_tributos', $flu['FlujosUser']['id']));
+                                $asesores = $this->requestAction(array('action' => 'get_asesores_edit', $flu['FlujosUser']['id']));
                                 ?>
                                 <div class="<?php echo ($nkey == 1) ? 'saltar_pagina' : ''; ?>">
                                     <table class="tabla_g">
@@ -301,12 +302,20 @@
                                         <tr>
                                             <td style=" width: 25%;"><b>Fecha de inicio:</b></td>
                                             <td style=" width: 25%;"><?php echo$flu['FlujosUser']['fecha_inicio']; ?></td>
-                                            <td style=" width: 25%;"><b>Fecha de Fin:</b></td>
-                                            <td><?php echo$flu['FlujosUser']['fecha_fin']; ?></td>
+                                            <td style=" width: 25%;"><b>Fecha de Fin:</b> <?php echo $flu['FlujosUser']['fecha_fin']; ?></td>
+                                            <td><b>Fecha de Notificacion:</b> <?php echo $flu['FlujosUser']['fecha_notificacion']; ?></td>
                                         </tr>
                                         <tr>
                                             <td><b>Profesional asignado:</b></td>
-                                            <td><?php echo$flu['Asesor']['nombre_completo']; ?></td>
+                                            <td>
+                                                <?php
+                                                foreach ($asesores as $asesore)
+                                                {
+                                                    echo "|".$asesore['Asesor']['nombre_completo']."|";
+                                                }
+                                                    ?>
+                                                <?php echo$flu['Asesor']['nombre_completo']; ?>
+                                            </td>
                                             <td><b>Número de expediente:</b></td>
                                             <td><?php echo$flu['FlujosUser']['expediente']; ?></td>
                                         </tr>
@@ -337,7 +346,7 @@
 
                                                             <tr>
                                                                 <td><?php echo $tri['Tributo']['nombre']; ?></td>
-                                                                <td><?php echo $tri['FlujosUsersTributo']['estado']; ?></td>
+                                                                <td><?php echo $tri['FlujosUsersTributo']['descripcion']; ?></td>
                                                                 <td><?php echo $tri['FlujosUsersTributo']['periodo_fiscal']; ?></td>
                                                                 <td><?php echo $tri['FlujosUsersTributo']['deuda_tributaria']; ?></td>
                                                             </tr>

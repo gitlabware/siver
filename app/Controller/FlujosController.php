@@ -6,7 +6,9 @@ App::uses('File', 'Utility');
 class FlujosController extends AppController {
 
     public $layout = 'svergara';
-    public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione', 'ProcesosEstado', 'Adjunto', 'Cliente', 'Regione', 'Tarea', 'Alerta', 'Comentario', 'Documento', 'Resultado');
+    public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione',
+        'ProcesosEstado', 'Adjunto', 'Cliente', 'Regione', 'Tarea', 'Alerta',
+        'Comentario', 'Documento', 'Resultado','FlujosUsersAsesore');
 
     public function prueba($idFlujo = null) {
         if (!empty($_POST)) {
@@ -28,8 +30,11 @@ class FlujosController extends AppController {
             'order' => 'modified ASC'
         ));
         $this->FlujosUser->virtualFields = array(
+            'asesores' => "(SELECT GROUP_CONCAT(users.nombre_completo SEPARATOR ', ') FROM flujos_users_asesores LEFT JOIN users ON users.id = flujos_users_asesores.asesor_id WHERE flujos_users_asesores.flujos_user_id = FlujosUser.id GROUP BY flujos_users_asesores.flujos_user_id)",
             'estado_color' => "(IF(FlujosUser.estado = 'Finalizado','success',''))"
         );
+
+
 
         $flujos_c = $this->FlujosUser->find('all', array(
             'recursive' => 0,
@@ -43,8 +48,9 @@ class FlujosController extends AppController {
                     ),
                 )
             ),
-            'fields' => array('Flujo.*', 'Asesor.*', 'FlujosUser.*', 'Cliente.nombre'),
-            'order' => array('FlujosUser.created DESC')
+            'fields' => array('Flujo.*', 'FlujosUser.*', 'Cliente.nombre'),
+            'order' => array('FlujosUser.created DESC'),
+            'conditions' => array('ISNULL(HojasRuta.fecha_eliminado)' => true)
         ));
         //debug($flujos_c);exit;
         $this->set(compact('flujos', 'flujos_c'));
@@ -57,11 +63,11 @@ class FlujosController extends AppController {
             'recursive' => -1,
             'order' => 'modified ASC'
         ));
-        $this->FlujosUser->virtualFields = array(
+        $this->FlujosUsersAsesore->virtualFields = array(
             'estado_color' => "(IF(FlujosUser.estado = 'Finalizado','success',''))"
         );
 
-        $flujos_c = $this->FlujosUser->find('all', array(
+        /*$flujos_c = $this->FlujosUser->find('all', array(
             'recursive' => 0,
             'joins' => array(
                 array(
@@ -76,7 +82,43 @@ class FlujosController extends AppController {
             'conditions' => array('FlujosUser.asesor_id' => $idUser),
             'fields' => array('Flujo.*', 'FlujosUser.*', 'Cliente.nombre', 'HojasRuta.codigo_caso'),
             'order' => array('FlujosUser.created DESC')
+        ));*/
+
+
+        $flujos_c = $this->FlujosUsersAsesore->find('all',array(
+            'recursive' => 0,
+            'joins' => array(
+                array(
+                    'table' => 'hojas_rutas',
+                    'alias' => 'HojasRuta',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'HojasRuta.id = FlujosUser.hojas_ruta_id',
+                    ),
+                ),
+                array(
+                    'table' => 'clientes',
+                    'alias' => 'Cliente',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Cliente.id = HojasRuta.cliente_id',
+                    ),
+                ),
+                array(
+                    'table' => 'flujos',
+                    'alias' => 'Flujo',
+                    'type' => 'LEFT',
+                    'conditions' => array(
+                        'Flujo.id = FlujosUser.flujo_id',
+                    ),
+                )
+            ),
+            'conditions' => array('FlujosUsersAsesore.asesor_id' => $idUser),
+            'fields' => array('Flujo.*', 'FlujosUser.*', 'Cliente.nombre', 'HojasRuta.codigo_caso','FlujosUsersAsesore.*'),
+            'order' => array('FlujosUser.created DESC')
         ));
+
+        //debug($idUser);
         //debug($flujos_c);exit;
         $this->set(compact('flujos', 'flujos_c'));
     }
