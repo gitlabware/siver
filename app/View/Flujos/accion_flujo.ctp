@@ -1,6 +1,6 @@
-<script>
+<!--<script>
     $('body').addClass('sb-r-o');
-</script>
+</script>-->
 <!-- Start: Topbar-Dropdown -->
 <style>
     .sorted_table tr {
@@ -122,7 +122,9 @@
                                                             <button type="button" class="btn btn-primary pmover" title="Mover">
                                                                 <i class="glyphicon glyphicon-move"></i>
                                                             </button>
+
                                                             <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Procesos','action' => 'eliminar', $pro['Proceso']['id']), array('class' => 'btn btn-danger', 'confirm' => 'Esta seguro de eliminar el proceso??','escape' => false)) ?>
+
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -147,6 +149,7 @@
                         <table class="table dataTable tabla-dato table-bordered">
                             <thead>
                                 <tr class="bg-light">
+                                    <th>HojaR</th>
                                     <th>Exp.</th>
                                     <th>Cliente</th>
                                     <th>Usuario</th>
@@ -157,6 +160,12 @@
                             <tbody>
                                 <?php foreach ($flujos_c as $flu): ?>
                                     <tr class="<?php echo $flu['FlujosUser']['estado_color']; ?>">
+                                        <td>
+                                            <a href="<?php echo $this->Html->url(array('controller' => 'HojasRutas','action' => 'ver_hoja',$flu['HojasRuta']['id']));?>">
+                                                <?php echo $flu['HojasRuta']['numero_expediente']; ?>
+                                            </a>
+
+                                        </td>
                                         <td><?php echo $flu['FlujosUser']['expediente']; ?></td>
                                         <td><?php echo $flu['Cliente']['nombre']; ?></td>
                                         <td><?php echo $flu['User']['nombre_completo']; ?></td>
@@ -166,7 +175,7 @@
 
                                                 <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
                                                 <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>', true);" class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
-                                                <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
+                                                <?php //echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
                                             </div>
                                         </td>
                                     </tr>
@@ -179,7 +188,7 @@
         <?php endif; ?>
     </div>
 </section>
-<?php $this->start('fueracontent'); ?>
+<?php /*$this->start('fueracontent'); */?><!--
 <aside id="sidebar_right" class="nano affix">
     <div class="sidebar-right-content nano-content p15">
         <div data-offset-top="200">
@@ -193,13 +202,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($flujos as $flu): ?>
+                                <?php /*foreach ($flujos as $flu): */?>
                                     <tr>
-                                        <td class="primary text-center" onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'accion_flujo', $flu['Flujo']['id'])); ?>';" style="font-size: 16px; cursor: pointer;">
-                                            <b><?= $flu['Flujo']['nombre'] ?></b>
+                                        <td class="primary text-center" onclick="window.location = '<?php /*echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'accion_flujo', $flu['Flujo']['id'])); */?>';" style="font-size: 16px; cursor: pointer;">
+                                            <b><?/*= $flu['Flujo']['nombre'] */?></b>
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
+                                <?php /*endforeach; */?>
                             </tbody>
                         </table>
                     </div>
@@ -207,9 +216,8 @@
             </div>
         </div>
     </div>
-
 </aside>
-<?php $this->end(); ?>
+--><?php /*$this->end(); */?>
 
 <script src="<?php echo $this->request->webroot; ?>js/jquery-sortable.js">
 </script>

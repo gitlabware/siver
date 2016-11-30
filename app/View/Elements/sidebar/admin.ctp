@@ -12,7 +12,73 @@
                     <span class="sidebar-title">Principal</span>
                 </a>
             </li>
-            
+            <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Clientes', 'action' => 'index')); ?>">
+                    <span class="fa fa-suitcase"></span>
+                    <span class="sidebar-title">CLIENTES</span>
+                </a>
+            </li>
+            <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'HojasRutas', 'action' => 'index')); ?>">
+                    <span class="fa fa-copy"></span>
+                    <span class="sidebar-title">HOJAS-RUTAS</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="javascript:" class="accordion-toggle">
+                    <span class="fa fa-users"></span>
+                    <span class="sidebar-title">Usuarios</span>
+                    <span class="caret"></span>
+                </a>
+                <ul class="nav sub-nav">
+                    <li>
+                        <a href="<?php echo $this->Html->url(array('controller' => 'Users', 'action' => 'index')); ?>">
+                            Listado de Usuarios</a>
+                    </li>
+                    <li>
+                        <a href="javascript:"
+                           onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Users', 'action' => 'usuario')); ?>');">
+                            Nuevo Usuario</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'index')); ?>" class=" menu-open">
+                    <span class="fa fa-square-o"></span>
+                    <span class="sidebar-title">RECURSOS</span>
+                    
+                </a>
+                <ul class="nav sub-nav">
+                    <?php
+                    $categorias = $this->requestAction(array('controller' => 'Flujos', 'action' => 'get_menu_recursos'));
+                    ?>
+
+                    <?php foreach ($categorias as $categoria): ?>
+
+                        <li>
+                            <a class="accordion-toggle menu-open" href="#">
+                                <span class="fa fa-gears"></span> <?= $categoria['Flujo']['categoria'] ?>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="nav sub-nav">
+                                <?php foreach ($categoria['flujos'] as $idFlujo => $flujo): ?>
+                                    <li>
+                                        <a href="<?= $this->Html->url(array('controller' => 'Flujos','action' => 'accion_flujo',$idFlujo))?>" > <?= $flujo ?> </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </li>
+
+            <li>
+                <a href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'index')); ?>">
+                    <span class="fa fa-tasks"></span>
+                    <span class="sidebar-title">TAREAS</span>
+                </a>
+            </li>
             <li>
                 <a href="<?php echo $this->Html->url(array('controller' => 'Adjuntos', 'action' => 'index')); ?>">
                     <span class="fa fa-files-o"></span>
@@ -23,47 +89,6 @@
                 <a href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'calendario')); ?>">
                     <span class="fa fa-calendar"></span>
                     <span class="sidebar-title">Calendario</span>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:" class="accordion-toggle">
-                    <span class="fa fa-users"></span>
-                    <span class="sidebar-title">Usuarios</span>
-                    <span class="caret"></span>
-                </a>
-                <ul class="nav sub-nav">
-                    <li>
-                        <a href="<?php echo $this->Html->url(array('controller' => 'Users','action' => 'index')); ?>">
-                            Listado de Usuarios</a>
-                    </li>
-                    <li>
-                        <a href="javascript:" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Users', 'action' => 'usuario')); ?>');">
-                            Nuevo Usuario</a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'index')); ?>">
-                    <span class="fa fa-square-o"></span>
-                    <span class="sidebar-title">RECURSOS</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo $this->Html->url(array('controller' => 'HojasRutas', 'action' => 'index')); ?>">
-                    <span class="fa fa-copy"></span>
-                    <span class="sidebar-title">HOJAS-RUTAS</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo $this->Html->url(array('controller' => 'Clientes', 'action' => 'index')); ?>">
-                    <span class="fa fa-suitcase"></span>
-                    <span class="sidebar-title">CLIENTES</span>
-                </a>
-            </li>
-            <li>
-                <a href="<?php echo $this->Html->url(array('controller' => 'Tareas', 'action' => 'index')); ?>">
-                    <span class="fa fa-tasks"></span>
-                    <span class="sidebar-title">TAREAS</span>
                 </a>
             </li>
             <li>

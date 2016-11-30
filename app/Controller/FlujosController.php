@@ -8,7 +8,7 @@ class FlujosController extends AppController {
     public $layout = 'svergara';
     public $uses = array('Flujo', 'Proceso', 'FlujosUser', 'ProcesosCondicione',
         'ProcesosEstado', 'Adjunto', 'Cliente', 'Regione', 'Tarea', 'Alerta',
-        'Comentario', 'Documento', 'Resultado','FlujosUsersAsesore');
+        'Comentario', 'Documento', 'Resultado','FlujosUsersAsesore','User');
 
     public function prueba($idFlujo = null) {
         if (!empty($_POST)) {
@@ -25,9 +25,19 @@ class FlujosController extends AppController {
 
     public function index() {
 
+        if (!empty($_POST)) {
+            foreach ($_POST['flujos'] as $key => $pro) {
+                $this->Flujo->id = $key;
+                $datos_f['orden'] = $pro;
+                $this->Flujo->save($datos_f);
+            }
+            //debug($_POST['flujos']);
+            exit;
+        }
+
         $flujos = $this->Flujo->find('all', array(
             'recursive' => -1,
-            'order' => 'modified ASC'
+            'order' => 'orden'
         ));
         $this->FlujosUser->virtualFields = array(
             'asesores' => "(SELECT GROUP_CONCAT(users.nombre_completo SEPARATOR ', ') FROM flujos_users_asesores LEFT JOIN users ON users.id = flujos_users_asesores.asesor_id WHERE flujos_users_asesores.flujos_user_id = FlujosUser.id GROUP BY flujos_users_asesores.flujos_user_id)",
@@ -53,7 +63,10 @@ class FlujosController extends AppController {
             'conditions' => array('ISNULL(HojasRuta.fecha_eliminado)' => true)
         ));
         //debug($flujos_c);exit;
-        $this->set(compact('flujos', 'flujos_c'));
+
+
+
+        $this->set(compact('flujos'));
     }
 
     public function index2() {
@@ -182,8 +195,37 @@ class FlujosController extends AppController {
             'recursive' => -1,
             'conditions' => array('Resultado.flujo_id' => $idFlujo)
         ));
+        $categorias = $this->Flujo->find('list',array(
+            'recursive' => -1,
+            'fields' => array('Flujo.categoria','Flujo.categoria'),
+            'group' => array('Flujo.categoria'),
+            'conditions' => array('ISNULL(Flujo.categoria)' => false)
+        ));
+        /*debug($categorias);
+        exit;*/
+        $this->set(compact('resultados','categorias'));
+    }
 
-        $this->set(compact('resultados'));
+    public function get_menu_recursos(){
+        $categorias = $this->Flujo->find('all',array(
+            'recursive' => -1,
+            'fields' => array('Flujo.categoria','Flujo.categoria'),
+            'group' => array('Flujo.categoria'),
+            'conditions' => array('ISNULL(Flujo.categoria)' => false),
+            'order' => array('Flujo.orden ASC')
+        ));
+        foreach ($categorias as $key => $categoria){
+
+            $categorias[$key]['flujos'] = $this->Flujo->find('list',array(
+                'recurisve' => -1,
+                'conditions' => array('Flujo.categoria LIKE' => $categoria['Flujo']['categoria']),
+                'fields' => array('Flujo.id','Flujo.nombre'),
+                'order' => array('Flujo.orden ASC')
+            ));
+        }
+        /*debug($categorias);
+        exit;*/
+        return $categorias;
     }
 
     public function accion_flujo($idFlujo = null) {
@@ -226,9 +268,11 @@ class FlujosController extends AppController {
                 )
             ),
             'conditions' => array('FlujosUser.flujo_id' => $idFlujo),
-            'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*', 'Cliente.nombre'),
+            'fields' => array('Flujo.*', 'User.*', 'FlujosUser.*', 'Cliente.nombre','HojasRuta.numero_expediente','HojasRuta.id'),
             'order' => array('FlujosUser.created DESC')
         ));
+        /*debug($flujos_c);
+        exit;*/
         $flujos = $this->Flujo->find('all', array(
             'recursive' => -1,
             'order' => 'modified DESC'
@@ -246,6 +290,8 @@ class FlujosController extends AppController {
     public function iniciar_flujo($idFlujo = null, $idFlujosUser = null) {
         $this->layout = 'ajax';
         if (!empty($this->request->data['FlujosUser'])) {
+            /*debug($this->request->data);
+            exit;*/
 
             $this->FlujosUser->create();
             $d_flujo = $this->request->data['FlujosUser'];
@@ -323,7 +369,12 @@ class FlujosController extends AppController {
             'conditions' => array('Proceso.flujo_id' => $idFlujo),
             'fields' => array('Proceso.id', 'Proceso.nombre')
         ));
-        $this->set(compact('clientes', 'regiones', 'procesos'));
+        $usuarios = $this->User->find('list', arraY(
+            'recursive' => -1,
+            'conditions' => array('User.role' => 'Usuario'),
+            'fields' => array('User.id', 'User.nombre_completo')
+        ));
+        $this->set(compact('clientes', 'regiones', 'procesos','idFlujosUser','usuarios'));
     }
 
     public function enflujo($idFlujoUser = null) {

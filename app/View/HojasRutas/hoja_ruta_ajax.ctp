@@ -1,5 +1,5 @@
 <div class="panel heading-border panel-primary">
-    <?php echo $this->Form->create('HojasRuta', array('class' => 'form-validacion', 'id' => 'f-add', 'action' => 'hoja_ruta')); ?>
+    <?php echo $this->Form->create('HojasRuta', array('class' => 'form-validacion', 'id' => 'f-add', 'action' => "hoja_ruta/$idCliente/$idHojaruta",)); ?>
     <div class="panel-body bg-light">
         <div class="section-divider mb40 ">
             <span>Datos del cliente</span>

@@ -1,7 +1,7 @@
 
 <div class="panel-heading">
     <span class="panel-title">
-        <i class="fa fa-square"></i>Flujo</span>
+        <i class="fa fa-square"></i>Recurso</span>
 </div>
 <!-- end .panel-heading section -->
 
@@ -14,6 +14,21 @@
                 <label for="email" class="field-icon">
                     <i class="fa fa-edit"></i>
                 </label>
+            </label>
+        </div>
+    </div>
+    <div class="section row">
+        <div class="col-md-12">
+            <label for="firstname" class="field prepend-icon">
+                <?php echo  $this->Form->input('categoria',array('class' => 'gui-input','autocomplete' => 'off','list' => 'categoriase','type' => 'text','label' => false,'required'));?>
+<!--                <input list="categoriase" name="browser" class="gui-input" autocomplete="off">-->
+                <datalist id="categoriase">
+                    <?php foreach ($categorias as $categoria):?>
+                    <option value="<?= $categoria?>">
+                    <?php endforeach;?>
+                </datalist>
+                <?php //echo $this->Form->text('categoria', ['class' => 'gui-input', 'required']); ?>
+
             </label>
         </div>
     </div>

@@ -202,9 +202,11 @@ class HojasRutasController extends AppController {
                 }
             }
             //-------------------------- TERMINA REGISTRO DE RECURSOS --------------------------
-
+            /*debug($idCliente);
+            debug($idHojaruta);
+            exit;*/
             $this->Session->setFlash("Se ha registrado correctamente la hoja de ruta!!", 'msgbueno');
-            $this->redirect($this->referer());
+            $this->redirect(array('action' => 'hoja_ruta',$idCliente,$idHojaruta));
         }
 
         $this->set(compact('idCliente','idHojaruta'));
@@ -308,7 +310,7 @@ class HojasRutasController extends AppController {
             'order' => array('Regione.nombre ASC')
         ));
 
-        $this->set(compact('requisitos', 'cliente', 'requisitos_ad', 'flujos', 'usuarios', 'regiones'));
+        $this->set(compact('requisitos', 'cliente', 'requisitos_ad', 'flujos', 'usuarios', 'regiones','idCliente','idHojaruta'));
     }
 
     public function get_asesores_edit($idFlujoUser = null){
@@ -395,7 +397,8 @@ class HojasRutasController extends AppController {
     public function get_procesos($idFlujo = null, $idFlujosUser = null) {
         $procesos = $this->Proceso->find('all', array(
             'recursive' => -1,
-            'conditions' => array('Proceso.flujo_id' => $idFlujo, 'Proceso.hoja_ruta' => 1)
+            'conditions' => array('Proceso.flujo_id' => $idFlujo, 'Proceso.hoja_ruta' => 1),
+            'order' => array('Proceso.orden ASC')
         ));
         foreach ($procesos as $key => $pro) {
             $pro_fecha_ini = $this->ProcesosEstado->find('first', array(

@@ -37,7 +37,7 @@ class UsersController extends AppController
         } else {
             $this->Session->setFlash($valida, 'msgerror');
         }
-        $this->redirect(array('action' => 'index'));
+        //$this->redirect(array('action' => 'index'));
         $this->redirect($this->referer());
     }
 

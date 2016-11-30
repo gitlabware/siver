@@ -1,7 +1,31 @@
 <script>
-    $('body').addClass('sb-r-o');
+    //$('body').addClass('sb-r-o');
 </script>
 <!-- Start: Topbar-Dropdown -->
+<style>
+    .sorted_table tr {
+    //cursor: pointer;
+    }
+    /* line 96, /Users/jonasvonandrian/jquery-sortable/source/css/application.css.sass */
+    .sorted_table tr.placeholder {
+        display: block;
+        background: #2a74d6;
+        position: relative;
+        margin: 0;
+        padding: 0;
+        border: none; }
+    /* line 103, /Users/jonasvonandrian/jquery-sortable/source/css/application.css.sass */
+    .sorted_table tr.placeholder:before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-left-color: #2a74d6;
+        margin-top: -5px;
+        left: -5px;
+        border-right: none; }
+</style>
 <div id="topbar-dropmenu">
     <div class="topbar-menu row">
         <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
@@ -9,7 +33,7 @@
                 <a href="javascript:" class="metro-tile" onclick="cierra_elmenu();
                     cargarmodal('<?php echo $this->Html->url(array('action' => 'flujo')); ?>');">
                     <span class="metro-icon glyphicon glyphicon-plus"></span>
-                    <p class="metro-title">Nuevo Flujo</p>
+                    <p class="metro-title">Nuevo Recurso</p>
                 </a>
             </div>
         <?php endif; ?>
@@ -88,65 +112,56 @@
             <?php if (!empty($flujos)): ?>
                 <div class="panel panel-success">
                     <div class="panel-heading">
-                        <span class="fa fa-star-o mr5"></span> Recursos Creados
+                        <span class="fa fa-star-o mr5"></span> Lista de Recursos
                     </div>
                     <div class="panel-body pn">
                         <div class="table-responsive">
-                            <table class="table dataTable table-bordered" id="tabla-filtros">
+                            <table class="table dataTable table-bordered sorted_table" style="width: 100%;" cellspacing="0" width="100%">
                                 <thead>
                                 <tr class="bg-light">
-                                    <td>Exp.</td>
-                                    <td>Cliente</td>
-                                    <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                        <td>Asesor</td>
-                                    <?php endif; ?>
-                                    <td>Creado</td>
-                                    <td>Recurso</td>
-                                    <td></td>
-                                </tr>
-                                <tr class="bg-light">
-                                    <th>Exp.</th>
-                                    <th>Cliente</th>
-                                    <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                        <th>Asesor</th>
-                                    <?php endif; ?>
-                                    <th>Creado</th>
-                                    <th>Recurso</th>
                                     <th></th>
+                                    <th class="text-center">Recurso</th>
+                                    <th class="text-center">Categoria</th>
+                                    <th class="text-center">Hoja R.</th>
+                                    <th class="text-center">Trib. Det</th>
+                                    <th>Accion </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($flujos_c as $flu): ?>
-                                    <?php
-                                    $color_r = '';
-                                    if ($flu['FlujosUser']['estado'] == 'Finalizado') {
-                                        $color_r = 'success';
-                                    } elseif (!empty($flu['FlujosUser']['asesores'])) {
-                                        $color_r = 'info';
-                                    }
-                                    ?>
-                                    <tr class="<?php echo $color_r; ?>">
-                                        <td><?php echo $flu['FlujosUser']['expediente'] ?></td>
-                                        <td><?php echo $flu['Cliente']['nombre']; ?></td>
-                                        <?php if ($this->Session->read('Auth.User.role') == 'Administrador'): ?>
-                                            <td>
+                                <?php foreach ($flujos as $key => $flujo): ?>
+                                    <tr class="blockquote-info" id="item-<?= $key + 1 ?>" data-id="<?php echo $flujo['Flujo']['id'] ?>">
+                                        <td><?php echo ($key + 1) ?></td>
+                                        <td><?php echo $flujo['Flujo']['nombre'] ?></td>
+                                        <td><?php echo $flujo['Flujo']['categoria'] ?></td>
+                                        <td>
+                                            <?php
+                                            if($flujo['Flujo']['hoja_ruta'] == 1){
+                                                echo "SI";
+                                            }else{
+                                                echo "NO";
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            if($flujo['Flujo']['tributos_determinados'] == 1){
+                                                echo "SI";
+                                            }else{
+                                                echo "NO";
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos','action' => 'accion_flujo', $flujo['Flujo']['id']), array('class' => 'btn btn-success btn-xs','escape' => false)) ?>
 
-                                                <?php echo $flu['FlujosUser']['asesores']; ?>
-                                            </td>
-                                        <?php endif; ?>
-                                        <td><?php echo $flu['FlujosUser']['created']; ?></td>
-                                        <td><?php echo $flu['Flujo']['nombre']; ?></td>
-                                        <td class="text-center" style="font-size: 16px;">
-                                            <div class="btn-group" style="width: 120px;">
+                                                <button type="button" class="btn btn-warning btn-xs" title="Editar Recurso" onclick="cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'flujo', $flujo['Flujo']['id'])); ?>');">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary pmover btn-xs" title="Mover">
+                                                    <i class="glyphicon glyphicon-move"></i>
+                                                </button>
+                                                <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos','action' => 'eliminar', $flujo['Flujo']['id']), array('class' => 'btn btn-danger btn-xs', 'confirm' => 'Esta seguro de eliminar el Recurso??','escape' => false)) ?>
 
-                                                <?php echo $this->Html->link('<i class="fa fa-eye"></i>', array('controller' => 'Flujos', 'action' => 'enflujo', $flu['FlujosUser']['id']), array('class' => 'btn btn-success', 'escape' => false, 'title' => 'VER FLUJO')); ?>
-                                                <a href="javascript:"
-                                                   onclick="cargarmodal('<?php echo $this->Html->url(array('action' => 'iniciar_flujo', $flu['FlujosUser']['flujo_id'], $flu['FlujosUser']['id'])); ?>', true);"
-                                                   class="btn btn-warning" title="Editar"><i class="fa fa-edit"></i></a>
-
-                                                <?php //echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'Flujos', 'action' => 'eliminar_e_flujo', $flu['FlujosUser']['id']), array('confirm' => 'Esta seguro de eliminar el flujo??', 'class' => 'btn btn-danger', 'escape' => false, 'title' => 'ELIMINAR')); ?>
-
-                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -161,7 +176,7 @@
 </section>
 
 <?php $this->start('fueracontent'); ?>
-<aside id="sidebar_right" class="nano affix">
+<!--<aside id="sidebar_right" class="nano affix">
     <div class="sidebar-right-content nano-content p15">
         <div data-offset-top="200">
             <div class="panel">
@@ -174,7 +189,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <?php foreach ($flujos as $flu): ?>
+                            <?php /*foreach ($flujos as $flu): ?>
                                 <tr>
                                     <td class="primary text-center"
                                         onclick="window.location = '<?php echo $this->Html->url(array('controller' => 'Flujos', 'action' => 'accion_flujo', $flu['Flujo']['id'])); ?>';"
@@ -182,7 +197,7 @@
                                         <b><?= $flu['Flujo']['nombre'] ?></b>
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
+                            <?php endforeach;*/ ?>
                             </tbody>
                         </table>
                     </div>
@@ -191,7 +206,7 @@
         </div>
     </div>
 
-</aside>
+</aside>-->
 <?php $this->end(); ?>
 
 
@@ -245,4 +260,58 @@ echo $this->Html->script(array(
      aoColumns: filtro_c
      });*/
 </script>
+
+
 <?php $this->end(); ?>
+
+
+<script src="<?php echo $this->request->webroot; ?>js/jquery-sortable.js">
+</script>
+<script>
+    $('.sorted_table').sortable({
+        containerSelector: 'table',
+        itemPath: '> tbody',
+        itemSelector: 'tr',
+        placeholder: '<tr class="placeholder"/>',
+        //group: 'no-drop',
+        handle: 'button.pmover',
+        onDrop: function ($item, container, _super, event) {
+            $item.removeClass(container.group.options.draggedClass).removeAttr("style");
+            //$("body").removeClass(container.group.options.bodyClass);
+            revisa_tabla();
+        }
+    });
+    function revisa_tabla() {
+        var postData = "";
+        var cont = 0;
+        $('.sorted_table tbody tr').each(function (ey, eva) {
+            cont++;
+            postData += " flujos[" + $(eva).attr('data-id') + ']=' + cont + '&';
+        });
+
+        var formURL = '<?php echo $this->Html->url(array('action' => 'index')); ?>';
+        $.ajax(
+            {
+                url: formURL,
+                type: "POST",
+                data: postData,
+                /*beforeSend:function (XMLHttpRequest) {
+                 alert("antes de enviar");
+                 },
+                 complete:function (XMLHttpRequest, textStatus) {
+                 alert('despues de enviar');
+                 },*/
+                success: function (data, textStatus, jqXHR)
+                {
+                    //data: return data from server
+                    //$("#parte").html(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    //if fails
+                    alert("error");
+                }
+            });
+    }
+    revisa_tabla();
+</script>
