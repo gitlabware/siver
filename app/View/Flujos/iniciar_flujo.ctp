@@ -167,7 +167,8 @@
         <div class="col-md-4">
             <?php foreach ($asesores as $ka_num => $asesore): ?>
                 <div class="section">
-                    <?php echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'HojasRutas', 'action' => 'elimina_asesor_fu', $asesore['FlujosUsersAsesore']['id']), array('class' => 'btn btn-danger dark', 'escape' => false, 'title' => 'Eliminar Asesor', 'confirm' => 'Esta seguro de eliminar el asesor??')); ?>
+                    <a href="javascript:" class="btn btn-danger dark" title="asesor" onclick="elimina_ase(<?= $asesore['FlujosUsersAsesore']['id']?>)"> <i class="fa fa-remove"></i></a>
+<!--                    --><?php //echo $this->Html->link('<i class="fa fa-remove"></i>', array('controller' => 'HojasRutas', 'action' => 'elimina_asesor_fu', $asesore['FlujosUsersAsesore']['id']), array('class' => 'btn btn-danger dark', 'escape' => false, 'title' => 'Eliminar Asesor', 'confirm' => 'Esta seguro de eliminar el asesor??')); ?>
                 </div>
             <?php endforeach; ?>
             <div class="section">
@@ -234,11 +235,8 @@ echo $this->Html->script([
             if($(elem).val() != ''){
                 var fecha_dt = $(elem).val().split("/");
                 $(elem).val(fecha_dt[2]+'-'+fecha_dt[1]+'-'+fecha_dt[0]);
-                //console.log();
             }
-//            console.log(elem);
         });
-        //e.preventDefault();
     });
 </script>
 <script>
@@ -256,6 +254,18 @@ echo $this->Html->script([
         if (n_asesores != 1) {
             $('#asesor-' + key_f + '-' + (n_asesores)).remove();
             $('#but-as-' + key_f).attr('data-num', (n_asesores - 1));
+        }
+    }
+
+    function elimina_ase(idAsesor){
+        if(confirm("Esta seguro de eliminar el asesor??")){
+            $.ajax({
+                type: 'GET',
+                url: '<?= $this->Html->url(array('controller' => 'Flujos','action' => 'elimina_asesor_fu'));?>/'+idAsesor,
+                success: function (data) {
+                    cargarmodal('<?php echo $this->Html->url(array('controller' => 'Flujos','action' => 'iniciar_flujo',$idFlujosUser))?>',true);
+                }
+            });
         }
     }
 </script>

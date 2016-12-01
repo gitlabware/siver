@@ -231,7 +231,7 @@
                     <div class="section">
                         <label for="datepicker1" class="field prepend-icon">
                             <?php echo $this->Form->hidden("FlujosUser.$key_f.flujo_id", array('value' => $flu['Flujo']['id'])); ?>
-                            <?php echo $this->Form->text("FlujosUser.$key_f.fecha_inicio", array('class' => 'form-control ddatepicker1', 'placeholder' => 'Fecha Inicio')); ?>
+                            <?php echo $this->Form->text("FlujosUser.$key_f.fecha_inicio", array('class' => 'form-control ddatepicker1', 'placeholder' => 'Fecha asignacion')); ?>
                             <label class="field-icon">
                                 <i class="fa fa-calendar-o"></i>
                             </label>
@@ -241,7 +241,7 @@
                 <div class="col-md-6">
                     <div class="section">
                         <label for="datepicker1" class="field prepend-icon">
-                            <?php echo $this->Form->text("FlujosUser.$key_f.fecha_fin", array('class' => 'form-control ddatepicker1', 'placeholder' => 'Fecha Fin')); ?>
+                            <?php echo $this->Form->text("FlujosUser.$key_f.fecha_fin", array('class' => 'form-control ddatepicker1', 'placeholder' => 'Fecha impugnado')); ?>
                             <label class="field-icon">
                                 <i class="fa fa-calendar-o"></i>
                             </label>
@@ -341,7 +341,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label class="field">
-                                        <?php echo $this->Form->text("FlujosUser.$key_f.tributos.$key.deuda_tributaria", array('class' => 'gui-input', 'placeholder' => 'Administracion Tributaria')); ?>
+                                        <?php echo $this->Form->text("FlujosUser.$key_f.tributos.$key.deuda_tributaria", array('class' => 'gui-input', 'placeholder' => 'Deuda Tributos (UFV)')); ?>
                                     </label>
                                 </div>
                             </div>
@@ -443,7 +443,30 @@
 </div>
 
 <script>
-    $('.ddatepicker1').datetimepicker({
+    /*$('.ddatepicker1').datetimepicker({
         format: 'YYYY-MM-DD'
+    });*/
+
+    $('.ddatepicker1').each(function(e,elem){
+        if($(elem).val() != ''){
+            var fecha_dt = $(elem).val().split("-");
+            $(elem).val(fecha_dt[2]+'/'+fecha_dt[1]+'/'+fecha_dt[0]);
+        }
+    });
+    $('.ddatepicker1').datetimepicker({
+        format: 'DD/MM/YYYY',
+        pickTime: false
+    });
+
+
+    $('#f-add').submit(function(e){
+        $('.ddatepicker1').each(function(e,elem){
+            /*console.log(elem);
+            alert("dsa");*/
+            if($(elem).val() != ''){
+                var fecha_dt = $(elem).val().split("/");
+                $(elem).val(fecha_dt[2]+'-'+fecha_dt[1]+'-'+fecha_dt[0]);
+            }
+        });
     });
 </script>

@@ -153,7 +153,9 @@
                                     <th>Exp.</th>
                                     <th>Cliente</th>
                                     <th>Usuario</th>
-                                    <th>Creado</th>
+                                    <th>F.asignacion</th>
+                                    <th>F.Impugnado</th>
+                                    <th>F.Notific</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -169,7 +171,9 @@
                                         <td><?php echo $flu['FlujosUser']['expediente']; ?></td>
                                         <td><?php echo $flu['Cliente']['nombre']; ?></td>
                                         <td><?php echo $flu['User']['nombre_completo']; ?></td>
-                                        <td><?php echo $flu['FlujosUser']['created']; ?></td>
+                                        <td><?php echo $flu['FlujosUser']['fecha_inicio']; ?></td>
+                                        <td><?php echo $flu['FlujosUser']['fecha_fin']; ?></td>
+                                        <td><?php echo $flu['FlujosUser']['fecha_notificacion']; ?></td>
                                         <td class="text-center" style="font-size: 16px;">
                                             <div class="btn-group" style="width: 120px;">
 

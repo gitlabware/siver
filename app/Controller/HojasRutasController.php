@@ -37,7 +37,7 @@ class HojasRutasController extends AppController {
         $this->set(compact('hojas'));
     }
 
-    public function hoja_ruta($idCliente = null, $idHojaruta = null) {
+    public function hoja_ruta($categoria = null,$idCliente = null, $idHojaruta = null) {
 
         if (!empty($this->request->data['HojasRuta'])) {
             $idUser = $this->Session->read('Auth.User.id');
@@ -209,11 +209,11 @@ class HojasRutasController extends AppController {
             $this->redirect(array('action' => 'hoja_ruta',$idCliente,$idHojaruta));
         }
 
-        $this->set(compact('idCliente','idHojaruta'));
+        $this->set(compact('idCliente','idHojaruta','categoria'));
 
     }
 
-    public function hoja_ruta_ajax($idCliente = null, $idHojaruta = null){
+    public function hoja_ruta_ajax($categoria = null,$idCliente = null, $idHojaruta = null){
         $this->layout = 'ajax';
         $this->HojasRuta->id = $idHojaruta;
         $this->request->data = $this->HojasRuta->read();
@@ -234,7 +234,6 @@ class HojasRutasController extends AppController {
             ///debug($requisitos_ad);exit;
 
             foreach ($requisitos_ad as $key => $re) {
-
                 $this->request->data['orequisitos'][$key] = $re['HojasRequisito'];
             }
         } else {
@@ -248,16 +247,16 @@ class HojasRutasController extends AppController {
             'conditions' => array('FlujosUser.hojas_ruta_id' => $idHojaruta),
             'fields' => array('FlujosUser.*', 'Flujo.*')
         ));
+        //debug($categoria);exit;
         if (empty($flujos)) {
             $flujos = $this->Flujo->find('all', array(
                 'recursive' => -1,
-                'conditions' => array('Flujo.hoja_ruta' => 1)
+                'conditions' => array('Flujo.hoja_ruta' => 1,'Flujo.categoria'=> $categoria)
             ));
+            //debug($flujos);exit;
         }
 
         foreach ($flujos as $key_f => $flu) {
-
-
             if (!empty($flu['FlujosUser']['id'])) {
                 $flujos[$key_f]['Flujo']['resultados'] = $this->FlujosUsersResultado->find('all', array(
                     'recursive' => 0,
@@ -310,7 +309,7 @@ class HojasRutasController extends AppController {
             'order' => array('Regione.nombre ASC')
         ));
 
-        $this->set(compact('requisitos', 'cliente', 'requisitos_ad', 'flujos', 'usuarios', 'regiones','idCliente','idHojaruta'));
+        $this->set(compact('requisitos', 'cliente', 'requisitos_ad', 'flujos', 'usuarios', 'regiones','idCliente','idHojaruta','categoria'));
     }
 
     public function get_asesores_edit($idFlujoUser = null){

@@ -13,7 +13,7 @@
     </div>-->
     <div class="section">
         <label for="datepicker1" class="field prepend-icon">
-            <?php echo $this->Form->text('ProcesosEstado.created', array('class' => 'form-control', 'placeholder' => 'Fecha de Activacion', 'id' => 'ddatepicker1', 'required')); ?>
+            <?php echo $this->Form->text('ProcesosEstado.created', array('class' => 'form-control ddatepicker2', 'placeholder' => 'Fecha de Activacion', 'required')); ?>
             <label class="field-icon">
                 <i class="fa fa-calendar-o"></i>
             </label>
@@ -38,7 +38,7 @@ echo $this->Html->script(
     array(
         'vendor/plugins/moment/moment.min',
         'vendor/plugins/datepicker/js/bootstrap-datetimepicker',
-        'inicalendario2',
+        //'inicalendario2',
         'jquery.validate.min',
         'inivalidacion_reg'
     )
@@ -48,6 +48,12 @@ echo $this->Html->script(
 
 <script>
     $('#f-add').submit(function (e) {
+        $('.ddatepicker2').each(function(e,elem){
+            if($(elem).val() != ''){
+                var fecha_dt = $(elem).val().split("/");
+                $(elem).val(fecha_dt[2]+'-'+fecha_dt[1]+'-'+fecha_dt[0]);
+            }
+        });
         var postData = $(this).serializeArray();
         $.ajax({
             url: '<?= $this->Html->url(array('controller' => 'Procesos', 'action' => 'activacion_ajax', $idFlujosUser, $idProceso));?>',
@@ -64,4 +70,19 @@ echo $this->Html->script(
         });
         e.preventDefault();
     });
+
+    $('.ddatepicker2').each(function(e,elem){
+
+        if($(elem).val() != ''){
+            var fecha_dt = $(elem).val().split("-");
+            var v_dia = fecha_dt[2];
+            var dia_f = v_dia.split(" ");
+            $(elem).val(dia_f[0]+'/'+fecha_dt[1]+'/'+fecha_dt[0]);
+        }
+    });
+    $('.ddatepicker2').datetimepicker({
+        format: 'DD/MM/YYYY',
+        pickTime: false
+    });
+
 </script>

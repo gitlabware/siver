@@ -3,14 +3,20 @@
 class ClientesController extends AppController {
 
     public $layout = 'svergara';
-    public $uses = array('Cliente');
+    public $uses = array('Cliente','Flujo');
 
     public function index() {
         $clientes = $this->Cliente->find('all', array(
             'recursive' => -1,
             'order' => array('Cliente.created DESC')
         ));
-        $this->set(compact('clientes'));
+        $categorias = $this->Flujo->find('list',array(
+            'recursive' => -1,
+            'fields' => array('Flujo.categoria','Flujo.categoria'),
+            'group' => array('Flujo.categoria'),
+            'conditions' => array('ISNULL(Flujo.categoria)' => false)
+        ));
+        $this->set(compact('clientes','categorias'));
     }
 
     public function cliente($idCliente = null) {

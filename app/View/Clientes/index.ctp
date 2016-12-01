@@ -56,17 +56,19 @@
                                         <td><?= h($cli['Cliente']['telefono'] . ' - ' . $cli['Cliente']['celular']) ?></td>
                                         <td><?= h($cli['Cliente']['razon_social']) ?></td>
                                         <td class="text-left">
-                                            <div class="btn-group text-right">
+                                            <div class="btn-group text-left">
                                                 <button type="button"
                                                         class="btn btn-success br2 btn-xs fs12 dropdown-toggle"
                                                         data-toggle="dropdown" aria-expanded="false"> Opciones
                                                     <span class="caret ml5"></span>
                                                 </button>
-                                                <ul class="dropdown-menu" role="menu">
+                                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                                     <?php if ($role == 'Administrador'): ?>
+                                                        <?php foreach ($categorias as $categoria):?>
                                                         <li>
-                                                            <?= $this->Form->postLink('Empezar Hoja-Ruta', ['controller' => 'HojasRutas', 'action' => 'hoja_ruta', $cli['Cliente']['id']]) ?>
+                                                            <?= $this->Form->postLink('HR-'.$categoria, ['controller' => 'HojasRutas', 'action' => 'hoja_ruta', $categoria,$cli['Cliente']['id']]) ?>
                                                         </li>
+                                                        <?php endforeach;?>
                                                     <?php endif; ?>
                                                     <li>
                                                         <a href="javascript:"

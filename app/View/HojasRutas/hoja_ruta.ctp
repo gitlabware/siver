@@ -59,7 +59,7 @@
 
     function carga_hoja_r(){
         $.ajax({
-            url: '<?= $this->Html->url(array('action' => 'hoja_ruta_ajax',$idCliente,$idHojaruta));?>',
+            url: '<?= $this->Html->url(array('action' => 'hoja_ruta_ajax',$categoria,$idCliente,$idHojaruta));?>',
             type: 'GET',
             success: function(data){
                 $('#cont_hoja_ruta').html(data);

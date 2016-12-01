@@ -308,6 +308,24 @@ class FlujosController extends AppController {
                 }*/
 
                 $this->FlujosUser->save($d_flujo);
+                if(!empty($this->request->data['FlujosUser']['id'])){
+                    $idFlujosUser = $this->request->data['FlujosUser']['id'];
+                }else{
+                    $idFlujosUser = $this->FlujosUser->getLastInsertID();
+                }
+
+                //REGISTRA LOS ASCESORES ----------
+                if(!empty($this->request->data['FlujosUser'][0]['asesores'])){
+                    foreach ($this->request->data['FlujosUser'][0]['asesores'] as $asce){
+                        $asce['flujos_user_id'] = $idFlujosUser;
+                        if(!empty($asce['asesor_id'])){
+                            $this->FlujosUsersAsesore->create();
+                            $this->FlujosUsersAsesore->save($asce);
+                        }
+                    }
+                }
+                //--------------------------------
+
                 $this->Session->setFlash('Se ha registrado correctamente!!', 'msgbueno');
                 $this->redirect($this->referer());
                 /*if (empty($idFlujosUser)) {
@@ -443,6 +461,13 @@ class FlujosController extends AppController {
         ));
         //debug($procesos);exit;
         return $procesos;
+    }
+
+    public function elimina_asesor_fu($idFluAsesor = null){
+        $this->FlujosUsersAsesore->delete($idFluAsesor);
+
+        $this->Session->setFlash("Se ha eliminado correctamente al asesor!!",'msgbueno');
+        $this->redirect($this->referer());
     }
 
     public function update_proceso_est($idFlujo = null, $idFlujoUser = null) {
